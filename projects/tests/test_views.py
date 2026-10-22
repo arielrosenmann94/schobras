@@ -1,0 +1,151 @@
+import tempfile
+from unittest import mock
+
+from django.test import TestCase, override_settings
+from django.urls import reverse
+
+from core.models import SiteSettings
+from projects.models import Category, Project, ProjectPhoto
+
+from .test_models import make_image, make_project
+
+
+def configure_whatsapp():
+    settings_obj = SiteSettings.load()
+    settings_obj.whatsapp = "912345678"
+    settings_obj.save()
+
+
+def publish(title="Casa Chicureo", **extra):
+    project = make_project(title, **extra)
+    ProjectPhoto.objects.create(project=project, image=make_image(), order=1, is_cover=True)
+    project.status = Project.Status.PUBLISHED
+    project.save()
+    return project
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class ProjectListTests(TestCase):
+    def test_list_empty_message(self):
+        response = self.client.get(reverse("projects:list"))
+        self.assertContains(response, "Pronto publicaremos nuestras obras")
+
+    def test_list_only_published(self):
+        publish("Casa Publicada")
+        make_project("Casa Borrador")
+        draft_with_photo = make_project("Borrador con foto")
+        ProjectPhoto.objects.create(project=draft_with_photo, image=make_image(), order=1)
+        published_no_photo = make_project("Publicada sin fotos")
+        Project.objects.filter(pk=published_no_photo.pk).update(status=Project.Status.PUBLISHED)
+        response = self.client.get(reverse("projects:list"))
+        self.assertContains(response, "Casa Publicada")
+        self.assertNotContains(response, "Casa Borrador")
+        self.assertNotContains(response, "Borrador con foto")
+        self.assertNotContains(response, "Publicada sin fotos")
+
+    def test_list_title(self):
+        publish()
+        response = self.client.get(reverse("projects:list"))
+        self.assertContains(response, "<title>Proyectos | SCHOBRAS.CL</title>", html=True)
+
+    def test_category_filter(self):
+        residential = Category.objects.get(name="Residencial")
+        other = Category.objects.exclude(pk=residential.pk).first()
+        publish("Casa Uno", category=residential)
+        publish("Otra Obra", category=other)
+        response = self.client.get(reverse("projects:category", args=[residential.slug]))
+        self.assertContains(response, "Casa Uno")
+        self.assertNotContains(response, "Otra Obra")
+        self.assertContains(response, "Todos")
+
+    def test_unknown_category_404(self):
+        response = self.client.get("/proyectos/categoria/no-existe/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_category_route_wins_over_detail_slug(self):
+        self.assertEqual(reverse("projects:category", args=["x"]), "/proyectos/categoria/x/")
+
+    def test_inactive_category_hidden_from_filters_projects_still_listed(self):
+        inactive = Category.objects.get(name="Residencial")
+        publish("Casa Oculta", category=inactive)
+        Category.objects.filter(pk=inactive.pk).update(is_active=False)
+        response = self.client.get(reverse("projects:list"))
+        self.assertContains(response, "Casa Oculta")
+        self.assertNotContains(response, reverse("projects:category", args=[inactive.slug]))
+        self.assertEqual(
+            self.client.get(reverse("projects:category", args=[inactive.slug])).status_code, 404
+        )
+
+    def test_filters_only_categories_with_published_projects(self):
+        publish("Casa Uno")
+        empty = Category.objects.exclude(name="Residencial").first()
+        response = self.client.get(reverse("projects:list"))
+        self.assertNotContains(response, reverse("projects:category", args=[empty.slug]))
+
+    def test_list_images_have_dimensions_and_lazy(self):
+        publish()
+        html = self.client.get(reverse("projects:list")).content.decode()
+        self.assertRegex(html, r'<img[^>]*width="20"[^>]*height="20"')
+        self.assertIn('loading="lazy"', html)
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class ProjectDetailTests(TestCase):
+    def test_detail_shows_only_filled_fields(self):
+        project = publish(area_m2=120)
+        html = self.client.get(project.get_absolute_url()).content.decode()
+        self.assertIn("120", html)
+        self.assertIn("Colina", html)
+        self.assertIn("Región Metropolitana", html)
+        self.assertNotIn("Año", html)
+        self.assertNotIn("Sistemas constructivos", html)
+        project.year = 2024
+        project.construction_systems = ["timber"]
+        project.save()
+        html = self.client.get(project.get_absolute_url()).content.decode()
+        self.assertIn("2024", html)
+        self.assertIn("Madera", html)
+
+    def test_detail_title_and_cta(self):
+        configure_whatsapp()
+        project = publish()
+        response = self.client.get(project.get_absolute_url())
+        self.assertContains(response, "Casa Chicureo en Colina | SCHOBRAS.CL")
+        self.assertContains(response, "¿Tienes un proyecto parecido? Conversemos.")
+
+    def test_detail_cover_high_priority_and_gallery_link(self):
+        project = publish()
+        ProjectPhoto.objects.create(project=project, image=make_image(), order=2)
+        html = self.client.get(project.get_absolute_url()).content.decode()
+        self.assertIn('fetchpriority="high"', html)
+        self.assertIn("data-gallery", html)
+
+    def test_detail_draft_404(self):
+        project = make_project("Borrador")
+        ProjectPhoto.objects.create(project=project, image=make_image(), order=1)
+        self.assertEqual(self.client.get(project.get_absolute_url()).status_code, 404)
+
+    def test_detail_no_contact_no_cta(self):
+        project = publish()
+        self.assertNotContains(self.client.get(project.get_absolute_url()), "Conversemos")
+
+    def test_detail_without_photos_404(self):
+        project = make_project("Sin fotos")
+        Project.objects.filter(pk=project.pk).update(status=Project.Status.PUBLISHED)
+        self.assertEqual(self.client.get(project.get_absolute_url()).status_code, 404)
+
+    def test_detail_whatsapp_mentions_project(self):
+        configure_whatsapp()
+        project = publish("Casa O'Higgins")
+        html = self.client.get(project.get_absolute_url()).content.decode()
+        self.assertIn("text=Hola%2C%20vi%20el%20proyecto%20Casa%20O%27Higgins%20y%20quiero", html)
+
+    def test_detail_missing_file_does_not_500(self):
+        project = publish()
+        with mock.patch(
+            "django.db.models.fields.files.ImageFieldFile._get_image_dimensions",
+            side_effect=FileNotFoundError,
+        ):
+            with self.assertLogs("core.templatetags.image_tags", level="WARNING"):
+                response = self.client.get(project.get_absolute_url())
+        self.assertEqual(response.status_code, 200)

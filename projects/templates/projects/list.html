@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load image_tags %}
+{% block title %}Proyectos | SCHOBRAS.CL{% endblock %}
+{% block meta_description %}Obras de arquitectura y construcción de SCHOBRAS.CL en la Región Metropolitana, Valparaíso y O'Higgins.{% endblock %}
+{% block og %}
+  <meta property="og:site_name" content="SCHOBRAS.CL">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Proyectos | SCHOBRAS.CL">
+{% endblock %}
+{% block content %}
+<section class="section projects axes">
+  <div class="container">
+    <header class="projects__head">
+      <p class="label">SCHOBRAS.CL</p>
+      <h1 class="display">Proyectos</h1>
+      <div class="cota cota--start" aria-hidden="true"></div>
+    </header>
+
+    {% if projects %}
+      {% if categories %}
+      <nav class="projects__filter" aria-label="Filtrar por categoría">
+        <ul class="projects__filter-list">
+          <li><a class="projects__chip" href="{% url 'projects:list' %}"{% if not active_category %} aria-current="page"{% endif %}>Todos</a></li>
+          {% for category in categories %}
+          <li><a class="projects__chip" href="{% url 'projects:category' category.slug %}"{% if category == active_category %} aria-current="page"{% endif %}>{{ category.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
+
+      <ul class="projects__grid">
+        {% for project in projects %}
+        {% with cover=project.cover_photo %}
+        <li class="project-card reveal">
+          <a class="project-card__link" href="{{ project.get_absolute_url }}">
+            <span class="project-card__media">
+              <img src="{{ cover.image.url|variant:800 }}" srcset="{{ cover.image.url|srcset }}" sizes="(min-width: 64em) 30vw, (min-width: 40em) 45vw, 100vw" alt="{{ cover.alt }}" {% image_size cover.image %} loading="lazy" decoding="async">
+            </span>
+            <span class="project-card__body">
+              <span class="label">{{ project.category.name }}</span>
+              <span class="subheading project-card__title">{{ project.title }}</span>
+              <span class="project-card__meta">{{ project.commune }} · {{ project.get_region_display }}</span>
+            </span>
+          </a>
+        </li>
+        {% endwith %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="lead projects__empty">Pronto publicaremos nuestras obras.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

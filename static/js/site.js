@@ -60,5 +60,58 @@
     }
   }
 
+  /* Visor de fotos (<dialog>): sin soporte, los enlaces abren la imagen. showModal deja
+     el resto inerte (foco atrapado) y Esc cierra de forma nativa. */
+  var links = document.querySelectorAll("a[data-gallery]");
+  if (links.length && typeof HTMLDialogElement === "function" && HTMLDialogElement.prototype.showModal) {
+    var dialog = document.createElement("dialog");
+    dialog.className = "viewer";
+    dialog.setAttribute("aria-label", "Galería de fotos");
+    dialog.innerHTML =
+      '<img class="viewer__img" alt="">' +
+      '<p class="viewer__count" aria-live="polite"></p>' +
+      '<button type="button" class="viewer__btn viewer__btn--close" aria-label="Cerrar galería"></button>' +
+      '<button type="button" class="viewer__btn viewer__btn--prev" aria-label="Foto anterior"></button>' +
+      '<button type="button" class="viewer__btn viewer__btn--next" aria-label="Foto siguiente"></button>';
+    document.body.appendChild(dialog);
+
+    var big = dialog.querySelector(".viewer__img");
+    var count = dialog.querySelector(".viewer__count");
+    var current = 0;
+    var startX = null;
+
+    var go = function (index) {
+      current = (index + links.length) % links.length;
+      var thumb = links[current].querySelector("img");
+      big.src = links[current].href;
+      big.alt = thumb ? thumb.alt : "";
+      count.textContent = (current + 1) + " de " + links.length;
+    };
+
+    each(links, function (link, index) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        go(index);
+        dialog.showModal();
+      });
+    });
+    dialog.querySelector(".viewer__btn--close").addEventListener("click", function () { dialog.close(); });
+    dialog.querySelector(".viewer__btn--prev").addEventListener("click", function () { go(current - 1); });
+    dialog.querySelector(".viewer__btn--next").addEventListener("click", function () { go(current + 1); });
+    dialog.addEventListener("keydown", function (event) {
+      if (event.key === "ArrowLeft") go(current - 1);
+      else if (event.key === "ArrowRight") go(current + 1);
+    });
+    dialog.addEventListener("touchstart", function (event) { startX = event.changedTouches[0].clientX; }, { passive: true });
+    dialog.addEventListener("touchend", function (event) {
+      if (startX === null) return;
+      var delta = event.changedTouches[0].clientX - startX;
+      startX = null;
+      if (Math.abs(delta) > 50) go(current + (delta < 0 ? 1 : -1));
+    });
+    dialog.addEventListener("click", function (event) { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener("close", function () { big.removeAttribute("src"); });
+  }
+
   root.classList.add("js");
 })();
