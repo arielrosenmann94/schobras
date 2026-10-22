@@ -1,3 +1,4 @@
+import re
 import tempfile
 from unittest import mock
 
@@ -48,6 +49,19 @@ class ProjectListTests(TestCase):
         response = self.client.get(reverse("projects:list"))
         self.assertContains(response, "<title>Proyectos | SCHOBRAS.CL</title>", html=True)
 
+    def test_first_card_image_is_lcp_priority(self):
+        for title in ("Casa Uno", "Casa Dos", "Casa Tres"):
+            publish(title)
+        html = self.client.get(reverse("projects:list")).content.decode()
+        grid = html.split('class="projects__grid"', 1)[1]
+        images = re.findall(r"<img [^>]*>", grid)
+        self.assertEqual(len(images), 3)
+        self.assertIn('fetchpriority="high"', images[0])
+        self.assertNotIn('loading="lazy"', images[0])
+        for image in images[1:]:
+            self.assertIn('loading="lazy"', image)
+            self.assertNotIn("fetchpriority", image)
+
     def test_category_filter(self):
         residential = Category.objects.get(name="Residencial")
         other = Category.objects.exclude(pk=residential.pk).first()
@@ -82,11 +96,10 @@ class ProjectListTests(TestCase):
         response = self.client.get(reverse("projects:list"))
         self.assertNotContains(response, reverse("projects:category", args=[empty.slug]))
 
-    def test_list_images_have_dimensions_and_lazy(self):
+    def test_list_images_have_dimensions(self):
         publish()
         html = self.client.get(reverse("projects:list")).content.decode()
         self.assertRegex(html, r'<img[^>]*width="20"[^>]*height="20"')
-        self.assertIn('loading="lazy"', html)
 
 
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
