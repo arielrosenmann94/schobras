@@ -90,6 +90,18 @@ class PanelSettingsTests(TestCase):
                 self.assertEqual(response.status_code, 302)
                 self.assertEqual(SiteSettings.objects.get().phone, phone)
 
+    def test_help_and_error_ids_match_aria_describedby(self):
+        self.client.force_login(self.admin)
+        html = self.client.get(self.url()).content.decode()
+        self.assertRegex(html, r'<input[^>]*aria-describedby="id_whatsapp_helptext"[^>]*id="id_whatsapp"')
+        self.assertIn('<p class="help" id="id_whatsapp_helptext">', html)
+        html = self.client.post(self.url(), self.data(whatsapp="123")).content.decode()
+        self.assertRegex(
+            html,
+            r'<input[^>]*aria-describedby="id_whatsapp_helptext id_whatsapp_error"[^>]*id="id_whatsapp"',
+        )
+        self.assertIn(f'<p class="form-error" id="id_whatsapp_error" role="alert">{INVALID_WHATSAPP}</p>', html)
+
     def test_home_links_settings_for_admin_only(self):
         self.client.force_login(self.admin)
         self.assertContains(self.client.get(reverse("panel:home")), f'href="{self.url()}"')

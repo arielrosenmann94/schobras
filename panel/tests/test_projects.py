@@ -63,6 +63,13 @@ class PanelProjectTests(TestCase):
             response, reverse("panel:project_photos", args=[project.pk])
         )
 
+    def test_construction_systems_grouped_in_fieldset(self):
+        html = self.client.get(reverse("panel:project_create")).content.decode()
+        self.assertRegex(
+            html, r'<fieldset class="field">\s*<legend>Sistemas constructivos</legend>'
+        )
+        self.assertNotIn("<label>Sistemas constructivos</label>", html)
+
     def test_create_form_lists_only_active_categories(self):
         Category.objects.create(name="Antigua", is_active=False)
         response = self.client.get(reverse("panel:project_create"))
