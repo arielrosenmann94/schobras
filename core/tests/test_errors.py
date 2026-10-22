@@ -38,8 +38,11 @@ class BadRequestPageTests(TestCase):
         self.assertIn('<html lang="es-CL">', html)
         self.assertIn('<meta name="robots" content="noindex">', html)
         self.assertIn("SCHOBRAS", html)
-        self.assertIn("Algo salió mal con el envío", html)
-        self.assertIn("Si subías fotos, sube de a menos.", html)
+        # QA-2.3: cualquier 400 (p. ej. Host inválido) decía "envío" y "fotos".
+        self.assertIn("No pudimos procesar esta solicitud", html)
+        self.assertIn("Vuelve atrás e inténtalo de nuevo.", html)
+        self.assertNotIn("envío", html)
+        self.assertNotIn("fotos", html)
         self.assertIn('href="/static/css/site.css"', html)
         self.assertNotIn("Bad Request", html)
         self.assertNotRegex(html, "sty" + 'le="')
@@ -63,7 +66,7 @@ class TooManyFilesTests(TestCase):
             response = self.client.post(
                 reverse("panel:project_photos", args=[project.pk]), {"images": files}
             )
-        self.assertContains(response, "Si subías fotos, sube de a menos.", status_code=400)
+        self.assertContains(response, "No pudimos procesar esta solicitud", status_code=400)
 
 
 @override_settings(DEBUG=False, ALLOWED_HOSTS=["testserver"])

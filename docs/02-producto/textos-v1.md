@@ -140,9 +140,9 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 
 | Dónde | Texto |
 |---|---|
-| 400 (envío rechazado, p. ej. más de 100 fotos de una vez): título de la pestaña | `Algo salió mal \| SCHOBRAS.CL` |
-| 400: título | `Algo salió mal con el envío` |
-| 400: texto | `Si subías fotos, sube de a menos.` |
+| 400 (solicitud rechazada, p. ej. Host inválido o más de 100 fotos de una vez): título de la pestaña | `Algo salió mal \| SCHOBRAS.CL` |
+| 400: título (genérico desde la QA vuelta 2; antes `Algo salió mal con el envío`) | `No pudimos procesar esta solicitud` |
+| 400: texto (genérico desde la QA vuelta 2; antes `Si subías fotos, sube de a menos.`) | `Vuelve atrás e inténtalo de nuevo.` |
 | 400: botón | `Volver al inicio` |
 | Panel, foto con demasiados megapíxeles (tope por formato desde la QA vuelta 2: 40 en JPG, 20 en PNG, 12 en WebP) | `La foto {nombre} tiene demasiados megapíxeles (máximo {40, 20 o 12}).` |
 | Panel, categoría repetida (sin importar mayúsculas) | `Ya existe una categoría con ese nombre.` |
