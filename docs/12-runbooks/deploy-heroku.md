@@ -28,7 +28,7 @@ heroku create schobras --region us
 heroku buildpacks:set heroku/python -a schobras
 heroku addons:create heroku-postgresql:essential-0 -a schobras
 heroku pg:backups:schedule DATABASE_URL --at '04:00 America/Santiago' -a schobras
-heroku addons:create cloudinary:starter -a schobras     # define CLOUDINARY_URL
+heroku addons:create cloudinary:starter -a schobras     # define CLOUDINARY_URL (obligatoria: sin ella la app no arranca, "Falta CLOUDINARY_URL")
 ```
 
 ## 2. Config vars (en tu terminal; nunca las imprimas después)
@@ -75,7 +75,7 @@ heroku domains:add www.schobras.cl -a schobras
 heroku certs:auto:enable -a schobras
 ```
 
-En el registrador (Registrar.eu o su revendedor): registros que indique `heroku domains` (ALIAS/ANAME o CNAME). `www` redirige a `schobras.cl`.
+En el registrador (Registrar.eu o su revendedor): registros que indique `heroku domains` (ALIAS/ANAME o CNAME). `www` redirige (301) a `schobras.cl` con `core.middleware.CanonicalHostMiddleware`, activo solo en producción; basta con apuntar ambos nombres a Heroku.
 
 ## 6. Rollback
 
