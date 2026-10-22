@@ -1,0 +1,17 @@
+{% extends "panel/base.html" %}
+{% block title %}Ingresar{% endblock %}
+{% block content %}
+<h1>Ingresar al panel</h1>
+<form method="post" class="card form">
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+  <div class="form-error" role="alert">{{ form.non_field_errors|join:" " }}</div>
+  {% endif %}
+  <label for="{{ form.username.id_for_label }}">Usuario</label>
+  <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" autocomplete="username" autocapitalize="none" autofocus required>
+  <label for="{{ form.password.id_for_label }}">Contraseña</label>
+  <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}" autocomplete="current-password" required>
+  <input type="hidden" name="next" value="{{ next }}">
+  <button type="submit" class="btn btn-primary">Ingresar</button>
+</form>
+{% endblock %}

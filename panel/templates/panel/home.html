@@ -1,0 +1,22 @@
+{% extends "panel/base.html" %}
+{% block title %}Proyectos{% endblock %}
+{% block content %}
+<h1>Proyectos</h1>
+<nav class="actions" aria-label="Acciones del panel">
+  <a class="btn btn-primary" href="#">Nuevo proyecto</a>
+  <a class="btn btn-secondary" href="#">Categorías</a>
+  {% if user.is_admin_role %}<a class="btn btn-secondary" href="#">Configuración</a>{% endif %}
+</nav>
+{% if projects %}
+<ul class="project-list">
+  {% for project in projects %}
+  <li class="card">
+    <span class="project-title">{{ project.title }}</span>
+    <span class="badge badge-{{ project.status }}">{{ project.get_status_display }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="card">Todavía no hay proyectos. Crea el primero con el botón "Nuevo proyecto".</p>
+{% endif %}
+{% endblock %}

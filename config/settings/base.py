@@ -6,6 +6,7 @@ No contiene secretos: los valores sensibles llegan por variables de entorno
 con python-decouple (ver .env.example).
 Diseño: docs/2026-10-22-web-v1-diseno.md.
 """
+from datetime import timedelta
 from pathlib import Path
 
 from decouple import config
@@ -42,7 +43,11 @@ LOCAL_APPS = [
     "panel",      # backoffice propio (no el admin de Django)
 ]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
+THIRD_PARTY_APPS = [
+    "axes",       # bloqueo por intentos fallidos de ingreso
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -54,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.csp.ContentSecurityPolicyMiddleware",
+    "axes.middleware.AxesMiddleware",  # siempre al final
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -132,3 +138,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "/panel/ingresar/"
 LOGIN_REDIRECT_URL = "/panel/"
 LOGOUT_REDIRECT_URL = "/"
+
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+# ── Bloqueo por intentos fallidos (django-axes) ────────────────────────────────
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = timedelta(minutes=30)
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_PARAMETERS = ["username", "ip_address"]
+AXES_LOCKOUT_TEMPLATE = "panel/locked.html"
