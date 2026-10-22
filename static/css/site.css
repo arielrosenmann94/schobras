@@ -1,0 +1,762 @@
+/* ==========================================================================
+   SCHOBRAS.CL: hoja de estilos única (sin frameworks).
+   Reglas: docs/06-frontend/guia-visual.md. Mobile-first: 360 · 768 · 1024 · 1440.
+   Lenguaje: plano (ejes y cotas finas), muros (bloques sólidos), escala contrastada.
+   ========================================================================== */
+
+/* ── Fuente autoalojada (Open Sans variable, subconjunto latino) ─────────── */
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("../fonts/open-sans-latin-wght-normal.woff2") format("woff2");
+}
+
+/* Respaldo con métricas ajustadas: reduce el salto de diseño mientras carga. */
+@font-face {
+  font-family: "Open Sans Fallback";
+  src: local("Arial"), local("Helvetica"), local("Liberation Sans");
+  size-adjust: 105%;
+  ascent-override: 101.6%;
+  descent-override: 27.9%;
+  line-gap-override: 0%;
+}
+
+/* ── Tokens ────────────────────────────────────────────────────────────── */
+:root {
+  --color-anthracite: #2C3539;
+  --color-bronze: #B57949;
+  --color-cement: #A9ABB6;
+  --color-white: #FFFFFF;
+
+  /* Líneas de plano: derivadas del cemento, nunca colores nuevos. */
+  --line: color-mix(in srgb, var(--color-cement) 55%, transparent);
+  --line-on-dark: color-mix(in srgb, var(--color-cement) 28%, transparent);
+
+  --font-sans: "Open Sans", "Open Sans Fallback", system-ui, sans-serif;
+
+  /* Escala con contraste fuerte: display enorme, cuerpo pequeño y aireado. */
+  --text-display: clamp(2.75rem, 8vw, 7rem);
+  --text-h2: clamp(2rem, 5.5vw, 4.5rem);
+  --text-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --text-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --text-small: 0.875rem;
+  --text-label: 0.8125rem;
+  --text-index: clamp(3.5rem, 11vw, 9rem);
+
+  /* Espaciado en múltiplos de 8 px. */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --space-12: 6rem;
+  --space-16: 8rem;
+
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --max-width: 90rem;
+  --header-height: 4rem;
+  --section-space: clamp(5rem, 12vw, 10rem);
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration: 600ms;
+}
+
+@media (min-width: 64em) {
+  :root { --header-height: 5rem; }
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  color: var(--color-anthracite);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+main { flex: 1 0 auto; }
+main:focus { outline: none; }
+
+h1, h2, h3, h4, p, ul, ol, figure, blockquote, dl, dd { margin: 0; }
+ul[class], ol[class] { padding: 0; list-style: none; }
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+p { text-wrap: pretty; }
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+[id] { scroll-margin-top: calc(var(--header-height) + var(--space-2)); }
+
+::selection {
+  background: var(--color-anthracite);
+  color: var(--color-white);
+}
+
+/* Foco: contorno de 3 px con separación (antracita en claro, bronce en oscuro). */
+:focus-visible {
+  outline: 3px solid var(--color-anthracite);
+  outline-offset: 3px;
+}
+
+.wall :focus-visible,
+.site-footer :focus-visible,
+.menu-open .site-header :focus-visible,
+.whatsapp-float:focus-visible {
+  outline-color: var(--color-bronze);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* ── Plano: ejes verticales finos detrás del contenido ───────────────────
+   El cuerpo lleva los ejes fijos; los "muros" (fondos sólidos) los tapan.
+   .axes los repite sobre un muro oscuro. */
+body::before,
+.axes::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: -1;
+  width: min(100% - 2 * var(--gutter), var(--max-width) - 2 * var(--gutter));
+  transform: translateX(-50%);
+  border-inline: 1px solid var(--axes-color, var(--line));
+  background:
+    linear-gradient(var(--axes-color, var(--line)), var(--axes-color, var(--line))) 50% 0 / 1px 100% no-repeat;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.axes {
+  position: relative;
+  isolation: isolate;
+  --axes-color: var(--line-on-dark);
+}
+
+.axes::before { position: absolute; opacity: 1; }
+
+@media (min-width: 48em) {
+  body::before,
+  .axes::before {
+    background:
+      linear-gradient(var(--axes-color, var(--line)), var(--axes-color, var(--line))) 25% 0 / 1px 100% no-repeat,
+      linear-gradient(var(--axes-color, var(--line)), var(--axes-color, var(--line))) 50% 0 / 1px 100% no-repeat,
+      linear-gradient(var(--axes-color, var(--line)), var(--axes-color, var(--line))) 75% 0 / 1px 100% no-repeat;
+  }
+}
+
+/* ── Utilidades de composición ──────────────────────────────────────────── */
+.container {
+  width: min(100% - 2 * var(--gutter), var(--max-width) - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+.section { padding-block: var(--section-space); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Muros: bloques sólidos que estructuran la página. */
+.wall {
+  background: var(--color-anthracite);
+  color: var(--color-white);
+}
+
+.wall--cement {
+  background: var(--color-cement);
+  color: var(--color-anthracite);
+}
+
+/* ── Tipografía de composición ─────────────────────────────────────────── */
+.display {
+  font-size: var(--text-display);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.heading {
+  font-size: var(--text-h2);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+}
+
+.subheading {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.label {
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.lead {
+  max-width: 38rem;
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  line-height: 1.6;
+}
+
+.prose { max-width: 40rem; }
+.prose > * + * { margin-top: 1em; }
+
+/* Número de sección grande en bronce (≥ 24 px: contraste permitido). */
+.section-index {
+  display: block;
+  color: var(--color-bronze);
+  font-size: var(--text-index);
+  font-weight: 300;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Cota: línea de dimensión con remates, como en un plano. */
+.cota {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cota::before,
+.cota::after {
+  content: "";
+  height: 0.6875rem;
+  background: linear-gradient(var(--color-bronze), var(--color-bronze)) 0 50% / 100% 1px no-repeat;
+}
+
+.cota::before { border-left: 1px solid var(--color-bronze); transform-origin: left; }
+.cota::after { border-right: 1px solid var(--color-bronze); transform-origin: right; }
+
+.cota--start { grid-template-columns: auto 1fr; }
+.cota--start::before { display: none; }
+
+.rule {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: var(--line);
+}
+
+/* ── Botones ───────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 3rem;
+  padding: 0.75rem var(--space-3);
+  border: 1px solid var(--color-anthracite);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-anthracite);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 200ms var(--ease), color 200ms var(--ease), box-shadow 200ms var(--ease);
+}
+
+.btn::after {
+  content: "";
+  width: 1.25rem;
+  height: 0.5rem;
+  background:
+    linear-gradient(currentColor, currentColor) 0 50% / 100% 1px no-repeat,
+    linear-gradient(currentColor, currentColor) 100% 0 / 1px 100% no-repeat;
+  transition: transform 200ms var(--ease);
+}
+
+.btn:hover::after { transform: translateX(0.25rem); }
+
+.btn--primary {
+  background: var(--color-anthracite);
+  color: var(--color-white);
+}
+
+.btn--primary:hover { box-shadow: inset 0 -3px 0 var(--color-bronze); }
+
+.btn--ghost:hover {
+  background: var(--color-anthracite);
+  color: var(--color-white);
+}
+
+.wall .btn { border-color: var(--color-white); color: var(--color-white); }
+.wall .btn--primary { background: var(--color-white); color: var(--color-anthracite); }
+.wall .btn--ghost:hover { background: var(--color-white); color: var(--color-anthracite); }
+
+/* ── Enlace para saltar al contenido ───────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: var(--space-1);
+  left: var(--space-1);
+  z-index: 100;
+  padding: 0.75rem var(--space-2);
+  background: var(--color-anthracite);
+  color: var(--color-white);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus { transform: none; }
+.skip-link:focus-visible { outline-color: var(--color-bronze); }
+
+/* ── Encabezado ────────────────────────────────────────────────────────── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--line);
+  transition: background-color 300ms var(--ease), color 300ms var(--ease), border-color 300ms var(--ease);
+}
+
+.site-header__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: var(--space-3);
+  min-height: var(--header-height);
+}
+
+/* Marca y botón quedan sobre el menú abierto. */
+.brand,
+.menu-toggle {
+  position: relative;
+  z-index: 2;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand__mark { width: 2rem; flex: none; }
+
+.brand__word {
+  /* Compensa el espaciado final para que el bloque quede alineado al eje. */
+  margin-right: -0.32em;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  line-height: 1;
+}
+
+/* Isotipo: volúmenes en el color del texto; fierros y amarras en bronce. */
+.isotype { width: 100%; height: auto; overflow: visible; }
+.isotype .rebar,
+.isotype .tie { stroke: var(--color-bronze); }
+
+/* Botón del menú: solo existe con JS y bajo 1024 px. */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin-right: -0.5rem;
+  padding: 0 0.5rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.menu-toggle__icon {
+  position: relative;
+  width: 1.5rem;
+  height: 0.5rem;
+}
+
+.menu-toggle__icon::before,
+.menu-toggle__icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform 300ms var(--ease);
+}
+
+.menu-toggle__icon::before { top: 0; }
+.menu-toggle__icon::after { bottom: 0; }
+
+.menu-toggle[aria-expanded="true"] .menu-toggle__icon::before { transform: translateY(0.1875rem) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] .menu-toggle__icon::after { transform: translateY(-0.1875rem) rotate(-45deg); }
+
+/* Navegación: sin JS es una fila simple bajo la marca. */
+.site-nav { width: 100%; }
+
+.site-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-3);
+  padding-bottom: var(--space-1);
+}
+
+.site-nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.625rem;
+  height: 1px;
+  background: var(--color-bronze);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms var(--ease);
+}
+
+.site-nav__link:hover::after,
+.site-nav__link[aria-current="page"]::after { transform: scaleX(1); }
+
+@media (max-width: 63.999em) {
+  html.js .menu-toggle { display: inline-flex; }
+
+  /* Menú a pantalla completa: un muro antracita que baja. */
+  html.js .site-nav {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: calc(var(--header-height) + var(--space-4)) var(--gutter) var(--space-6);
+    overflow-y: auto;
+    background: var(--color-anthracite);
+    color: var(--color-white);
+    visibility: hidden;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 450ms var(--ease), visibility 0s linear 450ms;
+  }
+
+  html.js.menu-open .site-nav {
+    visibility: visible;
+    clip-path: inset(0);
+    transition: clip-path 450ms var(--ease);
+  }
+
+  html.js .site-nav__list {
+    display: block;
+    border-bottom: 1px solid var(--line-on-dark);
+  }
+
+  html.js .site-nav__list li { border-top: 1px solid var(--line-on-dark); }
+
+  html.js .site-nav__link {
+    display: flex;
+    width: 100%;
+    min-height: 4.5rem;
+    font-size: clamp(2rem, 9vw, 3.25rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  html.js .site-nav__link::after { bottom: 0.75rem; height: 2px; }
+
+  html.menu-open { overflow: hidden; }
+
+  html.menu-open .site-header {
+    background: var(--color-anthracite);
+    color: var(--color-white);
+    border-bottom-color: transparent;
+  }
+
+  html.menu-open .whatsapp-float { visibility: hidden; }
+}
+
+@media (min-width: 64em) {
+  .site-header__bar { flex-wrap: nowrap; }
+
+  .site-nav { width: auto; }
+
+  .site-nav__list {
+    align-items: center;
+    column-gap: var(--space-4);
+    padding: 0;
+  }
+
+  .site-nav__link {
+    font-size: var(--text-small);
+    letter-spacing: 0.04em;
+  }
+
+  /* Contacto: llamado sobrio con borde, sin competir con el contenido. */
+  .site-nav__link--cta {
+    padding-inline: var(--space-3);
+    border: 1px solid var(--color-anthracite);
+    transition: background-color 200ms var(--ease), color 200ms var(--ease);
+  }
+
+  .site-nav__link--cta::after { display: none; }
+
+  .site-nav__link--cta:hover {
+    background: var(--color-anthracite);
+    color: var(--color-white);
+  }
+}
+
+/* ── Pie: el muro final, con la marca a escala de placa ───────────────── */
+.site-footer {
+  /* Abajo deja aire para que el botón flotante no tape el último enlace. */
+  padding-block: var(--section-space) calc(var(--space-4) + 4.5rem);
+  background: var(--color-anthracite);
+  color: var(--color-white);
+  font-size: var(--text-small);
+}
+
+.site-footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.site-footer__mark { width: clamp(3.5rem, 9vw, 7.5rem); flex: none; }
+
+.site-footer__word {
+  margin-right: -0.06em;
+  font-size: clamp(2.25rem, 9.5vw, 8rem);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  line-height: 0.85;
+}
+
+.site-footer__company {
+  margin-top: var(--space-2);
+  color: var(--color-cement);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.site-footer__grid {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: clamp(3rem, 8vw, 6rem);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line-on-dark);
+}
+
+.site-footer__label {
+  margin-bottom: var(--space-2);
+  color: var(--color-cement);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.site-footer__list li + li { margin-top: var(--space-1); }
+
+.site-footer__list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  text-decoration-color: var(--color-bronze);
+}
+
+.site-footer__list a:hover { text-decoration-thickness: 2px; }
+
+.site-footer__channel {
+  display: inline-block;
+  min-width: 5.5rem;
+  color: var(--color-cement);
+}
+
+.site-footer__legal {
+  margin-top: clamp(3rem, 8vw, 6rem);
+  color: var(--color-cement);
+  font-size: var(--text-label);
+  letter-spacing: 0.06em;
+}
+
+@media (min-width: 48em) {
+  .site-footer__brand { flex-direction: row; align-items: flex-end; gap: clamp(1.5rem, 3vw, 2.5rem); }
+
+  /* Columnas sin separación: cada una arranca justo en su eje del plano. */
+  .site-footer__grid { grid-template-columns: repeat(4, 1fr); column-gap: 0; }
+  .site-footer__col { padding-left: var(--space-2); }
+  .site-footer__col:first-child { grid-column: 3; }
+  .site-footer__col:only-child { grid-column: 3 / span 2; }
+}
+
+/* ── Botón flotante de WhatsApp ────────────────────────────────────────── */
+.whatsapp-float {
+  position: fixed;
+  right: max(var(--space-2), env(safe-area-inset-right));
+  bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--color-anthracite);
+  color: var(--color-white);
+  box-shadow:
+    inset 0 -3px 0 var(--color-bronze),
+    0 0 0 1px var(--line-on-dark),
+    0 1rem 2rem -1rem var(--color-anthracite);
+  transition: transform 200ms var(--ease);
+}
+
+.whatsapp-float:hover { transform: translateY(-2px); }
+.whatsapp-float__icon { width: 1.75rem; height: 1.75rem; }
+
+@media (min-width: 64em) {
+  .site-footer { padding-bottom: var(--space-4); }
+
+  .whatsapp-float {
+    right: var(--space-4);
+    bottom: var(--space-4);
+  }
+}
+
+/* ── Movimiento (solo si el usuario no pidió reducirlo) ──────────────────
+   .reveal solo se oculta con JS activo: sin JS todo queda visible. */
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes rise { from { transform: scaleY(0); } to { transform: none; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .reveal {
+    opacity: 0;
+    transform: translate3d(0, 2rem, 0);
+    transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
+  }
+
+  /* Variante muro: el bloque "sube" desde su base. */
+  html.js .reveal--wall {
+    opacity: 1;
+    clip-path: inset(100% 0 0 0);
+    transform: translate3d(0, 1.5rem, 0);
+    transition: clip-path var(--duration) var(--ease), transform var(--duration) var(--ease);
+  }
+
+  html.js .reveal.visible {
+    opacity: 1;
+    clip-path: inset(0);
+    transform: none;
+  }
+
+  /* Las cotas y reglas dentro de un bloque revelado se dibujan. */
+  html.js .reveal .cota::before,
+  html.js .reveal .cota::after,
+  html.js .reveal .rule {
+    transform: scaleX(0);
+    transition: transform var(--duration) var(--ease) 150ms;
+  }
+
+  html.js .reveal .rule { transform-origin: left; }
+
+  html.js .reveal.visible .cota::before,
+  html.js .reveal.visible .cota::after,
+  html.js .reveal.visible .rule { transform: none; }
+
+  /* Isotipo armándose: fierros que suben, amarras, y volúmenes que se levantan. */
+  html.js .build .ground {
+    stroke-dasharray: 180;
+    stroke-dashoffset: 180;
+    animation: draw 400ms var(--ease) forwards;
+  }
+
+  html.js .build .rebar {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: draw var(--duration) var(--ease) forwards;
+  }
+
+  html.js .build .rebar:nth-child(2) { animation-delay: 60ms; }
+  html.js .build .rebar:nth-child(3) { animation-delay: 120ms; }
+  html.js .build .rebar:nth-child(4) { animation-delay: 180ms; }
+  html.js .build .rebar:nth-child(5) { animation-delay: 240ms; }
+
+  html.js .build .tie {
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    animation: draw 300ms var(--ease) 600ms forwards;
+  }
+
+  html.js .build .volume {
+    transform: scaleY(0);
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: rise var(--duration) var(--ease) 300ms forwards;
+  }
+
+  html.js .build .volume + .volume { animation-delay: 420ms; }
+
+  html.js .reveal:not(.visible) .build * { animation-play-state: paused; }
+}

@@ -1,0 +1,21 @@
+{% load site_tags %}<header class="site-header">
+  <div class="site-header__bar container">
+    <a class="brand" href="/" aria-label="SCHOBRAS.CL, inicio">
+      <span class="brand__mark">{% inline_svg "img/isotipo.svg" %}</span>
+      <span class="brand__word">SCHOBRAS</span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" data-menu-toggle>
+      <span class="menu-toggle__label">Menú</span>
+      <span class="menu-toggle__icon" aria-hidden="true"></span>
+    </button>
+    <nav aria-label="Principal" class="site-nav" id="menu-principal">
+      <ul class="site-nav__list">
+        <li><a class="site-nav__link" href="/#nosotros">Nosotros</a></li>
+        <li><a class="site-nav__link" href="/#servicios">Servicios</a></li>
+        <li><a class="site-nav__link" href="/#proceso">Proceso</a></li>
+        {% if has_projects %}<li><a class="site-nav__link" href="/proyectos/"{% if request.path|slice:":11" == "/proyectos/" %} aria-current="page"{% endif %}>Proyectos</a></li>{% endif %}
+        {% if has_contact %}<li><a class="site-nav__link site-nav__link--cta" href="/#contacto">Contacto</a></li>{% endif %}
+      </ul>
+    </nav>
+  </div>
+</header>

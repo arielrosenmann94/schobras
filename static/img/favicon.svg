@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="3" fill="#2C3539"/>
+  <g transform="translate(3.6 2.6) scale(0.135)">
+    <g fill="none" stroke="#B57949" stroke-width="7">
+      <line x1="34" y1="195" x2="34" y2="62"/>
+      <line x1="58.5" y1="195" x2="58.5" y2="16"/>
+      <line x1="84" y1="195" x2="84" y2="2"/>
+    </g>
+    <g fill="#FFFFFF">
+      <polygon points="57,66 83,76 83,18 121,29 121,97 96,108 96,195 57,195"/>
+      <polygon points="119,97 157,110 157,195 119,195"/>
+    </g>
+    <path d="M10 195H96M119 195H182" fill="none" stroke="#FFFFFF" stroke-width="7"/>
+  </g>
+</svg>

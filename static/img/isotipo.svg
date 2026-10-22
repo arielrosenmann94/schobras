@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Isotipo PROVISORIO de SCHOBRAS: redibujo de static/img/isotipo.png hasta que llegue el logo oficial. Reemplazar este archivo cambia el logo en todo el sitio. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="6 0 180 200" class="isotype" aria-hidden="true" focusable="false">
+  <g fill="none" stroke="currentColor" stroke-linecap="butt">
+    <line class="rebar" x1="32.5" y1="195" x2="32.5" y2="62" stroke-width="1.5"/>
+    <line class="rebar" x1="45" y1="195" x2="45" y2="54" stroke-width="2"/>
+    <line class="rebar" x1="58.5" y1="195" x2="58.5" y2="16" stroke-width="3"/>
+    <line class="rebar" x1="71" y1="195" x2="71" y2="11" stroke-width="2"/>
+    <line class="rebar" x1="84" y1="195" x2="84" y2="4" stroke-width="2"/>
+    <line class="tie" x1="26" y1="81" x2="61" y2="65.4" stroke-width="2"/>
+    <line class="tie" x1="51" y1="33" x2="82" y2="18.8" stroke-width="2"/>
+  </g>
+  <g fill="currentColor">
+    <polygon class="volume" points="57,66 83,76 83,18 121,29 121,97 96,108 96,195 57,195"/>
+    <polygon class="volume" points="119,97 157,110 157,195 119,195"/>
+  </g>
+  <path class="ground" d="M10 195H96M119 195H182" fill="none" stroke="currentColor" stroke-width="3"/>
+</svg>
