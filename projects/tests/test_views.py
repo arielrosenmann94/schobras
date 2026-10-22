@@ -96,6 +96,13 @@ class ProjectListTests(TestCase):
         response = self.client.get(reverse("projects:list"))
         self.assertNotContains(response, reverse("projects:category", args=[empty.slug]))
 
+    def test_first_card_is_not_hidden_by_reveal(self):
+        publish("Casa Uno")
+        publish("Casa Dos")
+        html = self.client.get(reverse("projects:list")).content.decode()
+        cards = re.findall(r'<li class="(project-card[^"]*)"', html)
+        self.assertEqual(cards, ["project-card", "project-card reveal"])
+
     def test_list_images_have_dimensions(self):
         publish()
         html = self.client.get(reverse("projects:list")).content.decode()
@@ -147,6 +154,15 @@ class ProjectDetailTests(TestCase):
         html = self.client.get(project.get_absolute_url()).content.decode()
         self.assertIn('fetchpriority="high"', html)
         self.assertIn("data-gallery", html)
+
+    def test_gallery_thumbs_have_distinct_labels_and_matching_sizes(self):
+        project = publish()
+        ProjectPhoto.objects.create(project=project, image=make_image(), order=2)
+        html = self.client.get(project.get_absolute_url()).content.decode()
+        self.assertIn('aria-label="Ver foto 1 de 2"', html)
+        self.assertIn('aria-label="Ver foto 2 de 2"', html)
+        thumbs = html[html.index("project__gallery-grid"):]
+        self.assertIn('sizes="(min-width: 48em) 30vw, 50vw"', thumbs)
 
     def test_detail_draft_404(self):
         project = make_project("Borrador")

@@ -33,7 +33,7 @@
       <ul class="projects__grid">
         {% for project in projects %}
         {% with cover=project.cover_photo %}
-        <li class="project-card reveal">
+        <li class="project-card{% if not forloop.first %} reveal{% endif %}">
           <a class="project-card__link" href="{{ project.get_absolute_url }}">
             <span class="project-card__media">
               <img src="{{ cover.image.url|variant:800 }}" srcset="{{ cover.image.url|srcset }}" sizes="(min-width: 64em) 30vw, (min-width: 40em) 45vw, 100vw" alt="{{ cover.alt }}" {% image_size cover %} {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
