@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
+from core.templatetags.image_tags import variant
+
 from .models import Category, Project
 
 
@@ -47,6 +49,6 @@ def project_detail(request, slug):
             "cover": cover,
             "photos": list(project.photos.all()),
             "meta_description": description[:155].rstrip() or f"{project.title} en {project.commune}.",
-            "og_image": request.build_absolute_uri(cover.image.url) if cover else "",
+            "og_image": request.build_absolute_uri(variant(cover.image.url, 1200)) if cover else "",
         },
     )

@@ -1,25 +1,23 @@
 """Variantes responsivas de imágenes y dimensiones seguras para <img>."""
-import logging
+import re
 
 from django import template
 from django.utils.html import format_html
 
 register = template.Library()
-logger = logging.getLogger(__name__)
 
 WIDTHS = (400, 800, 1600)
-CLOUDINARY_MARK = "res.cloudinary.com"
-UPLOAD_SEGMENT = "/upload/"
+CLOUDINARY_UPLOAD = re.compile(r"^https://res\.cloudinary\.com/[^/]+/image/upload/")
 
 
 @register.filter
 def variant(url, width):
     """URL de la imagen al ancho pedido; en Cloudinary pide la variante, en local no cambia."""
     url = str(url or "")
-    if CLOUDINARY_MARK not in url or UPLOAD_SEGMENT not in url:
+    match = CLOUDINARY_UPLOAD.match(url)
+    if not match:
         return url
-    head, tail = url.split(UPLOAD_SEGMENT, 1)
-    return f"{head}{UPLOAD_SEGMENT}f_auto,q_auto,w_{int(width)}/{tail}"
+    return f"{match.group(0)}f_auto,q_auto,c_limit,w_{int(width)}/{url[match.end():]}"
 
 
 @register.filter
@@ -29,13 +27,9 @@ def srcset(url):
 
 
 @register.simple_tag
-def image_size(image):
-    """Atributos width y height de una imagen; vacío si el archivo no se puede leer."""
-    try:
-        width, height = image.width, image.height
-    except (OSError, ValueError):
-        logger.warning("No se pudieron leer las dimensiones de %s", getattr(image, "name", ""))
-        return ""
+def image_size(photo):
+    """Atributos width y height guardados en la foto; nunca abre el archivo."""
+    width, height = photo.image_width, photo.image_height
     if not width or not height:
         return ""
     return format_html('width="{}" height="{}"', width, height)

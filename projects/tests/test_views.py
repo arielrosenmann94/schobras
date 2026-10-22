@@ -140,12 +140,17 @@ class ProjectDetailTests(TestCase):
         html = self.client.get(project.get_absolute_url()).content.decode()
         self.assertIn("text=Hola%2C%20vi%20el%20proyecto%20Casa%20O%27Higgins%20y%20quiero", html)
 
-    def test_detail_missing_file_does_not_500(self):
+    def test_photo_saves_dimensions(self):
         project = publish()
+        photo = project.photos.get()
+        self.assertEqual((photo.image_width, photo.image_height), (20, 20))
+
+    def test_render_does_not_open_files(self):
+        project = publish()
+        ProjectPhoto.objects.create(project=project, image=make_image(), order=2)
         with mock.patch(
-            "django.db.models.fields.files.ImageFieldFile._get_image_dimensions",
-            side_effect=FileNotFoundError,
+            "django.core.files.storage.FileSystemStorage._open", side_effect=OSError("no abrir")
         ):
-            with self.assertLogs("core.templatetags.image_tags", level="WARNING"):
-                response = self.client.get(project.get_absolute_url())
-        self.assertEqual(response.status_code, 200)
+            for url in (project.get_absolute_url(), reverse("projects:list")):
+                html = self.client.get(url).content.decode()
+                self.assertRegex(html, r'<img[^>]*width="20"[^>]*height="20"')

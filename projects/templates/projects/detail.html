@@ -20,7 +20,7 @@
 
   {% if cover %}
   <figure class="project__cover">
-    <img src="{{ cover.image.url|variant:1600 }}" srcset="{{ cover.image.url|srcset }}" sizes="100vw" alt="{{ cover.alt }}" {% image_size cover.image %} fetchpriority="high" decoding="async">
+    <img src="{{ cover.image.url|variant:1600 }}" srcset="{{ cover.image.url|srcset }}" sizes="100vw" alt="{{ cover.alt }}" {% image_size cover %} fetchpriority="high" decoding="async">
   </figure>
   {% endif %}
 
@@ -47,7 +47,7 @@
       {% for photo in photos %}
       <li>
         <a class="project__thumb" href="{{ photo.image.url|variant:1600 }}" data-gallery>
-          <img src="{{ photo.image.url|variant:800 }}" srcset="{{ photo.image.url|srcset }}" sizes="(min-width: 64em) 30vw, (min-width: 40em) 45vw, 100vw" alt="{{ photo.alt }}" {% image_size photo.image %} loading="lazy" decoding="async">
+          <img src="{{ photo.image.url|variant:800 }}" srcset="{{ photo.image.url|srcset }}" sizes="(min-width: 64em) 30vw, (min-width: 40em) 45vw, 100vw" alt="{{ photo.alt }}" {% image_size photo %} loading="lazy" decoding="async">
         </a>
       </li>
       {% endfor %}
