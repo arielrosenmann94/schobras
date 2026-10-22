@@ -7,13 +7,29 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Max
 from django.utils.text import slugify
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 from .models import Project, ProjectPhoto
 
 
 class PublishError(Exception):
     """El proyecto no cumple las condiciones para publicarse."""
+
+
+class InvalidImageError(Exception):
+    """La foto no se pudo decodificar (archivo dañado o con metadatos inválidos)."""
+
+
+# Lo que Pillow lanza ante un archivo dañado o malicioso: chunks de texto que
+# descomprimen demasiado (ValueError), EXIF que no es TIFF (SyntaxError),
+# datos truncados (OSError) o bombas de descompresión.
+IMAGE_ERRORS = (
+    UnidentifiedImageError,
+    Image.DecompressionBombError,
+    OSError,
+    SyntaxError,
+    ValueError,
+)
 
 
 def publish(project: Project) -> None:
@@ -47,12 +63,16 @@ def _reencode(file) -> ContentFile:
     El perfil de color ICC se conserva para no alterar los colores.
     """
     file.seek(0)
-    with Image.open(file) as original:
-        if original.format == "JPEG":
-            original.draft("RGB", (MAX_SIDE, MAX_SIDE))
-        icc_profile = original.info.get("icc_profile")
-        transparent = _has_transparency(original)
-        image = ImageOps.exif_transpose(original)
+    try:
+        with Image.open(file) as original:
+            if original.format == "JPEG":
+                original.draft("RGB", (MAX_SIDE, MAX_SIDE))
+            icc_profile = original.info.get("icc_profile")
+            transparent = _has_transparency(original)
+            image = ImageOps.exif_transpose(original)
+    except IMAGE_ERRORS as error:
+        # El formulario ya decodifica cada foto; esto es defensa en profundidad.
+        raise InvalidImageError(file.name) from error
     image = image.convert("RGBA" if transparent else "RGB")
     image.thumbnail((MAX_SIDE, MAX_SIDE))
 

@@ -1,13 +1,14 @@
 import re
 
 from django import forms
-from PIL import Image, UnidentifiedImageError
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
+from PIL import Image, ImageOps
 
 from core.models import SiteSettings
 from core.whatsapp import normalize_number
 from projects.models import Category, Project
+from projects.services import IMAGE_ERRORS, MAX_SIDE
 
 
 class PanelAuthenticationForm(AuthenticationForm):
@@ -124,8 +125,20 @@ class SiteSettingsForm(forms.ModelForm):
 
 
 MAX_PHOTO_BYTES = 15 * 1024 * 1024
+# Una foto de celular ronda los 12-50 MP; sobre 40 MP decodificarla gasta
+# cientos de MB de memoria en el servidor.
+MAX_PHOTO_PIXELS = 40_000_000
 ALLOWED_PHOTO_FORMATS = {"JPEG", "PNG", "WEBP"}
 FORMAT_ERROR = "Formato no soportado: sube fotos JPG, PNG o WebP."
+
+
+def _decode(file) -> None:
+    """Decodifica la foto como lo hará el re-encode; lanza IMAGE_ERRORS si está dañada."""
+    with Image.open(file) as image:
+        if image.format == "JPEG":
+            image.draft("RGB", (MAX_SIDE, MAX_SIDE))
+        image.load()
+        ImageOps.exif_transpose(image)
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -158,16 +171,25 @@ class PhotoUploadForm(forms.Form):
                 errors.append(f"La foto {file.name} pesa más de 15 MB.")
                 continue
             try:
+                # Primero solo la cabecera: formato y tamaño, sin cargar los píxeles.
                 with Image.open(file) as image:
                     image_format = image.format
+                    width, height = image.size
                     image.verify()
-            except (UnidentifiedImageError, Image.DecompressionBombError, OSError, SyntaxError):
+                if image_format not in ALLOWED_PHOTO_FORMATS:
+                    errors.append(FORMAT_ERROR)
+                    continue
+                if width * height > MAX_PHOTO_PIXELS:
+                    errors.append(
+                        f"La foto {file.name} tiene demasiados megapíxeles (máximo 40)."
+                    )
+                    continue
+                file.seek(0)
+                _decode(file)
+            except IMAGE_ERRORS:
                 errors.append(FORMAT_ERROR)
-                continue
             finally:
                 file.seek(0)
-            if image_format not in ALLOWED_PHOTO_FORMATS:
-                errors.append(FORMAT_ERROR)
         if errors:
             raise forms.ValidationError(list(dict.fromkeys(errors)))
         return self.cleaned_data["images"]

@@ -1,9 +1,11 @@
 import io
 import shutil
+import struct
 import tempfile
+import zlib
 from unittest import mock
 
-from PIL import Image
+from PIL import Image, ImageFile
 from cloudinary.exceptions import Error as CloudinaryError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
@@ -29,6 +31,36 @@ UPLOAD_ERROR = "No se pudo subir la foto. Inténtalo de nuevo en unos minutos."
 
 def png(name):
     return SimpleUploadedFile(name, PNG, "image/png")
+
+
+def png_chunk(kind, data):
+    return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+
+def png_with_chunk(kind, data):
+    """PNG válido de 64x64 con un chunk extra justo después de IHDR (byte 33)."""
+    buffer = io.BytesIO()
+    Image.new("RGB", (64, 64), "green").save(buffer, format="PNG")
+    base = buffer.getvalue()
+    return base[:33] + png_chunk(kind, data) + base[33:]
+
+
+def png_header_only(width, height):
+    """PNG que declara width x height en la cabecera, sin los píxeles."""
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + png_chunk(b"IHDR", ihdr)
+        + png_chunk(b"IDAT", zlib.compress(b""))
+        + png_chunk(b"IEND", b"")
+    )
+
+
+def truncated_jpeg():
+    buffer = io.BytesIO()
+    Image.effect_noise((256, 256), 64).convert("RGB").save(buffer, format="JPEG")
+    data = buffer.getvalue()
+    return data[: len(data) // 2]
 
 
 class PanelPhotoTests(TestCase):
@@ -101,6 +133,54 @@ class PanelPhotoTests(TestCase):
         response = self.upload(broken)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, FORMAT_ERROR)
+
+    def test_reject_images_that_fail_to_decode(self):
+        # QA-1.3: estos archivos daban 500 o "Inténtalo de nuevo en unos minutos".
+        cases = {
+            # zTXt que descomprime a 2 MB en 2 KB de disco: ValueError al abrir.
+            "texto.png": png_with_chunk(b"zTXt", b"k\x00\x00" + zlib.compress(b"A" * 2_000_000)),
+            # eXIf que no es TIFF: SyntaxError al orientar la foto.
+            "exif.png": png_with_chunk(b"eXIf", b"garbage-not-tiff"),
+            # JPEG cortado a la mitad: pasa verify() y falla al decodificar.
+            "cortada.jpg": truncated_jpeg(),
+        }
+        for name, content in cases.items():
+            with self.subTest(name=name):
+                response = self.upload(SimpleUploadedFile(name, content, "image/png"))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, FORMAT_ERROR)
+                self.assertNotContains(response, UPLOAD_ERROR)
+                self.assertEqual(self.project.photos.count(), 0)
+
+    def test_reject_over_40_megapixels(self):
+        # K1: 8000 x 6000 = 48 MP; se rechaza leyendo solo la cabecera.
+        huge = SimpleUploadedFile("enorme.png", png_header_only(8000, 6000), "image/png")
+        real_load = ImageFile.ImageFile.load
+
+        def load_unless_huge(image):
+            if image.size == (8000, 6000):
+                raise AssertionError("decodificó la foto de 48 MP")
+            return real_load(image)
+
+        with mock.patch.object(ImageFile.ImageFile, "load", load_unless_huge):
+            response = self.upload(png("ok.png"), huge)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "La foto enorme.png tiene demasiados megapíxeles (máximo 40)."
+        )
+        self.assertEqual(self.project.photos.count(), 0)
+
+    def test_reencode_failure_shows_format_error(self):
+        # Defensa en profundidad: si algo pasa el formulario y falla al re-codificar.
+        with mock.patch(
+            "panel.views.PhotoUploadForm.clean_images",
+            lambda form: form.cleaned_data["images"],
+        ):
+            response = self.upload(SimpleUploadedFile("cortada.jpg", truncated_jpeg(), "image/jpeg"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, FORMAT_ERROR)
+        self.assertNotContains(response, UPLOAD_ERROR)
+        self.assertEqual(ProjectPhoto.objects.count(), 0)
 
     def test_upload_requires_login(self):
         self.client.logout()

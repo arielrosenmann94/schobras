@@ -20,6 +20,7 @@ from projects import services
 from projects.models import Category, Project, ProjectPhoto
 
 from .forms import (
+    FORMAT_ERROR,
     CategoryForm,
     PanelAuthenticationForm,
     PhotoUploadForm,
@@ -134,6 +135,9 @@ class ProjectPhotosView(PanelAccessMixin, View):
             return self.render_page(request, project, form)
         try:
             created = services.add_photos(project, form.cleaned_data["images"])
+        except services.InvalidImageError:
+            form.add_error("images", FORMAT_ERROR)
+            return self.render_page(request, project, form)
         except STORAGE_ERRORS:
             # Límite HTTP: se registra el detalle y la editora ve un mensaje claro.
             logger.exception("No se pudieron guardar las fotos del proyecto %s", project.pk)
