@@ -156,3 +156,5 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 | Página caducada: título | `La página caducó` |
 | Página caducada: texto | `Por seguridad, el formulario venció. Vuelve al panel e inténtalo de nuevo.` |
 | Página caducada: botón | `Volver al panel` |
+| Proyecto (detalle): nombre accesible de cada miniatura (lector de pantalla) | `Ver foto {n} de {total}` |
+| 403 (web y panel): título de la pestaña | `No tienes acceso \| SCHOBRAS.CL` |
