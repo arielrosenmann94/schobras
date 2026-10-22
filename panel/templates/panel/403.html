@@ -1,0 +1,7 @@
+{% extends "panel/base.html" %}
+{% block title %}No tienes acceso{% endblock %}
+{% block content %}
+<h1>No tienes acceso a esta página</h1>
+<p>Esta sección es solo para quien administra el sitio.</p>
+<p><a class="btn btn-primary" href="{% url 'panel:home' %}">Volver al panel</a></p>
+{% endblock %}

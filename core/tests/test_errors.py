@@ -1,4 +1,5 @@
-from django.core.exceptions import SuspiciousOperation
+from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import get_resolver, reverse
@@ -72,7 +73,30 @@ class PermissionDeniedPageTests(TestCase):
         self.client.force_login(editor)
         response = self.client.get(reverse("panel:settings"))
         self.assertEqual(response.status_code, 403)
-        self.assertTemplateUsed(response, "403.html")
         self.assertContains(response, "No tienes acceso a esta página", status_code=403)
         self.assertContains(response, f'href="{reverse("panel:home")}"', status_code=403)
         self.assertNotContains(response, "Forbidden", status_code=403)
+
+    def test_panel_403_uses_panel_layout(self):
+        # QA-1.32: el 403 del panel mostraba cabecera, pie y WhatsApp públicos.
+        editor = User.objects.create_user(username="claudia", password="x-clave-123")
+        self.client.force_login(editor)
+        response = self.client.get(reverse("panel:settings"))
+        self.assertTemplateUsed(response, "panel/403.html")
+        self.assertTemplateUsed(response, "panel/base.html")
+        self.assertTemplateNotUsed(response, "base.html")
+        self.assertContains(response, "SCHOBRAS.CL <span>Panel</span>", status_code=403)
+        self.assertContains(response, "Esta sección es solo para quien administra el sitio.", status_code=403)
+        self.assertContains(response, '<meta name="robots" content="noindex, nofollow">', status_code=403)
+
+    def test_public_403_keeps_public_layout(self):
+        handler = get_resolver().resolve_error_handler(403)
+        request = RequestFactory().get("/proyectos/")
+        request.user = AnonymousUser()
+        response = handler(request, PermissionDenied())
+        self.assertEqual(response.status_code, 403)
+        html = response.content.decode()
+        self.assertIn('<header class="error-page">', html)
+        self.assertIn("No tienes acceso a esta página", html)
+        self.assertNotIn("<span>Panel</span>", html)
+        self.assertIn(f'href="{reverse("core:home")}"', html)

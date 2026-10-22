@@ -11,6 +11,8 @@ urlpatterns = [
     path("", include("core.urls")),
 ]
 
+handler403 = "core.views.permission_denied"
+
 # Solo en local: runserver sirve las fotos subidas. En producción van a Cloudinary.
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

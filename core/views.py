@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views import defaults
 from django.views.decorators.http import require_GET
 
 from projects.models import Project
@@ -59,3 +60,11 @@ def robots(request):
         "",
     ]
     return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
+def permission_denied(request, exception):
+    """403: en el panel con el diseño del panel; en el resto, con el del sitio público."""
+    template_name = "403.html"
+    if request.path.startswith(reverse("panel:home")):
+        template_name = "panel/403.html"
+    return defaults.permission_denied(request, exception, template_name=template_name)

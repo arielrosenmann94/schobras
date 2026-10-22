@@ -3,9 +3,11 @@
 {% block content %}
 <section class="section">
   <div class="container">
-    <p class="label">SCHOBRAS.CL</p>
-    <h1 class="display">No tienes acceso a esta página</h1>
-    <p class="lead">Esta sección es solo para quien administra el sitio.</p>
+    <header class="error-page">
+      <p class="label">SCHOBRAS.CL</p>
+      <h1 class="display">No tienes acceso a esta página</h1>
+      <p class="lead">Esta sección es solo para quien administra el sitio.</p>
+    </header>
     <p>{% if user.is_authenticated %}<a class="btn btn--primary" href="{% url 'panel:home' %}">Volver al panel</a>{% else %}<a class="btn btn--primary" href="{% url 'core:home' %}">Volver al inicio</a>{% endif %}</p>
   </div>
 </section>
