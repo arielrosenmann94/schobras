@@ -1,5 +1,6 @@
 """Única puerta de escritura para proyectos y fotos (ADR-0004)."""
 import io
+import math
 import os
 from typing import Literal
 
@@ -55,6 +56,29 @@ def _has_transparency(image: Image.Image) -> bool:
     return image.mode in ("RGBA", "LA", "PA") or "transparency" in image.info
 
 
+def load_reduced(image: Image.Image) -> Image.Image:
+    """Decodifica la foto, la reduce a MAX_SIDE y la orienta según EXIF.
+
+    QA-2.1 (K1): con 40 MP cada copia a tamaño completo pesa 160 MB, así que
+    nada se copia antes de reducir: todo pasa en el mismo objeto. Un JPEG
+    grande se decodifica a 1/2, 1/4 u 1/8 si así todavía alcanza para MAX_SIDE.
+    Se reduce antes de orientar: el cuadro de MAX_SIDE x MAX_SIDE es cuadrado,
+    así que el resultado es el mismo.
+    """
+    width, height = image.size
+    if image.format == "JPEG" and max(width, height) > MAX_SIDE:
+        scale = MAX_SIDE / max(width, height)
+        image.draft("RGB", (math.ceil(width * scale), math.ceil(height * scale)))
+    image.load()
+    if image.mode in ("1", "P"):
+        # thumbnail() reduce estos modos sin suavizar. Pesan 1 byte por píxel
+        # o menos, así que pasarlos a color antes cuesta poco.
+        image = image.convert("RGBA" if _has_transparency(image) else "RGB")
+    image.thumbnail((MAX_SIDE, MAX_SIDE))
+    ImageOps.exif_transpose(image, in_place=True)
+    return image
+
+
 def _reencode(file) -> ContentFile:
     """Foto lista para guardar: orientada según EXIF, de máx. 2560 px y sin metadatos.
 
@@ -65,18 +89,15 @@ def _reencode(file) -> ContentFile:
     file.seek(0)
     try:
         with Image.open(file) as original:
-            if original.format == "JPEG":
-                original.draft("RGB", (MAX_SIDE, MAX_SIDE))
             icc_profile = original.info.get("icc_profile")
             transparent = _has_transparency(original)
-            image = ImageOps.exif_transpose(original)
+            # Ya reducida, convertirla cuesta pocos MB; sale del with como imagen nueva.
+            image = load_reduced(original).convert("RGBA" if transparent else "RGB")
     except IMAGE_ERRORS as error:
         # El formulario ya decodifica cada foto; esto es defensa en profundidad.
         raise InvalidImageError(file.name) from error
-    image = image.convert("RGBA" if transparent else "RGB")
     # Pillow vuelve a escribir el comentario COM del JPEG original al guardar.
     image.info.pop("comment", None)
-    image.thumbnail((MAX_SIDE, MAX_SIDE))
 
     output = io.BytesIO()
     extension = "jpg"

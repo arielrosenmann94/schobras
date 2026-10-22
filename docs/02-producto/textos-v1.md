@@ -144,6 +144,6 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 | 400: título | `Algo salió mal con el envío` |
 | 400: texto | `Si subías fotos, sube de a menos.` |
 | 400: botón | `Volver al inicio` |
-| Panel, foto de más de 40 megapíxeles | `La foto {nombre} tiene demasiados megapíxeles (máximo 40).` |
+| Panel, foto con demasiados megapíxeles (tope por formato desde la QA vuelta 2: 40 en JPG, 20 en PNG, 12 en WebP) | `La foto {nombre} tiene demasiados megapíxeles (máximo {40, 20 o 12}).` |
 | Panel, categoría repetida (sin importar mayúsculas) | `Ya existe una categoría con ese nombre.` |
 | Panel, año fuera de rango | `El año debe estar entre 1950 y {año actual + 2}.` |

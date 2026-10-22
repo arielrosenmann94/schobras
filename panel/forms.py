@@ -3,12 +3,12 @@ import re
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
-from PIL import Image, ImageOps
+from PIL import Image
 
 from core.models import SiteSettings
 from core.whatsapp import normalize_number
 from projects.models import DUPLICATE_CATEGORY_ERROR, Category, Project
-from projects.services import IMAGE_ERRORS, MAX_SIDE
+from projects.services import IMAGE_ERRORS, load_reduced
 
 
 class PanelAuthenticationForm(AuthenticationForm):
@@ -132,20 +132,35 @@ class SiteSettingsForm(forms.ModelForm):
 
 
 MAX_PHOTO_BYTES = 15 * 1024 * 1024
-# Una foto de celular ronda los 12-50 MP; sobre 40 MP decodificarla gasta
-# cientos de MB de memoria en el servidor.
-MAX_PHOTO_PIXELS = 40_000_000
-ALLOWED_PHOTO_FORMATS = {"JPEG", "PNG", "WEBP"}
+# Tope de megapíxeles por formato (QA-2.1, K1), para que una foto quepa con
+# margen en el dyno de 512 MB (pico medido < 300 MB por foto). Un JPEG se
+# decodifica reducido; PNG y WebP, completos, y WebP mantiene varias copias
+# de la foto mientras la decodifica.
+MAX_PHOTO_MEGAPIXELS = {"JPEG": 40, "PNG": 20, "WEBP": 12}
 FORMAT_ERROR = "Formato no soportado: sube fotos JPG, PNG o WebP."
+
+
+def _format_from_signature(file) -> str | None:
+    """Sobre ~179 MP Image.open falla sin decir el formato (QA-2.4): se mira la firma."""
+    head = file.read(12)
+    if head.startswith(b"\xff\xd8\xff"):
+        return "JPEG"
+    if head.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "PNG"
+    if head[:4] == b"RIFF" and head[8:12] == b"WEBP":
+        return "WEBP"
+    return None
+
+
+def _megapixel_error(file, image_format: str) -> str:
+    limit = MAX_PHOTO_MEGAPIXELS[image_format]
+    return f"La foto {file.name} tiene demasiados megapíxeles (máximo {limit})."
 
 
 def _decode(file) -> None:
     """Decodifica la foto como lo hará el re-encode; lanza IMAGE_ERRORS si está dañada."""
     with Image.open(file) as image:
-        if image.format == "JPEG":
-            image.draft("RGB", (MAX_SIDE, MAX_SIDE))
-        image.load()
-        ImageOps.exif_transpose(image)
+        load_reduced(image)
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -183,16 +198,21 @@ class PhotoUploadForm(forms.Form):
                     image_format = image.format
                     width, height = image.size
                     image.verify()
-                if image_format not in ALLOWED_PHOTO_FORMATS:
+                if image_format not in MAX_PHOTO_MEGAPIXELS:
                     errors.append(FORMAT_ERROR)
                     continue
-                if width * height > MAX_PHOTO_PIXELS:
-                    errors.append(
-                        f"La foto {file.name} tiene demasiados megapíxeles (máximo 40)."
-                    )
+                if width * height > MAX_PHOTO_MEGAPIXELS[image_format] * 1_000_000:
+                    errors.append(_megapixel_error(file, image_format))
                     continue
                 file.seek(0)
                 _decode(file)
+            except Image.DecompressionBombError:
+                file.seek(0)
+                image_format = _format_from_signature(file)
+                if image_format in MAX_PHOTO_MEGAPIXELS:
+                    errors.append(_megapixel_error(file, image_format))
+                else:
+                    errors.append(FORMAT_ERROR)
             except IMAGE_ERRORS:
                 errors.append(FORMAT_ERROR)
             finally:

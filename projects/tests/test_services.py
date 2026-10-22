@@ -1,10 +1,11 @@
+import contextlib
 import io
 import tempfile
 from unittest import mock
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
-from PIL import ExifTags, Image
+from PIL import ExifTags, Image, ImageFile
 
 from projects import services
 from projects.models import Category, Project, ProjectPhoto
@@ -99,6 +100,30 @@ def phone_exif():
     return exif
 
 
+@contextlib.contextmanager
+def record_full_size_copies():
+    """Anota cada copia de una foto de más de MAX_SIDE px (convert, copy, transpose).
+
+    QA-2.1 (K1): con 40 MP cada copia a tamaño completo son 160 MB; la foto
+    se reduce primero y recién después se orienta y se convierte.
+    """
+    copies = []
+
+    def spy(name, real):
+        def wrapper(image, *args, **kwargs):
+            if max(image.size) > services.MAX_SIDE:
+                copies.append((name, image.size))
+            return real(image, *args, **kwargs)
+
+        return wrapper
+
+    with contextlib.ExitStack() as stack:
+        for name in ("convert", "copy", "transpose"):
+            real = getattr(Image.Image, name)
+            stack.enter_context(mock.patch.object(Image.Image, name, spy(name, real)))
+        yield copies
+
+
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class AddPhotosReencodeTests(TestCase):
     def setUp(self):
@@ -144,6 +169,51 @@ class AddPhotosReencodeTests(TestCase):
         with Image.open(photo.image.path) as stored:
             self.assertEqual(stored.size, (2560, 1920))
         self.assertEqual((photo.image_width, photo.image_height), (2560, 1920))
+
+    def test_large_photo_is_never_copied_at_full_size(self):
+        # QA-2.1 (K1): exif_transpose y convert copiaban la foto completa (505 MB con 40 MP).
+        cases = {
+            "girada.jpg": (make_photo_bytes((3000, 2000), exif=phone_exif()), (1707, 2560)),
+            "plano.png": (make_photo_bytes((3000, 2000), "PNG"), (2560, 1707)),
+            "render.webp": (make_photo_bytes((3000, 2000), "WEBP"), (2560, 1707)),
+        }
+        # Con transparencia, Pillow copia la foto al reducirla (premultiplica el
+        # alfa); por eso PNG y WebP tienen un tope de megapíxeles menor.
+        for name, (content, size) in cases.items():
+            with self.subTest(name=name):
+                with record_full_size_copies() as copies:
+                    photo = self.add(name, content)
+                self.assertEqual(copies, [])
+                self.assertEqual((photo.image_width, photo.image_height), size)
+
+    def test_large_palette_png_is_smoothed_when_reduced(self):
+        # Pillow reduce las imágenes de paleta sin suavizar; se pasan a color antes.
+        stripes = Image.new("L", (3000, 2000), 0)
+        for x in range(0, 3000, 2):
+            stripes.paste(255, (x, 0, x + 1, 2000))
+        palette = stripes.convert("P")
+        buffer = io.BytesIO()
+        palette.save(buffer, format="PNG", transparency=0)
+        photo = self.add("plano.png", buffer.getvalue(), "image/png")
+        with Image.open(photo.image.path) as stored:
+            self.assertEqual(stored.size, (2560, 1707))
+            self.assertGreater(len(stored.getcolors(2560 * 1707)), 2)
+
+    def test_large_jpeg_is_decoded_at_reduced_scale(self):
+        # QA-2.1 (K1): un JPEG de 5200 x 3000 se decodifica a la mitad (2600 x 1500),
+        # que todavía alcanza para los 2560 px finales.
+        loaded = set()
+        real_load = ImageFile.ImageFile.load
+
+        def spy_load(image):
+            loaded.add(image.size)
+            return real_load(image)
+
+        with mock.patch.object(ImageFile.ImageFile, "load", spy_load):
+            photo = self.add("grande.jpg", make_photo_bytes((5200, 3000)))
+        self.assertIn((2600, 1500), loaded)
+        self.assertNotIn((5200, 3000), loaded)
+        self.assertEqual((photo.image_width, photo.image_height), (2560, 1477))
 
     def test_transparent_png_stays_png(self):
         content = make_photo_bytes((30, 30), "PNG", mode="RGBA", color=(0, 0, 0, 0))

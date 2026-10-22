@@ -14,7 +14,7 @@ from django.urls import reverse
 from accounts.models import User
 from projects import services
 from projects.models import Category, Project, ProjectPhoto
-
+from projects.tests.test_services import make_photo_bytes, phone_exif, record_full_size_copies
 
 
 def make_png_bytes():
@@ -120,13 +120,24 @@ class PanelPhotoTests(TestCase):
                 self.assertContains(response, FORMAT_ERROR)
                 self.assertEqual(self.project.photos.count(), 0)
 
-    def test_reject_image_bomb(self):
-        # Con un límite diminuto, un PNG de 4x4 cuenta como bomba de descompresión.
-        with mock.patch.object(Image, "MAX_IMAGE_PIXELS", 1):
-            response = self.upload(png("bomba.png"))
+    def test_reject_image_bomb_with_megapixel_message(self):
+        # QA-2.4: sobre ~179 MP Pillow lanza DecompressionBombError al abrir y
+        # salía "Formato no soportado". 14000 x 14000 = 196 MP.
+        bomb = SimpleUploadedFile("bomba.png", png_header_only(14000, 14000), "image/png")
+        response = self.upload(bomb)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, FORMAT_ERROR)
+        self.assertContains(response, "La foto bomba.png tiene demasiados megapíxeles (máximo 20).")
+        self.assertNotContains(response, FORMAT_ERROR)
         self.assertEqual(self.project.photos.count(), 0)
+
+    def test_reject_non_image_bomb_with_format_error(self):
+        # Una bomba que no es JPG, PNG ni WebP sigue siendo "Formato no soportado".
+        buffer = io.BytesIO()
+        Image.new("P", (4, 4)).save(buffer, format="GIF")
+        with mock.patch.object(Image, "MAX_IMAGE_PIXELS", 1):
+            response = self.upload(SimpleUploadedFile("bomba.gif", buffer.getvalue()))
+        self.assertContains(response, FORMAT_ERROR)
+        self.assertNotContains(response, "megapíxeles")
 
     def test_reject_truncated_image(self):
         broken = SimpleUploadedFile("corta.png", PNG[: len(PNG) // 2], "image/png")
@@ -152,6 +163,30 @@ class PanelPhotoTests(TestCase):
                 self.assertNotContains(response, UPLOAD_ERROR)
                 self.assertEqual(self.project.photos.count(), 0)
 
+    def test_reject_over_megapixel_limit_of_each_format(self):
+        # QA-2.1 (K1): PNG y WebP se decodifican completos; topes medidos para
+        # que el pico de memoria por foto quede bajo 300 MB.
+        webp = SimpleUploadedFile("render.webp", make_photo_bytes((4000, 3100), "WEBP"), "image/webp")
+        png_24 = SimpleUploadedFile("plano.png", png_header_only(5000, 4100), "image/png")
+        response = self.upload(webp, png_24)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "La foto render.webp tiene demasiados megapíxeles (máximo 12).")
+        self.assertContains(response, "La foto plano.png tiene demasiados megapíxeles (máximo 20).")
+        self.assertEqual(self.project.photos.count(), 0)
+
+    def test_upload_never_copies_photo_at_full_size(self):
+        # QA-2.1 (K1): _decode y _reencode copiaban la foto completa (505 MB con 40 MP).
+        girada = SimpleUploadedFile(
+            "girada.jpg", make_photo_bytes((3000, 2000), exif=phone_exif()), "image/jpeg"
+        )
+        plano = SimpleUploadedFile("plano.png", make_photo_bytes((3000, 2000), "PNG"), "image/png")
+        with record_full_size_copies() as copies:
+            response = self.upload(girada, plano)
+        self.assertRedirects(response, self.url)
+        self.assertEqual(copies, [])
+        sizes = [(p.image_width, p.image_height) for p in self.project.photos.order_by("order")]
+        self.assertEqual(sizes, [(1707, 2560), (2560, 1707)])
+
     def test_reject_over_40_megapixels(self):
         # K1: 8000 x 6000 = 48 MP; se rechaza leyendo solo la cabecera.
         huge = SimpleUploadedFile("enorme.png", png_header_only(8000, 6000), "image/png")
@@ -166,7 +201,7 @@ class PanelPhotoTests(TestCase):
             response = self.upload(png("ok.png"), huge)
         self.assertEqual(response.status_code, 200)
         self.assertContains(
-            response, "La foto enorme.png tiene demasiados megapíxeles (máximo 40)."
+            response, "La foto enorme.png tiene demasiados megapíxeles (máximo 20)."
         )
         self.assertEqual(self.project.photos.count(), 0)
 
