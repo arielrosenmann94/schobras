@@ -167,8 +167,8 @@ class PanelPhotoTests(TestCase):
         # QA-2.1 (K1): PNG y WebP se decodifican completos; topes medidos para
         # que el pico de memoria por foto quede bajo 300 MB.
         webp = SimpleUploadedFile("render.webp", make_photo_bytes((4000, 3100), "WEBP"), "image/webp")
-        png_24 = SimpleUploadedFile("plano.png", png_header_only(5000, 4100), "image/png")
-        response = self.upload(webp, png_24)
+        png_big = SimpleUploadedFile("plano.png", png_header_only(5000, 4100), "image/png")
+        response = self.upload(webp, png_big)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "La foto render.webp tiene demasiados megapíxeles (máximo 12).")
         self.assertContains(response, "La foto plano.png tiene demasiados megapíxeles (máximo 20).")
@@ -187,7 +187,7 @@ class PanelPhotoTests(TestCase):
         sizes = [(p.image_width, p.image_height) for p in self.project.photos.order_by("order")]
         self.assertEqual(sizes, [(1707, 2560), (2560, 1707)])
 
-    def test_reject_over_40_megapixels(self):
+    def test_reject_over_megapixel_limit_without_decoding(self):
         # K1: 8000 x 6000 = 48 MP; se rechaza leyendo solo la cabecera.
         huge = SimpleUploadedFile("enorme.png", png_header_only(8000, 6000), "image/png")
         real_load = ImageFile.ImageFile.load
