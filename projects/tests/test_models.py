@@ -51,6 +51,14 @@ class ProjectModelTests(TestCase):
         self.assertEqual(second.slug, "casa-chicureo-2")
         self.assertEqual(third.slug, "casa-chicureo-3")
 
+    def test_slug_fallback_when_title_has_no_letters_or_digits(self):
+        # QA-1.15: "¡¡¡!!!" daba el slug "item".
+        first = make_project(title="¡¡¡!!!")
+        second = make_project(title="¿?")
+        self.assertEqual(first.slug, "proyecto")
+        self.assertEqual(second.slug, "proyecto-2")
+        self.assertEqual(Category.objects.create(name="!!!").slug, "categoria")
+
     def test_slug_respects_max_length(self):
         long_title = "a" * 150
         first = make_project(title=long_title)

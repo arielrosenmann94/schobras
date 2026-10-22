@@ -48,7 +48,7 @@ class Category(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = unique_slug(Category, self.name, max_length=80)
+            self.slug = unique_slug(Category, self.name, max_length=80, fallback="categoria")
         super().save(*args, **kwargs)
 
 
