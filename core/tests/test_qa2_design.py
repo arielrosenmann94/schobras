@@ -37,3 +37,10 @@ class ContactEmailCssTests(SimpleTestCase):
         body = rule(read("static/css/site.css"), ".home-channel__value--email")
         self.assertRegex(body, r"font-size: clamp\(")
         self.assertNotIn("2.75rem", body)
+
+
+class PanelSpacingTests(SimpleTestCase):
+    def test_top_row_actions_leave_space_before_the_form(self):
+        # QA-2.7: en Editar proyecto, Publicar quedaba pegado a "Nombre del proyecto" (0 px).
+        body = rule(read("static/css/panel.css"), ".panel-main > .row-actions")
+        self.assertIn("margin-bottom: calc(var(--space) * 3)", body)

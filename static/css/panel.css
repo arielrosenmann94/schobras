@@ -146,6 +146,8 @@ h1 { font-size: 1.75rem; line-height: 1.2; }
 
 .btn-danger { background: var(--color-danger); border-color: var(--color-danger); color: var(--color-white); }
 .row-actions { display: flex; flex-wrap: wrap; gap: var(--space); width: 100%; }
+/* QA-2.7: Publicar/Ver en la web no queda pegado al formulario de abajo. */
+.panel-main > .row-actions { margin-bottom: calc(var(--space) * 3); }
 .row-actions > .btn, .row-actions > form { flex: 1 1 120px; }
 .row-actions > form { display: flex; }
 .row-actions > form .btn { flex: 1; }
