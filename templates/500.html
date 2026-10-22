@@ -1,0 +1,33 @@
+{% load static %}<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Algo falló | SCHOBRAS.CL</title>
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+</head>
+<body>
+  {% comment %}Página autónoma: Django la renderiza sin request, así que no hay context processors, BD ni etiquetas url.{% endcomment %}
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="site-header__bar container">
+      <a class="brand" href="/" aria-label="SCHOBRAS.CL, inicio">
+        <img class="brand__mark" src="{% static 'img/isotipo.svg' %}" alt="" width="32" height="36">
+        <span class="brand__word">SCHOBRAS</span>
+      </a>
+    </div>
+  </header>
+  <main id="contenido" tabindex="-1">
+    <section class="section">
+      <div class="container">
+        <p class="label">SCHOBRAS.CL</p>
+        <h1 class="display">Algo falló de nuestro lado</h1>
+        <p class="lead">No pudimos cargar esta página. Vuelve a intentarlo en unos minutos.</p>
+        <p><a class="btn btn--primary" href="/">Volver al inicio</a></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
