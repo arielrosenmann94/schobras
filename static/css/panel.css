@@ -194,7 +194,7 @@ fieldset.field label { display: flex; align-items: center; gap: var(--space); mi
 .photo-item { display: grid; gap: calc(var(--space) * 2); }
 .photo-item img { width: 100%; max-width: 320px; height: auto; border-radius: 6px; object-fit: cover; }
 .photo-info { display: grid; gap: var(--space); }
-.photo-delete summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; min-height: 48px; }
+.photo-delete summary { cursor: pointer; list-style: none; display: flex; justify-content: center; align-items: center; min-height: 48px; }
 .photo-delete[open] { display: grid; gap: var(--space); }
 @media (min-width: 600px) {
   .photo-item { grid-template-columns: 200px 1fr; align-items: start; }

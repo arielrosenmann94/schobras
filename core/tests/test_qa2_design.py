@@ -52,3 +52,9 @@ class PanelSpacingTests(SimpleTestCase):
             r'@media \(max-width: 30em\) \{\s*\.form input\[type="file"\]::file-selector-button \{'
             r"[^}]*display: block;[^}]*width: 100%;",
         )
+
+    def test_photo_delete_summary_fills_the_row_like_the_other_buttons(self):
+        # QA-2.10: "Eliminar" era el único botón de la tarjeta que no ocupaba el ancho.
+        body = rule(read("static/css/panel.css"), ".photo-delete summary")
+        self.assertIn("display: flex;", body)
+        self.assertIn("justify-content: center;", body)
