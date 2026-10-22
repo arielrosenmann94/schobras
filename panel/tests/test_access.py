@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+from accounts.backends import lockout_username
 from accounts.models import User
 from panel.client_ip import get_client_ip
 
@@ -112,6 +113,58 @@ class PanelAccessTests(QuietAxesMixin, TestCase):
             self.client.post(url, {"username": "claudia", "password": "mala"})
         self.client.post(url, {"username": "ariel", "password": PASSWORD})
         self.assertIn("_auth_user_id", self.client.session)
+
+    def test_lockout_shared_by_case_and_username_variants(self):
+        # QA-1.2: cada forma de escribir la cuenta no debe dar 5 intentos nuevos.
+        url = reverse("panel:login")
+        variants = [
+            "claudia@schobras.cl",
+            "CLAUDIA@schobras.cl",
+            "Claudia@Schobras.CL",
+            "claudia",
+            "claudia@SCHOBRAS.cl",
+        ]
+        for variant in variants:
+            self.client.post(url, {"username": variant, "password": "mala"})
+        for variant in ["CLAUDIA@SCHOBRAS.CL", "claudia", "cLaUdIa@schobras.cl"]:
+            with self.subTest(variant=variant):
+                response = self.client.post(url, {"username": variant, "password": PASSWORD})
+                self.assertEqual(response.status_code, 429)
+                self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_unknown_account_variants_share_lockout(self):
+        url = reverse("panel:login")
+        for variant in ["Nadie@X.cl", "NADIE@x.cl", "nadie@X.CL", "nadie@x.cl", "NaDiE@x.cl"]:
+            self.client.post(url, {"username": variant, "password": "mala"})
+        response = self.client.post(url, {"username": "nadie@x.CL", "password": "mala"})
+        self.assertEqual(response.status_code, 429)
+
+
+class LockoutUsernameTests(TestCase):
+    """Clave canónica que usa django-axes para contar intentos (AXES_USERNAME_CALLABLE)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create_user(username="claudia", email="claudia@schobras.cl", password=PASSWORD)
+
+    def key(self, username):
+        return lockout_username(RequestFactory().post("/panel/ingresar/"), {"username": username})
+
+    def test_email_any_case_and_username_map_to_username(self):
+        for value in ["claudia@schobras.cl", "CLAUDIA@Schobras.cl", "claudia"]:
+            with self.subTest(value=value):
+                self.assertEqual(self.key(value), "claudia")
+
+    def test_unknown_account_is_lowercased(self):
+        self.assertEqual(self.key("Nadie@X.CL"), "nadie@x.cl")
+
+    def test_blank_stays_blank(self):
+        self.assertEqual(self.key(""), "")
+        self.assertIsNone(self.key(None))
+
+    def test_reads_post_without_credentials(self):
+        request = RequestFactory().post("/panel/ingresar/", {"username": "CLAUDIA@schobras.cl"})
+        self.assertEqual(lockout_username(request, None), "claudia")
 
 
 class EmailOrUsernameBackendTests(QuietAxesMixin, TestCase):

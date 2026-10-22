@@ -149,4 +149,7 @@ AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = timedelta(minutes=30)
 AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]  # combinado: usuario + IP
+# Correo en cualquier mayúscula o nombre de usuario de la misma cuenta cuentan
+# juntos: si no, cada variante daría 5 intentos nuevos (QA-1.2).
+AXES_USERNAME_CALLABLE = "accounts.backends.lockout_username"
 AXES_LOCKOUT_TEMPLATE = "panel/locked.html"
