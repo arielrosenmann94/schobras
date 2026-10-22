@@ -1,0 +1,35 @@
+{% load static %}<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Algo salió mal | SCHOBRAS.CL</title>
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+</head>
+<body>
+  {% comment %}Página autónoma como 500.html (no extiende base.html ni usa datos de la BD). Aparece sobre todo al subir más de 100 fotos de una vez.{% endcomment %}
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="site-header__bar container">
+      <a class="brand" href="/" aria-label="SCHOBRAS.CL, inicio">
+        <img class="brand__mark" src="{% static 'img/isotipo.svg' %}" alt="" width="32" height="36">
+        <span class="brand__word">SCHOBRAS</span>
+      </a>
+    </div>
+  </header>
+  <main id="contenido" tabindex="-1">
+    <section class="section">
+      <div class="container">
+        <header class="error-page">
+          <p class="label">SCHOBRAS.CL</p>
+          <h1 class="display">Algo salió mal con el envío</h1>
+          <p class="lead">Si subías fotos, sube de a menos.</p>
+        </header>
+        <p><a class="btn btn--primary" href="/">Volver al inicio</a></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
