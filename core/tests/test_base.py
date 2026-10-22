@@ -1,7 +1,9 @@
 import re
 import tempfile
+from pathlib import Path
 
-from django.test import TestCase, override_settings
+from django.conf import settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.utils import timezone
 
 from core.models import SiteSettings
@@ -86,10 +88,11 @@ class BaseTemplateTests(TestCase):
     def test_footer_legal_name_no_rut(self):
         _, html = self.get()
         footer = html[html.index("<footer"):]
+        self.assertIn("SCHOBRAS.CL", footer)
         self.assertIn("Constructora Schonffeldt SpA", footer)
-        for region in ("Región Metropolitana", "Región de Valparaíso", "Región de O'Higgins"):
-            self.assertIn(region, footer)
-        self.assertIn(str(timezone.localdate().year), footer)
+        # Texto exacto de docs/02-producto/textos-v1.md §Pie.
+        self.assertIn("Región Metropolitana · Valparaíso · O'Higgins", footer)
+        self.assertIn(f"© {timezone.localdate().year}", footer)
         self.assertNotIn("RUT", html)
 
     def test_skip_link_and_landmarks(self):
@@ -123,3 +126,29 @@ class BaseTemplateTests(TestCase):
     def test_font_preloaded(self):
         _, html = self.get()
         self.assertRegex(html, r'<link rel="preload" href="[^"]*open-sans-latin-wght-normal\.woff2" as="font" type="font/woff2" crossorigin>')
+
+
+class StaticAssetsTests(SimpleTestCase):
+    def read(self, relative):
+        return (Path(settings.BASE_DIR) / "static" / relative).read_text(encoding="utf-8")
+
+    def test_all_motion_respects_reduced_motion(self):
+        """Toda transition/animation vive dentro de @media (prefers-reduced-motion: no-preference)."""
+        stack, outside = [], []
+        for number, line in enumerate(self.read("css/site.css").splitlines(), 1):
+            for char in line:
+                if char == "{":
+                    stack.append("prefers-reduced-motion: no-preference" in line)
+                elif char == "}":
+                    stack.pop()
+            if re.match(r"\s*(transition|animation)\s*:", line) and not any(stack):
+                outside.append(number)
+        self.assertEqual(outside, [])
+
+    def test_js_class_added_last(self):
+        """Si algo falla antes, html.js no se activa y el contenido .reveal queda visible."""
+        js = self.read("js/site.js")
+        add_js = js.index('root.classList.add("js")')
+        self.assertGreater(add_js, js.index("IntersectionObserver("))
+        self.assertGreater(add_js, js.index("addListener"))
+        self.assertEqual(js.count('classList.add("js")'), 1)

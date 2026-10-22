@@ -8,25 +8,15 @@
       </div>
     </div>
     <div class="site-footer__grid">
-      <div class="site-footer__col">
-        <p class="site-footer__label">Zona de trabajo</p>
-        <ul class="site-footer__list">
-          <li>Región Metropolitana</li>
-          <li>Región de Valparaíso</li>
-          <li>Región de O'Higgins</li>
-        </ul>
-      </div>
+      <p class="site-footer__col site-footer__regions">Región Metropolitana · Valparaíso · O'Higgins</p>
       {% if has_contact %}
-      <div class="site-footer__col">
-        <p class="site-footer__label">Contacto</p>
-        <ul class="site-footer__list">
-          {% if wa_href %}<li><span class="site-footer__channel">WhatsApp</span> <a href="{{ wa_href }}" target="_blank" rel="noopener">{{ site.whatsapp }}</a></li>{% endif %}
-          {% if site.phone %}<li><span class="site-footer__channel">Teléfono</span> <a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></li>{% endif %}
-          {% if site.email %}<li><span class="site-footer__channel">Correo</span> <a href="mailto:{{ site.email }}">{{ site.email }}</a></li>{% endif %}
-        </ul>
-      </div>
+      <ul class="site-footer__col site-footer__list">
+        {% if wa_href %}<li><span class="site-footer__channel">WhatsApp</span> <a href="{{ wa_href }}" target="_blank" rel="noopener">{{ site.whatsapp }}</a></li>{% endif %}
+        {% if site.phone %}<li><span class="site-footer__channel">Teléfono</span> <a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></li>{% endif %}
+        {% if site.email %}<li><span class="site-footer__channel">Correo</span> <a href="mailto:{{ site.email }}">{{ site.email }}</a></li>{% endif %}
+      </ul>
       {% endif %}
     </div>
-    <p class="site-footer__legal">© {% now "Y" %} SCHOBRAS.CL</p>
+    <p class="site-footer__legal">© {% now "Y" %}</p>
   </div>
 </footer>

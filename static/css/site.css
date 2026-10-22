@@ -305,7 +305,6 @@ body::before,
   line-height: 1.2;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 200ms var(--ease), color 200ms var(--ease), box-shadow 200ms var(--ease);
 }
 
 .btn::after {
@@ -315,10 +314,7 @@ body::before,
   background:
     linear-gradient(currentColor, currentColor) 0 50% / 100% 1px no-repeat,
     linear-gradient(currentColor, currentColor) 100% 0 / 1px 100% no-repeat;
-  transition: transform 200ms var(--ease);
 }
-
-.btn:hover::after { transform: translateX(0.25rem); }
 
 .btn--primary {
   background: var(--color-anthracite);
@@ -360,7 +356,6 @@ body::before,
   z-index: 50;
   background: var(--color-white);
   border-bottom: 1px solid var(--line);
-  transition: background-color 300ms var(--ease), color 300ms var(--ease), border-color 300ms var(--ease);
 }
 
 .site-header__bar {
@@ -438,7 +433,6 @@ body::before,
   width: 100%;
   height: 1.5px;
   background: currentColor;
-  transition: transform 300ms var(--ease);
 }
 
 .menu-toggle__icon::before { top: 0; }
@@ -476,7 +470,6 @@ body::before,
   background: var(--color-bronze);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 300ms var(--ease);
 }
 
 .site-nav__link:hover::after,
@@ -498,13 +491,11 @@ body::before,
     color: var(--color-white);
     visibility: hidden;
     clip-path: inset(0 0 100% 0);
-    transition: clip-path 450ms var(--ease), visibility 0s linear 450ms;
   }
 
   html.js.menu-open .site-nav {
     visibility: visible;
     clip-path: inset(0);
-    transition: clip-path 450ms var(--ease);
   }
 
   html.js .site-nav__list {
@@ -557,7 +548,6 @@ body::before,
   .site-nav__link--cta {
     padding-inline: var(--space-3);
     border: 1px solid var(--color-anthracite);
-    transition: background-color 200ms var(--ease), color 200ms var(--ease);
   }
 
   .site-nav__link--cta::after { display: none; }
@@ -611,13 +601,10 @@ body::before,
   border-top: 1px solid var(--line-on-dark);
 }
 
-.site-footer__label {
-  margin-bottom: var(--space-2);
-  color: var(--color-cement);
-  font-size: var(--text-label);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.site-footer__regions {
+  /* Alineada con la primera línea de canales (enlaces de 44 px de alto). */
+  padding-block: 0.6rem;
+  line-height: 1.6;
 }
 
 .site-footer__list li + li { margin-top: var(--space-1); }
@@ -649,9 +636,8 @@ body::before,
 
   /* Columnas sin separación: cada una arranca justo en su eje del plano. */
   .site-footer__grid { grid-template-columns: repeat(4, 1fr); column-gap: 0; }
-  .site-footer__col { padding-left: var(--space-2); }
-  .site-footer__col:first-child { grid-column: 3; }
-  .site-footer__col:only-child { grid-column: 3 / span 2; }
+  .site-footer__grid > .site-footer__col { grid-column: span 2; }
+  .site-footer__grid > .site-footer__col + .site-footer__col { padding-left: var(--space-2); }
 }
 
 /* ── Botón flotante de WhatsApp ────────────────────────────────────────── */
@@ -670,10 +656,7 @@ body::before,
     inset 0 -3px 0 var(--color-bronze),
     0 0 0 1px var(--line-on-dark),
     0 1rem 2rem -1rem var(--color-anthracite);
-  transition: transform 200ms var(--ease);
 }
-
-.whatsapp-float:hover { transform: translateY(-2px); }
 .whatsapp-float__icon { width: 1.75rem; height: 1.75rem; }
 
 @media (min-width: 64em) {
@@ -691,6 +674,22 @@ body::before,
 @keyframes rise { from { transform: scaleY(0); } to { transform: none; } }
 
 @media (prefers-reduced-motion: no-preference) {
+  /* Transiciones de interfaz: también quedan fuera con movimiento reducido. */
+  .btn { transition: background-color 200ms var(--ease), color 200ms var(--ease), box-shadow 200ms var(--ease); }
+  .btn::after { transition: transform 200ms var(--ease); }
+  .btn:hover::after { transform: translateX(0.25rem); }
+  .site-header { transition: background-color 300ms var(--ease), color 300ms var(--ease), border-color 300ms var(--ease); }
+  .menu-toggle__icon::before,
+  .menu-toggle__icon::after,
+  .site-nav__link::after { transition: transform 300ms var(--ease); }
+  .site-nav__link--cta { transition: background-color 200ms var(--ease), color 200ms var(--ease); }
+  .whatsapp-float { transition: transform 200ms var(--ease); }
+  .whatsapp-float:hover { transform: translateY(-2px); }
+
+  /* Menú móvil: el muro baja; al cerrar, se oculta después de subir. */
+  html.js .site-nav { transition: clip-path 450ms var(--ease), visibility 0s linear 450ms; }
+  html.js.menu-open .site-nav { transition: clip-path 450ms var(--ease); }
+
   html.js .reveal {
     opacity: 0;
     transform: translate3d(0, 2rem, 0);
@@ -725,38 +724,39 @@ body::before,
   html.js .reveal.visible .cota::after,
   html.js .reveal.visible .rule { transform: none; }
 
-  /* Isotipo armándose: fierros que suben, amarras, y volúmenes que se levantan. */
+  /* Isotipo armándose en 600 ms en total (retardo + duración de cada pieza):
+     suelo, fierros que suben, volúmenes que se levantan y amarras al final. */
   html.js .build .ground {
     stroke-dasharray: 180;
     stroke-dashoffset: 180;
-    animation: draw 400ms var(--ease) forwards;
+    animation: draw 250ms var(--ease) forwards;
   }
 
   html.js .build .rebar {
     stroke-dasharray: 200;
     stroke-dashoffset: 200;
-    animation: draw var(--duration) var(--ease) forwards;
+    animation: draw 360ms var(--ease) forwards;
   }
 
-  html.js .build .rebar:nth-child(2) { animation-delay: 60ms; }
-  html.js .build .rebar:nth-child(3) { animation-delay: 120ms; }
-  html.js .build .rebar:nth-child(4) { animation-delay: 180ms; }
-  html.js .build .rebar:nth-child(5) { animation-delay: 240ms; }
+  html.js .build .rebar:nth-child(2) { animation-delay: 40ms; }
+  html.js .build .rebar:nth-child(3) { animation-delay: 80ms; }
+  html.js .build .rebar:nth-child(4) { animation-delay: 120ms; }
+  html.js .build .rebar:nth-child(5) { animation-delay: 160ms; }
 
   html.js .build .tie {
     stroke-dasharray: 40;
     stroke-dashoffset: 40;
-    animation: draw 300ms var(--ease) 600ms forwards;
+    animation: draw 200ms var(--ease) 400ms forwards;
   }
 
   html.js .build .volume {
     transform: scaleY(0);
     transform-box: fill-box;
     transform-origin: 50% 100%;
-    animation: rise var(--duration) var(--ease) 300ms forwards;
+    animation: rise 420ms var(--ease) 120ms forwards;
   }
 
-  html.js .build .volume + .volume { animation-delay: 420ms; }
+  html.js .build .volume + .volume { animation-delay: 180ms; }
 
   html.js .reveal:not(.visible) .build * { animation-play-state: paused; }
 }
