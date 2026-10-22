@@ -4,4 +4,47 @@
 <h1>Fotos de {{ project.title }}</h1>
 <p><a class="btn btn-secondary" href="{% url 'panel:project_edit' project.pk %}">Volver al proyecto</a></p>
 <p class="card">Sube solo fotos de obras que el dueño autorizó a publicar. No incluyas números de casa ni patentes.</p>
+
+<form method="post" enctype="multipart/form-data" class="form">
+  {% csrf_token %}
+  <div class="field">
+    <label for="{{ form.images.id_for_label }}">Elige una o varias fotos (JPG, PNG o WebP, hasta 15 MB cada una)</label>
+    <input type="file" name="images" id="{{ form.images.id_for_label }}" accept="image/jpeg,image/png,image/webp" multiple required>
+    {% if form.images.errors %}
+    <ul class="form-error" role="alert">{% for error in form.images.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+  <button type="submit" class="btn btn-primary">Subir fotos</button>
+</form>
+
+{% if photos %}
+<ul class="photo-list">
+  {% for photo in photos %}
+  <li class="card photo-item">
+    <img src="{{ photo.image.url }}" alt="{{ photo.alt }}" width="160" height="120" loading="lazy">
+    <div class="photo-info">
+      <p><strong>Foto {{ forloop.counter }}</strong>{% if photo.is_cover %} <span class="badge badge-published">Portada</span>{% endif %}</p>
+      <div class="row-actions">
+        {% if not forloop.first %}
+        <form method="post" action="{% url 'panel:photo_up' photo.pk %}">{% csrf_token %}<button type="submit" class="btn btn-secondary">Subir posición</button></form>
+        {% endif %}
+        {% if not forloop.last %}
+        <form method="post" action="{% url 'panel:photo_down' photo.pk %}">{% csrf_token %}<button type="submit" class="btn btn-secondary">Bajar posición</button></form>
+        {% endif %}
+        {% if not photo.is_cover %}
+        <form method="post" action="{% url 'panel:photo_cover' photo.pk %}">{% csrf_token %}<button type="submit" class="btn btn-secondary">Usar como portada</button></form>
+        {% endif %}
+      </div>
+      <details class="photo-delete">
+        <summary class="btn btn-secondary">Eliminar</summary>
+        <p>¿Seguro? Esta acción no se puede deshacer.</p>
+        <form method="post" action="{% url 'panel:photo_delete' photo.pk %}">{% csrf_token %}<button type="submit" class="btn btn-danger">Sí, eliminar esta foto</button></form>
+      </details>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Este proyecto todavía no tiene fotos. Un proyecto sin fotos no se muestra en la web.</p>
+{% endif %}
 {% endblock %}

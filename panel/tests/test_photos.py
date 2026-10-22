@@ -1,0 +1,155 @@
+import io
+import shutil
+import tempfile
+
+from PIL import Image
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
+from django.urls import reverse
+
+from accounts.models import User
+from projects.models import Category, Project, ProjectPhoto
+
+
+
+def make_png_bytes():
+    buffer = io.BytesIO()
+    Image.new("RGB", (4, 4), "white").save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
+PNG = make_png_bytes()
+GIF = b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
+FORMAT_ERROR = "Formato no soportado: sube fotos JPG, PNG o WebP."
+
+
+def png(name):
+    return SimpleUploadedFile(name, PNG, "image/png")
+
+
+class PanelPhotoTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.editor = User.objects.create_user(username="claudia", password="x-clave-123")
+        cls.category = Category.objects.create(name="Casas")
+
+    def setUp(self):
+        media = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, media, ignore_errors=True)
+        override = override_settings(MEDIA_ROOT=media)
+        override.enable()
+        self.addCleanup(override.disable)
+        self.client.force_login(self.editor)
+        self.project = Project.objects.create(
+            title="Casa Lo Barnechea",
+            category=self.category,
+            intervention_type=Project.InterventionType.NEW_BUILD,
+            commune="Lo Barnechea",
+            region=Project.Region.METROPOLITANA,
+        )
+        self.url = reverse("panel:project_photos", args=[self.project.pk])
+
+    def upload(self, *files):
+        return self.client.post(self.url, {"images": list(files)})
+
+    def make_photos(self, count):
+        from projects import services
+
+        return services.add_photos(self.project, [png(f"f{i}.png") for i in range(count)])
+
+    def test_upload_multiple(self):
+        response = self.upload(png("a.png"), png("b.png"), png("c.png"))
+        self.assertRedirects(response, self.url)
+        photos = list(self.project.photos.order_by("order"))
+        self.assertEqual(len(photos), 3)
+        self.assertEqual([p.is_cover for p in photos], [True, False, False])
+
+    def test_upload_without_files_shows_message(self):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Elige al menos una foto.")
+
+    def test_reject_over_15mb(self):
+        big = SimpleUploadedFile("grande.jpg", b"x" * (15 * 1024 * 1024 + 1), "image/jpeg")
+        response = self.upload(png("a.png"), big)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "La foto grande.jpg pesa más de 15 MB.")
+        self.assertEqual(self.project.photos.count(), 0)
+
+    def test_reject_unsupported_format(self):
+        for name, content in [("a.gif", GIF), ("nota.jpg", b"esto es texto")]:
+            with self.subTest(name=name):
+                response = self.upload(png("ok.png"), SimpleUploadedFile(name, content))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, FORMAT_ERROR)
+                self.assertEqual(self.project.photos.count(), 0)
+
+    def test_upload_requires_login(self):
+        self.client.logout()
+        self.assertEqual(self.upload(png("a.png")).status_code, 302)
+        self.assertEqual(self.project.photos.count(), 0)
+
+    def test_list_shows_photos_and_cover_badge(self):
+        self.make_photos(2)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Portada", count=1)
+        self.assertContains(response, "<img", count=2)
+
+    def test_move_up_down(self):
+        first, second = self.make_photos(2)
+        self.client.post(reverse("panel:photo_up", args=[second.pk]))
+        second.refresh_from_db()
+        first.refresh_from_db()
+        self.assertLess(second.order, first.order)
+        response = self.client.post(reverse("panel:photo_down", args=[second.pk]))
+        self.assertRedirects(response, self.url)
+        second.refresh_from_db()
+        first.refresh_from_db()
+        self.assertLess(first.order, second.order)
+
+    def test_set_cover(self):
+        first, second = self.make_photos(2)
+        response = self.client.post(reverse("panel:photo_cover", args=[second.pk]))
+        self.assertRedirects(response, self.url)
+        first.refresh_from_db()
+        second.refresh_from_db()
+        self.assertFalse(first.is_cover)
+        self.assertTrue(second.is_cover)
+
+    def test_delete_last_photo_hides_project(self):
+        (photo,) = self.make_photos(1)
+        self.project.status = Project.Status.PUBLISHED
+        self.project.save()
+        self.assertEqual(Project.objects.published().count(), 1)
+        response = self.client.post(reverse("panel:photo_delete", args=[photo.pk]))
+        self.assertRedirects(response, self.url)
+        self.assertEqual(ProjectPhoto.objects.count(), 0)
+        self.assertEqual(Project.objects.published().count(), 0)
+
+    def test_delete_cover_promotes_another(self):
+        first, second = self.make_photos(2)
+        self.client.post(reverse("panel:photo_delete", args=[first.pk]))
+        second.refresh_from_db()
+        self.assertTrue(second.is_cover)
+
+    def test_actions_are_post_only(self):
+        (photo,) = self.make_photos(1)
+        for name in ["photo_up", "photo_down", "photo_cover", "photo_delete"]:
+            with self.subTest(name=name):
+                response = self.client.get(reverse(f"panel:{name}", args=[photo.pk]))
+                self.assertEqual(response.status_code, 405)
+
+    def test_delete_has_confirmation_step(self):
+        self.make_photos(1)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Sí, eliminar esta foto")
+
+    def test_permission_notice_visible(self):
+        response = self.client.get(self.url)
+        self.assertContains(
+            response,
+            "Sube solo fotos de obras que el dueño autorizó a publicar. "
+            "No incluyas números de casa ni patentes.",
+        )
+        self.assertContains(response, 'accept="image/jpeg,image/png,image/webp"')
+        self.assertContains(response, "multiple")

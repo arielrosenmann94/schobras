@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.db.models import ProtectedError
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import (
@@ -14,9 +14,9 @@ from django.views.generic import (
 )
 
 from projects import services
-from projects.models import Category, Project
+from projects.models import Category, Project, ProjectPhoto
 
-from .forms import CategoryForm, PanelAuthenticationForm, ProjectForm
+from .forms import CategoryForm, PanelAuthenticationForm, PhotoUploadForm, ProjectForm
 from .permissions import PanelAccessMixin
 
 
@@ -85,10 +85,72 @@ class ProjectTogglePublishView(PanelAccessMixin, View):
         return redirect("panel:home")
 
 
-class ProjectPhotosView(PanelAccessMixin, DetailView):
-    model = Project
+class ProjectPhotosView(PanelAccessMixin, View):
     template_name = "panel/photos.html"
-    context_object_name = "project"
+
+    def render_page(self, request, project, form):
+        photos = project.photos.all()
+        return render(request, self.template_name, {"project": project, "photos": photos, "form": form})
+
+    def get(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        return self.render_page(request, project, PhotoUploadForm())
+
+    def post(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        form = PhotoUploadForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return self.render_page(request, project, form)
+        created = services.add_photos(project, form.cleaned_data["images"])
+        if len(created) == 1:
+            messages.success(request, "Foto subida.")
+        else:
+            messages.success(request, f"{len(created)} fotos subidas.")
+        return redirect("panel:project_photos", pk=project.pk)
+
+
+class PhotoActionView(PanelAccessMixin, View):
+    http_method_names = ["post"]
+    action = None
+    message = ""
+
+    def post(self, request, pk):
+        photo = get_object_or_404(ProjectPhoto, pk=pk)
+        project_pk = photo.project_id
+        self.apply(photo)
+        messages.success(request, self.message)
+        return redirect("panel:project_photos", pk=project_pk)
+
+    def apply(self, photo):
+        raise NotImplementedError
+
+
+class PhotoUpView(PhotoActionView):
+    message = "Foto movida hacia arriba."
+
+    def apply(self, photo):
+        services.move_photo(photo, "up")
+
+
+class PhotoDownView(PhotoActionView):
+    message = "Foto movida hacia abajo."
+
+    def apply(self, photo):
+        services.move_photo(photo, "down")
+
+
+class PhotoCoverView(PhotoActionView):
+    message = "Esa foto ahora es la portada."
+
+    def apply(self, photo):
+        services.set_cover(photo)
+
+
+class PhotoDeleteView(PhotoActionView):
+    message = "Foto eliminada."
+
+    def apply(self, photo):
+        services.delete_photo(photo)
 
 
 class CategoryListView(PanelAccessMixin, ListView):

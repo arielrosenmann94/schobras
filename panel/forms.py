@@ -1,4 +1,5 @@
 from django import forms
+from PIL import Image, UnidentifiedImageError
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
 
@@ -77,3 +78,52 @@ class ProjectForm(OptionalOrderMixin, forms.ModelForm):
             active |= Q(pk=self.instance.category_id)
         self.fields["category"].queryset = Category.objects.filter(active)
         self.fields["category"].empty_label = "Elige una categoría"
+
+
+MAX_PHOTO_BYTES = 15 * 1024 * 1024
+ALLOWED_PHOTO_FORMATS = {"JPEG", "PNG", "WEBP"}
+FORMAT_ERROR = "Formato no soportado: sube fotos JPG, PNG o WebP."
+
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput)
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_clean = super().clean
+        if isinstance(data, (list, tuple)) and data:
+            return [single_clean(item, initial) for item in data]
+        return [single_clean(data or None, initial)]
+
+
+class PhotoUploadForm(forms.Form):
+    images = MultipleImageField(
+        label="Fotos",
+        error_messages={"required": "Elige al menos una foto."},
+    )
+
+    def clean_images(self):
+        errors = []
+        for file in self.cleaned_data["images"]:
+            if file.size > MAX_PHOTO_BYTES:
+                errors.append(f"La foto {file.name} pesa más de 15 MB.")
+                continue
+            try:
+                with Image.open(file) as image:
+                    image_format = image.format
+                    image.verify()
+            except (UnidentifiedImageError, OSError, SyntaxError):
+                errors.append(FORMAT_ERROR)
+                continue
+            finally:
+                file.seek(0)
+            if image_format not in ALLOWED_PHOTO_FORMATS:
+                errors.append(FORMAT_ERROR)
+        if errors:
+            raise forms.ValidationError(list(dict.fromkeys(errors)))
+        return self.cleaned_data["images"]
