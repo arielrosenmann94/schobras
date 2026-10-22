@@ -34,4 +34,4 @@ Settings: `config.settings.local` (por defecto en `manage.py`) y `config.setting
 
 ## Producción (Heroku)
 
-Variables: `SECRET_KEY`, `DJANGO_SETTINGS_MODULE=config.settings.production`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `ADMIN_URL` y `DATABASE_URL` (add-on de Postgres). El `Procfile` migra en cada release.
+Variables: `SECRET_KEY`, `DJANGO_SETTINGS_MODULE=config.settings.production`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `ADMIN_URL`, `DATABASE_URL` (add-on de Postgres) y `CLOUDINARY_URL` (add-on de Cloudinary; obligatoria, las fotos de producción se guardan ahí). `www.schobras.cl` redirige a `schobras.cl`. Pasos completos en `docs/12-runbooks/deploy-heroku.md`. El `Procfile` migra en cada release.

@@ -2,11 +2,11 @@
 config/settings/production.py
 ─────────────────────────────
 Settings de producción para Heroku.
-El almacenamiento de fotos (Cloudinary o S3) se agrega cuando se defina quién
-es dueño de esas cuentas (pendiente en docs/2026-10-22-web-v1-diseno.md).
+Las fotos van a Cloudinary (CLOUDINARY_URL, lo define el add-on de Heroku).
 """
 import dj_database_url
 from decouple import config
+from django.core.exceptions import ImproperlyConfigured
 
 from .base import *  # noqa: F401, F403
 
@@ -16,12 +16,22 @@ def csv_config(name, default):
 
 
 DEBUG = False
+
+# www.schobras.cl -> schobras.cl (justo después de SecurityMiddleware)
+MIDDLEWARE.insert(1, "core.middleware.CanonicalHostMiddleware")  # noqa: F405
 ALLOWED_HOSTS = csv_config("ALLOWED_HOSTS", "schobras.cl,www.schobras.cl")
 CSRF_TRUSTED_ORIGINS = csv_config("CSRF_TRUSTED_ORIGINS", "https://schobras.cl,https://www.schobras.cl")
 
 DATABASES = {
     "default": dj_database_url.config(conn_max_age=600, ssl_require=True),
 }
+
+# ── Fotos en Cloudinary ───────────────────────────────────────────────────────
+# El disco de Heroku es efímero: sin Cloudinary las fotos se perderían.
+if not config("CLOUDINARY_URL", default=""):
+    raise ImproperlyConfigured("Falta CLOUDINARY_URL")
+INSTALLED_APPS += ["cloudinary_storage", "cloudinary"]  # noqa: F405
+STORAGES["default"] = {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"}  # noqa: F405
 
 # ── SSL / HTTPS (Heroku) ──────────────────────────────────────────────────────
 SECURE_SSL_REDIRECT = True
