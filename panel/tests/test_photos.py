@@ -1,6 +1,7 @@
 import io
 import shutil
 import tempfile
+from unittest import mock
 
 from PIL import Image
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -83,6 +84,20 @@ class PanelPhotoTests(TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertContains(response, FORMAT_ERROR)
                 self.assertEqual(self.project.photos.count(), 0)
+
+    def test_reject_image_bomb(self):
+        # Con un límite diminuto, un PNG de 4x4 cuenta como bomba de descompresión.
+        with mock.patch.object(Image, "MAX_IMAGE_PIXELS", 1):
+            response = self.upload(png("bomba.png"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, FORMAT_ERROR)
+        self.assertEqual(self.project.photos.count(), 0)
+
+    def test_reject_truncated_image(self):
+        broken = SimpleUploadedFile("corta.png", PNG[: len(PNG) // 2], "image/png")
+        response = self.upload(broken)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, FORMAT_ERROR)
 
     def test_upload_requires_login(self):
         self.client.logout()

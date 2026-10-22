@@ -117,7 +117,7 @@ class PhotoUploadForm(forms.Form):
                 with Image.open(file) as image:
                     image_format = image.format
                     image.verify()
-            except (UnidentifiedImageError, OSError, SyntaxError):
+            except (UnidentifiedImageError, Image.DecompressionBombError, OSError, SyntaxError):
                 errors.append(FORMAT_ERROR)
                 continue
             finally:
