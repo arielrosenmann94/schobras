@@ -118,7 +118,7 @@ Región Metropolitana · Región de Valparaíso · Región de O'Higgins
 | Bloqueo por intentos | `Demasiados intentos. Vuelve a intentarlo en 30 minutos.` |
 | Login fallido | `Correo o contraseña incorrectos.` |
 
-## ⚠️ Pendiente de visto bueno de Ariel (QA vuelta 1)
+## ⚠️ Pendiente de visto bueno de Ariel (QA vueltas 1 y 2)
 
 Textos que ya están en el sitio o en el panel y no estaban en este documento (QA-1.14). No se cambiaron: quedan aquí para que Ariel los apruebe o los corrija en la revisión humana. Cuando los apruebe, se mueven a su sección y se borra esta marca.
 
@@ -147,3 +147,12 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 | Panel, foto con demasiados megapíxeles (tope por formato desde la QA vuelta 2: 40 en JPG, 20 en PNG, 12 en WebP) | `La foto {nombre} tiene demasiados megapíxeles (máximo {40, 20 o 12}).` |
 | Panel, categoría repetida (sin importar mayúsculas) | `Ya existe una categoría con ese nombre.` |
 | Panel, año fuera de rango | `El año debe estar entre 1950 y {año actual + 2}.` |
+
+### Nuevos en la QA vuelta 2
+
+| Dónde | Texto |
+|---|---|
+| Página caducada (fallo de CSRF en el panel): título de la pestaña | `La página caducó \| SCHOBRAS.CL` |
+| Página caducada: título | `La página caducó` |
+| Página caducada: texto | `Por seguridad, el formulario venció. Vuelve al panel e inténtalo de nuevo.` |
+| Página caducada: botón | `Volver al panel` |

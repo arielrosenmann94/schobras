@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from django.test import Client, RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import get_resolver, reverse
 
 from accounts.models import User
@@ -100,3 +100,27 @@ class PermissionDeniedPageTests(TestCase):
         self.assertIn("No tienes acceso a esta página", html)
         self.assertNotIn("<span>Panel</span>", html)
         self.assertIn(f'href="{reverse("core:home")}"', html)
+
+
+@override_settings(DEBUG=False, ALLOWED_HOSTS=["testserver"])
+class CsrfFailurePageTests(TestCase):
+    """QA-2.2: el fallo de CSRF salía en inglés y sin marca (página por defecto de Django)."""
+
+    def test_csrf_failure_is_branded_and_in_spanish(self):
+        client = Client(enforce_csrf_checks=True)
+        response = client.post(
+            reverse("panel:login"), {"username": "claudia", "password": "x-clave-123"}
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, "403_csrf.html")
+        self.assertTemplateUsed(response, "panel/base.html")
+        html = response.content.decode()
+        self.assertIn('<html lang="es-CL">', html)
+        self.assertIn("<title>La página caducó | SCHOBRAS.CL</title>", html)
+        self.assertIn("SCHOBRAS.CL <span>Panel</span>", html)
+        self.assertIn("<h1>La página caducó</h1>", html)
+        self.assertIn("Por seguridad, el formulario venció. Vuelve al panel e inténtalo de nuevo.", html)
+        self.assertIn(f'href="{reverse("panel:home")}">Volver al panel</a>', html)
+        self.assertRegex(html, r'<script src="/static/js/panel\.js" defer nonce="[^"]+">')
+        self.assertNotIn("Forbidden", html)
+        self.assertNotIn("CSRF", html)

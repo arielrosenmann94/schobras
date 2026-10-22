@@ -1,0 +1,8 @@
+{% extends "panel/base.html" %}
+{% comment %}Fallo de CSRF (QA-2.2): django.views.csrf.csrf_failure busca esta plantilla. Solo el panel tiene formularios; pasa al volver atrás después de salir o si el formulario quedó abierto mucho rato.{% endcomment %}
+{% block title %}La página caducó{% endblock %}
+{% block content %}
+<h1>La página caducó</h1>
+<p>Por seguridad, el formulario venció. Vuelve al panel e inténtalo de nuevo.</p>
+<p><a class="btn btn-primary" href="{% url 'panel:home' %}">Volver al panel</a></p>
+{% endblock %}
