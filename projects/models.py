@@ -138,7 +138,14 @@ class ProjectPhoto(BaseModel):
         related_name="photos",
         verbose_name="proyecto",
     )
-    image = models.ImageField("imagen", upload_to="proyectos/%Y/%m/")
+    image = models.ImageField(
+        "imagen",
+        upload_to="proyectos/%Y/%m/",
+        width_field="image_width",
+        height_field="image_height",
+    )
+    image_width = models.PositiveIntegerField(null=True, blank=True, editable=False)
+    image_height = models.PositiveIntegerField(null=True, blank=True, editable=False)
     order = models.PositiveIntegerField("orden", default=0)
     is_cover = models.BooleanField("portada", default=False)
     alt_text = models.CharField("texto alternativo", max_length=200, blank=True)

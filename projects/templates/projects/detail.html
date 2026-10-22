@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load image_tags %}
+{% block title %}{{ project.title }} en {{ project.commune }} | SCHOBRAS.CL{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+{% block og %}
+  <meta property="og:site_name" content="SCHOBRAS.CL">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ project.title }} en {{ project.commune }} | SCHOBRAS.CL">
+  <meta property="og:description" content="{{ meta_description }}">
+  {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+{% endblock %}
+{% block whatsapp_message %}Hola, vi el proyecto {{ project.title }} y quiero conversar uno parecido.{% endblock %}
+{% block content %}
+<article class="project">
+  <header class="container project__head">
+    <p class="label"><a href="{% url 'projects:list' %}">Proyectos</a> / {{ project.category.name }}</p>
+    <h1 class="display project__title">{{ project.title }}</h1>
+  </header>
+
+  {% if cover %}
+  <figure class="project__cover">
+    <img src="{{ cover.image.url|variant:1600 }}" srcset="{{ cover.image.url|srcset }}" sizes="100vw" alt="{{ cover.alt }}" {% image_size cover %} fetchpriority="high" decoding="async">
+  </figure>
+  {% endif %}
+
+  <div class="container project__info section">
+    <dl class="project__facts">
+      <div><dt class="label">Categoría</dt><dd>{{ project.category.name }}</dd></div>
+      <div><dt class="label">Tipo de intervención</dt><dd>{{ project.get_intervention_type_display }}</dd></div>
+      <div><dt class="label">Ubicación</dt><dd>{{ project.commune }}, {{ project.get_region_display }}</dd></div>
+      {% if project.construction_systems_display %}
+      <div><dt class="label">Sistemas constructivos</dt><dd>{{ project.construction_systems_display|join:", " }}</dd></div>
+      {% endif %}
+      {% if project.area_m2 %}<div><dt class="label">Superficie</dt><dd>{{ project.area_m2 }} m²</dd></div>{% endif %}
+      {% if project.year %}<div><dt class="label">Año</dt><dd>{{ project.year }}</dd></div>{% endif %}
+    </dl>
+    {% if project.description %}
+    <div class="prose project__description">{{ project.description|linebreaks }}</div>
+    {% endif %}
+  </div>
+
+  {% if photos|length > 1 %}
+  <section class="container project__gallery" aria-labelledby="galeria">
+    <h2 class="visually-hidden" id="galeria">Galería de fotos</h2>
+    <ul class="project__gallery-grid">
+      {% for photo in photos %}
+      <li>
+        <a class="project__thumb" href="{{ photo.image.url|variant:1600 }}" data-gallery>
+          <img src="{{ photo.image.url|variant:800 }}" srcset="{{ photo.image.url|srcset }}" sizes="(min-width: 64em) 30vw, (min-width: 40em) 45vw, 100vw" alt="{{ photo.alt }}" {% image_size photo %} loading="lazy" decoding="async">
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if has_contact %}
+  <section class="wall project__closing">
+    <div class="container project__closing-inner">
+      <h2 class="heading">¿Tienes un proyecto parecido? Conversemos.</h2>
+      {% if wa_href %}
+      <a class="btn btn--primary" href="{{ wa_href }}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+      {% elif site.phone %}
+      <a class="btn btn--primary" href="tel:{{ site.phone|cut:' ' }}">Llámanos al {{ site.phone }}</a>
+      {% elif site.email %}
+      <a class="btn btn--primary" href="mailto:{{ site.email }}">Escríbenos a {{ site.email }}</a>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+</article>
+{% endblock %}
