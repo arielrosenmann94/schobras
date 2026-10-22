@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Esta página no existe | SCHOBRAS.CL{% endblock %}
+{% block og %}
+  <meta property="og:site_name" content="SCHOBRAS.CL">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Esta página no existe | SCHOBRAS.CL">
+{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <p class="label">SCHOBRAS.CL</p>
+    <h1 class="display">Esta página no existe</h1>
+    <p class="lead">Puede que el enlace esté mal escrito o que el proyecto ya no esté publicado.</p>
+    <p><a class="btn btn--primary" href="{% url 'core:home' %}">Volver al inicio</a></p>
+  </div>
+</section>
+{% endblock %}

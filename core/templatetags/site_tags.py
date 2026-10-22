@@ -1,10 +1,12 @@
 """Tags de la plantilla base: WhatsApp, teléfono, captura de bloques y SVG en línea."""
 import html
+import json
 import re
 from functools import lru_cache
 
 from django import template
 from django.contrib.staticfiles import finders
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
 
 from core.whatsapp import whatsapp_url
@@ -68,3 +70,12 @@ def _read_svg(path):
 def inline_svg(path):
     """Inserta un SVG estático del repositorio en línea (para currentColor y animación)."""
     return mark_safe(_read_svg(path))
+
+
+_JSONLD_ESCAPES = {ord(">"): "\\u003E", ord("<"): "\\u003C", ord("&"): "\\u0026"}
+
+
+@register.filter
+def json_ld(value):
+    """Serializa a JSON seguro para incrustar dentro de <script> (escapa <, > y &)."""
+    return mark_safe(json.dumps(value, cls=DjangoJSONEncoder, ensure_ascii=False).translate(_JSONLD_ESCAPES))

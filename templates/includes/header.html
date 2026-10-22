@@ -13,7 +13,7 @@
         <li><a class="site-nav__link" href="{% url 'core:home' %}#nosotros">Nosotros</a></li>
         <li><a class="site-nav__link" href="{% url 'core:home' %}#servicios">Servicios</a></li>
         <li><a class="site-nav__link" href="{% url 'core:home' %}#proceso">Proceso</a></li>
-        {% if has_projects %}<li><a class="site-nav__link" href="{% url 'projects:list' %}"{% if request.path|slice:":11" == "/proyectos/" %} aria-current="page"{% endif %}>Proyectos</a></li>{% endif %}
+        {% if has_projects %}<li><a class="site-nav__link" href="{% url 'projects:list' %}"{% if request.resolver_match.namespace == "projects" %} aria-current="page"{% endif %}>Proyectos</a></li>{% endif %}
         {% if has_contact %}<li><a class="site-nav__link site-nav__link--cta" href="{% url 'core:home' %}#contacto">Contacto</a></li>{% endif %}
       </ul>
     </nav>

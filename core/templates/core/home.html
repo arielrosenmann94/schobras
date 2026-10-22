@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 {% load image_tags site_tags %}
+{% block og %}
+  <meta property="og:site_name" content="SCHOBRAS.CL">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SCHOBRAS.CL | Arquitectura y construcción en RM, Valparaíso y O'Higgins">
+  <meta property="og:description" content="Diseñamos y construimos proyectos residenciales, comerciales e industriales. Proyecto de arquitectura y trámites municipales sin costo adicional si construyes con nosotros.">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
+{% block jsonld %}<script type="application/ld+json" nonce="{{ csp_nonce }}">{{ jsonld|json_ld }}</script>{% endblock %}
 
 {% block content %}
 {% comment %}
