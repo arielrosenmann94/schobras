@@ -2,7 +2,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import engines
-from django.urls import path
+from django.urls import include, path
 
 CHILD_TEMPLATE = (
     '{% extends "base.html" %}'
@@ -34,4 +34,7 @@ urlpatterns = [
     path("nonce/", nonce_page),
     path("base/", base_page),
     path("hija/", child_page),
+    # base.html enlaza con rutas con nombre: mismos prefijos que config/urls.py.
+    path("proyectos/", include("projects.urls")),
+    path("", include("core.urls")),
 ]

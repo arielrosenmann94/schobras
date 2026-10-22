@@ -3,7 +3,7 @@
 {% block content %}
 <h1>{% if object %}Editar proyecto{% else %}Nuevo proyecto{% endif %}</h1>
 {% if object and object.status == 'published' %}
-<p><a class="btn btn-secondary" href="/proyectos/{{ object.slug }}/" target="_blank" rel="noopener">Ver en la web</a></p>
+<p><a class="btn btn-secondary" href="{{ object.get_absolute_url }}" target="_blank" rel="noopener">Ver en la web</a></p>
 {% endif %}
 <form method="post" class="form" novalidate>
   {% csrf_token %}

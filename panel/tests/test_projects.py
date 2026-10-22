@@ -85,7 +85,7 @@ class PanelProjectTests(TestCase):
         project.refresh_from_db()
         self.assertEqual(project.status, Project.Status.PUBLISHED)
         edit = self.client.get(reverse("panel:project_edit", args=[project.pk]))
-        self.assertContains(edit, f"/proyectos/{project.slug}/")
+        self.assertContains(edit, f'href="{project.get_absolute_url()}"')
         self.client.post(url)
         project.refresh_from_db()
         self.assertEqual(project.status, Project.Status.DRAFT)

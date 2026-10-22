@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load site_tags %}
+{% load image_tags site_tags %}
 
 {% block content %}
 {% comment %}
@@ -18,7 +18,7 @@
     {% if has_contact or has_projects %}
     <div class="home-hero__actions">
       {% if has_contact %}<a class="btn btn--primary" href="#contacto">Conversemos tu proyecto</a>{% endif %}
-      {% if has_projects %}<a class="btn btn--ghost" href="/proyectos/">Ver proyectos</a>{% endif %}
+      {% if has_projects %}<a class="btn btn--ghost" href="{% url 'projects:list' %}">Ver proyectos</a>{% endif %}
     </div>
     {% endif %}
   </div>
@@ -142,14 +142,14 @@
   <div class="container home-grid">
     <div class="home-head home-head--plain">
       <h2 class="heading" id="proyectos-titulo">Proyectos</h2>
-      <a class="home-more" href="/proyectos/">Ver todos los proyectos</a>
+      <a class="home-more" href="{% url 'projects:list' %}">Ver todos los proyectos</a>
     </div>
     <ul class="home-cards" role="list">
       {% for project in featured_projects %}
       {% with photo=project.cover_photo %}
       <li class="reveal">
-        <a class="home-card" href="/proyectos/{{ project.slug }}/">
-          {% if photo %}<span class="home-card__media"><img src="{{ photo.image.url }}" alt="{{ photo.alt }}" width="800" height="600" loading="lazy" decoding="async"></span>{% endif %}
+        <a class="home-card" href="{{ project.get_absolute_url }}">
+          {% if photo %}<span class="home-card__media"><img src="{{ photo.image.url|variant:800 }}" srcset="{{ photo.image.url|srcset }}" sizes="(min-width: 64em) 30vw, (min-width: 48em) 45vw, 100vw" alt="{{ photo.alt }}" {% image_size photo %} loading="lazy" decoding="async"></span>{% endif %}
           <h3 class="home-card__title">{{ project.title }}</h3>
           <p class="home-card__meta">{{ project.category.name }} · {{ project.commune }}</p>
         </a>

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.test import SimpleTestCase, TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 
 from core.models import SiteSettings
@@ -55,16 +56,17 @@ class BaseTemplateTests(TestCase):
 
     def test_menu_hides_projects_when_none(self):
         _, html = self.get()
-        self.assertIn('href="/#nosotros"', html)
-        self.assertIn('href="/#servicios"', html)
-        self.assertIn('href="/#proceso"', html)
-        self.assertNotIn('href="/proyectos/"', html)
+        home = reverse("core:home")
+        self.assertIn(f'href="{home}#nosotros"', html)
+        self.assertIn(f'href="{home}#servicios"', html)
+        self.assertIn(f'href="{home}#proceso"', html)
+        self.assertNotIn(f'href="{reverse("projects:list")}"', html)
 
     def test_menu_shows_projects_when_published(self):
         project = make_project(status=Project.Status.PUBLISHED)
         ProjectPhoto.objects.create(project=project, image=make_image())
         _, html = self.get()
-        self.assertIn('href="/proyectos/"', html)
+        self.assertIn(f'href="{reverse("projects:list")}"', html)
 
     def test_no_contact_no_contact_links(self):
         _, html = self.get()
@@ -75,7 +77,7 @@ class BaseTemplateTests(TestCase):
     def test_contact_in_menu_and_footer_email_only(self):
         configure(email="oficina@example.com")
         _, html = self.get()
-        self.assertIn('href="/#contacto"', html)
+        self.assertIn(f'href="{reverse("core:home")}#contacto"', html)
         self.assertIn('href="mailto:oficina@example.com"', html)
         self.assertNotIn("tel:", html)
         self.assertNotIn("wa.me", html)

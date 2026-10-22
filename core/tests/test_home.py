@@ -4,6 +4,7 @@ import tempfile
 from django.db import connection
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.test.utils import CaptureQueriesContext
+from django.urls import reverse
 
 from core.models import SiteSettings
 from core.templatetags.site_tags import tel_digits
@@ -104,7 +105,7 @@ class HomeTests(TestCase):
     def test_featured_hidden_without_projects(self):
         html = self.get()
         self.assertNotIn('id="proyectos"', html)
-        self.assertNotIn('href="/proyectos/"', html)
+        self.assertNotIn(f'href="{reverse("projects:list")}"', html)
         self.assertNotIn("Ver proyectos", html)
 
     def test_featured_hidden_when_none_is_featured(self):
@@ -123,7 +124,7 @@ class HomeTests(TestCase):
         projects = [publish(f"Casa {number}") for number in range(7)]
         html = self.get()
         self.assertIn('id="proyectos"', html)
-        shown = [p for p in projects if f'href="/proyectos/{p.slug}/"' in html]
+        shown = [p for p in projects if f'href="{p.get_absolute_url()}"' in html]
         self.assertEqual(len(shown), 6)
         self.assertEqual(html.count('class="home-card"'), 6)
         self.assertIn("Ver todos los proyectos", html)
@@ -131,13 +132,13 @@ class HomeTests(TestCase):
     def test_featured_card_link_and_image(self):
         project = publish("Casa Chicureo")
         html = self.get()
-        self.assertIn(f'href="/proyectos/{project.slug}/"', html)
+        self.assertIn(f'href="{project.get_absolute_url()}"', html)
         photo = project.cover_photo
         img = re.search(r'<img[^>]*src="' + re.escape(photo.image.url) + r'"[^>]*>', html).group(0)
         self.assertIn('alt="Fachada de Casa Chicureo"', img)
         self.assertIn('loading="lazy"', img)
-        self.assertRegex(img, r'width="\d+"')
-        self.assertRegex(img, r'height="\d+"')
+        self.assertIn(f'width="{photo.image_width}" height="{photo.image_height}"', img)
+        self.assertIn("srcset=", img)
         self.assertIn("Residencial", html)
         self.assertIn("Colina", html)
 
