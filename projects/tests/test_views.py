@@ -104,6 +104,21 @@ class ProjectListTests(TestCase):
 
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class ProjectDetailTests(TestCase):
+    def test_closing_cta_phone_uses_only_digits(self):
+        settings_obj = SiteSettings.load()
+        settings_obj.phone = "+56 (2) 2345-6789"
+        settings_obj.save()
+        html = self.client.get(publish().get_absolute_url()).content.decode()
+        self.assertIn('href="tel:+56223456789">Llámanos al +56 (2) 2345-6789</a>', html)
+
+    def test_closing_cta_without_phone_digits_has_no_tel_link(self):
+        settings_obj = SiteSettings.load()
+        settings_obj.phone = "pendiente"
+        settings_obj.save()
+        html = self.client.get(publish().get_absolute_url()).content.decode()
+        self.assertNotIn("tel:", html)
+        self.assertNotIn("Llámanos", html)
+
     def test_detail_shows_only_filled_fields(self):
         project = publish(area_m2=120)
         html = self.client.get(project.get_absolute_url()).content.decode()

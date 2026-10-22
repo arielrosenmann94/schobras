@@ -87,6 +87,17 @@ class BaseTemplateTests(TestCase):
         _, html = self.get()
         self.assertIn('href="tel:+56223456789"', html)
 
+    def test_footer_phone_link_uses_only_digits(self):
+        configure(phone="+56 (2) 2345-6789")
+        _, html = self.get()
+        self.assertIn('href="tel:+56223456789"', html)
+
+    def test_phone_without_digits_has_no_link_nor_contact(self):
+        configure(phone="pendiente")
+        _, html = self.get()
+        self.assertNotIn("tel:", html)
+        self.assertNotIn("#contacto", html)
+
     def test_footer_legal_name_no_rut(self):
         _, html = self.get()
         footer = html[html.index("<footer"):]

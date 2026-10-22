@@ -182,6 +182,14 @@ class HomeTests(TestCase):
             self.assertIn(label, contact)
 
 
+    def test_phone_without_digits_is_not_a_channel(self):
+        configure(phone="pendiente", email="oficina@example.com")
+        html = self.get()
+        contact = re.search(r'<section[^>]*id="contacto".*?</section>', html, re.S).group(0)
+        self.assertNotIn("tel:", contact)
+        self.assertNotIn("Teléfono", contact)
+
+
 class TelDigitsTests(SimpleTestCase):
     def test_keeps_plus_and_digits(self):
         self.assertEqual(tel_digits("+56 (2) 2345-6789"), "+56223456789")

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load image_tags %}
+{% load image_tags site_tags %}
 {% block title %}{{ project.title }} en {{ project.commune }} | SCHOBRAS.CL{% endblock %}
 {% block meta_description %}{{ meta_description }}{% endblock %}
 {% block og %}
@@ -59,13 +59,15 @@
   <section class="wall project__closing">
     <div class="container project__closing-inner">
       <h2 class="heading">¿Tienes un proyecto parecido? Conversemos.</h2>
+      {% with tel=site.phone|tel_digits %}
       {% if wa_href %}
       <a class="btn btn--primary" href="{{ wa_href }}" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
-      {% elif site.phone %}
-      <a class="btn btn--primary" href="tel:{{ site.phone|cut:' ' }}">Llámanos al {{ site.phone }}</a>
+      {% elif tel %}
+      <a class="btn btn--primary" href="tel:{{ tel }}">Llámanos al {{ site.phone }}</a>
       {% elif site.email %}
       <a class="btn btn--primary" href="mailto:{{ site.email }}">Escríbenos a {{ site.email }}</a>
       {% endif %}
+      {% endwith %}
     </div>
   </section>
   {% endif %}

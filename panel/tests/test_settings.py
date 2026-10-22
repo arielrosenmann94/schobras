@@ -6,6 +6,7 @@ from core.models import SiteSettings
 
 PASSWORD = "clave-segura-123"
 INVALID_WHATSAPP = "Número de WhatsApp no válido. Ejemplo: +56 9 1234 5678"
+INVALID_PHONE = "Teléfono no válido. Ejemplo: +56 9 1234 5678"
 
 
 class PanelSettingsTests(TestCase):
@@ -71,6 +72,23 @@ class PanelSettingsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, INVALID_WHATSAPP)
         self.assertEqual(SiteSettings.load().whatsapp, "")
+
+    def test_invalid_phone_form_error(self):
+        self.client.force_login(self.admin)
+        for phone in ("123", "pendiente", "+56 2 234"):
+            with self.subTest(phone=phone):
+                response = self.client.post(self.url(), self.data(phone=phone))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, INVALID_PHONE)
+                self.assertFalse(SiteSettings.objects.exclude(phone="").exists())
+
+    def test_valid_and_blank_phone_are_saved(self):
+        self.client.force_login(self.admin)
+        for phone in ("+56 (2) 2345-6789", "22345678", ""):
+            with self.subTest(phone=phone):
+                response = self.client.post(self.url(), self.data(phone=phone))
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(SiteSettings.objects.get().phone, phone)
 
     def test_home_links_settings_for_admin_only(self):
         self.client.force_login(self.admin)

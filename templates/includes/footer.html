@@ -12,7 +12,7 @@
       {% if has_contact %}
       <ul class="site-footer__col site-footer__list">
         {% if wa_href %}<li><span class="site-footer__channel">WhatsApp</span> <a href="{{ wa_href }}" target="_blank" rel="noopener">{{ site.whatsapp }}</a></li>{% endif %}
-        {% if site.phone %}<li><span class="site-footer__channel">Teléfono</span> <a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></li>{% endif %}
+        {% with tel=site.phone|tel_digits %}{% if tel %}<li><span class="site-footer__channel">Teléfono</span> <a href="tel:{{ tel }}">{{ site.phone }}</a></li>{% endif %}{% endwith %}
         {% if site.email %}<li><span class="site-footer__channel">Correo</span> <a href="mailto:{{ site.email }}">{{ site.email }}</a></li>{% endif %}
       </ul>
       {% endif %}

@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from PIL import Image, UnidentifiedImageError
 from django.contrib.auth.forms import AuthenticationForm
@@ -88,6 +90,9 @@ class ProjectForm(OptionalOrderMixin, forms.ModelForm):
         self.fields["category"].empty_label = "Elige una categoría"
 
 
+MIN_PHONE_DIGITS = 8
+
+
 class SiteSettingsForm(forms.ModelForm):
     class Meta:
         model = SiteSettings
@@ -109,6 +114,12 @@ class SiteSettingsForm(forms.ModelForm):
         value = self.cleaned_data["whatsapp"].strip()
         if value and not normalize_number(value):
             raise forms.ValidationError("Número de WhatsApp no válido. Ejemplo: +56 9 1234 5678")
+        return value
+
+    def clean_phone(self):
+        value = self.cleaned_data["phone"].strip()
+        if value and len(re.sub(r"\D", "", value)) < MIN_PHONE_DIGITS:
+            raise forms.ValidationError("Teléfono no válido. Ejemplo: +56 9 1234 5678")
         return value
 
 

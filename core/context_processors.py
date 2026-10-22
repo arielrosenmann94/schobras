@@ -1,6 +1,7 @@
 from projects.models import Project
 
 from .models import SiteSettings
+from .templatetags.site_tags import tel_digits
 from .whatsapp import whatsapp_url
 
 
@@ -11,6 +12,7 @@ def site(request):
     return {
         "site": settings_obj,
         "whatsapp_href": whatsapp_href,
-        "has_contact": bool(whatsapp_href or settings_obj.phone or settings_obj.email),
+        # Un teléfono sin dígitos no genera enlace tel:, así que no cuenta como canal.
+        "has_contact": bool(whatsapp_href or tel_digits(settings_obj.phone) or settings_obj.email),
         "has_projects": Project.objects.published().exists(),
     }
