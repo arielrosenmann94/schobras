@@ -37,7 +37,7 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     "accounts",   # usuarios y roles
     "core",       # páginas públicas: inicio, 404, sitemap, robots
-    "proyectos",  # proyectos, categorías y fotos
+    "projects",   # proyectos, categorías y fotos
     "panel",      # backoffice propio (no el admin de Django)
 ]
 

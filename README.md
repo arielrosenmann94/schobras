@@ -16,7 +16,7 @@ Python 3.12 · Django 6.0 · PostgreSQL (producción) / SQLite (local) · WhiteN
 |---|---|
 | `accounts` | Usuario propio (`accounts.User`) y roles |
 | `core` | Páginas públicas: inicio, 404, sitemap, robots |
-| `proyectos` | Proyectos, categorías y fotos |
+| `projects` | Proyectos, categorías y fotos |
 | `panel` | Backoffice para los dueños (no el admin de Django) |
 
 ## Desarrollo local
