@@ -1,8 +1,8 @@
-from django.test import SimpleTestCase, override_settings
+from django.test import TestCase, override_settings
 
 
 @override_settings(ROOT_URLCONF="core.tests.urls")
-class SecurityHeadersTests(SimpleTestCase):
+class SecurityHeadersTests(TestCase):
     def test_csp_header_present(self):
         response = self.client.get("/ping/")
         csp = response["Content-Security-Policy"]
