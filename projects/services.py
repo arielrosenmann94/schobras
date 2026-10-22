@@ -1,8 +1,13 @@
 """Única puerta de escritura para proyectos y fotos (ADR-0004)."""
+import io
+import os
 from typing import Literal
 
+from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Max
+from django.utils.text import slugify
+from PIL import Image, ImageOps
 
 from .models import Project, ProjectPhoto
 
@@ -23,7 +28,52 @@ def unpublish(project: Project) -> None:
     project.save(update_fields=["status", "updated_at"])
 
 
+# Límites del plan de Cloudinary: 10 MB y 25 MP por imagen. Con 2560 px de
+# lado mayor la foto queda en 6,5 MP como máximo y en pocos MB.
+MAX_SIDE = 2560
+MAX_STORED_BYTES = 10 * 1024 * 1024
+JPEG_OPTIONS = {"format": "JPEG", "quality": 85, "optimize": True, "progressive": True}
+
+
+def _has_transparency(image: Image.Image) -> bool:
+    return image.mode in ("RGBA", "LA", "PA") or "transparency" in image.info
+
+
+def _reencode(file) -> ContentFile:
+    """Foto lista para guardar: orientada según EXIF, de máx. 2560 px y sin metadatos.
+
+    JPEG de calidad 85, salvo imágenes con transparencia, que quedan en PNG
+    (si el PNG pasara de 10 MB, se aplana sobre blanco y va como JPEG).
+    El perfil de color ICC se conserva para no alterar los colores.
+    """
+    file.seek(0)
+    with Image.open(file) as original:
+        if original.format == "JPEG":
+            original.draft("RGB", (MAX_SIDE, MAX_SIDE))
+        icc_profile = original.info.get("icc_profile")
+        transparent = _has_transparency(original)
+        image = ImageOps.exif_transpose(original)
+    image = image.convert("RGBA" if transparent else "RGB")
+    image.thumbnail((MAX_SIDE, MAX_SIDE))
+
+    output = io.BytesIO()
+    extension = "jpg"
+    if transparent:
+        image.save(output, format="PNG", optimize=True, icc_profile=icc_profile)
+        extension = "png"
+        if output.tell() >= MAX_STORED_BYTES:
+            flat = Image.new("RGB", image.size, "white")
+            flat.paste(image, mask=image.getchannel("A"))
+            image, output, extension = flat, io.BytesIO(), "jpg"
+    if extension == "jpg":
+        image.save(output, icc_profile=icc_profile, **JPEG_OPTIONS)
+
+    base = slugify(os.path.splitext(os.path.basename(file.name or ""))[0])[:80] or "foto"
+    return ContentFile(output.getvalue(), name=f"{base}.{extension}")
+
+
 def add_photos(project: Project, files: list) -> list[ProjectPhoto]:
+    """Agrega fotos ya validadas por el formulario, re-codificadas con _reencode."""
     with transaction.atomic():
         last = project.photos.aggregate(last=Max("order"))["last"] or 0
         has_cover = project.photos.filter(is_cover=True).exists()
@@ -31,7 +81,7 @@ def add_photos(project: Project, files: list) -> list[ProjectPhoto]:
         for offset, file in enumerate(files, start=1):
             photo = ProjectPhoto.objects.create(
                 project=project,
-                image=file,
+                image=_reencode(file),
                 order=last + offset,
                 is_cover=not has_cover and offset == 1,
             )

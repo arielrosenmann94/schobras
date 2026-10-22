@@ -1,9 +1,10 @@
 import io
 import tempfile
+from unittest import mock
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
-from PIL import Image
+from PIL import ExifTags, Image
 
 from projects import services
 from projects.models import Category, Project, ProjectPhoto
@@ -80,3 +81,80 @@ class ServiceTests(TestCase):
         self.assertNotIn(self.project, Project.objects.published())
         self.project.refresh_from_db()
         self.assertEqual(self.project.status, Project.Status.PUBLISHED)
+
+
+def make_photo_bytes(size, image_format="JPEG", mode="RGB", color="gray", **save_kwargs):
+    buffer = io.BytesIO()
+    Image.new(mode, size, color).save(buffer, format=image_format, **save_kwargs)
+    return buffer.getvalue()
+
+
+def phone_exif():
+    """EXIF de celular: foto girada (orientación 6) y con coordenadas GPS."""
+    exif = Image.Exif()
+    exif[ExifTags.Base.Orientation] = 6
+    gps = exif.get_ifd(ExifTags.IFD.GPSInfo)
+    gps[ExifTags.GPS.GPSLatitudeRef] = "S"
+    gps[ExifTags.GPS.GPSLatitude] = (33.0, 26.0, 0.0)
+    return exif
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class AddPhotosReencodeTests(TestCase):
+    def setUp(self):
+        self.project = Project.objects.create(
+            title="Casa Pirque",
+            category=Category.objects.get(name="Residencial"),
+            intervention_type=Project.InterventionType.NEW_BUILD,
+            commune="Pirque",
+            region=Project.Region.METROPOLITANA,
+        )
+
+    def add(self, name, content, content_type="image/jpeg"):
+        (photo,) = services.add_photos(
+            self.project, [SimpleUploadedFile(name, content, content_type=content_type)]
+        )
+        return photo
+
+    def test_rotates_by_exif_and_strips_metadata(self):
+        photo = self.add("IMG_0001.JPG", make_photo_bytes((40, 20), exif=phone_exif()))
+        with Image.open(photo.image.path) as stored:
+            self.assertEqual(stored.size, (20, 40))
+            self.assertEqual(stored.format, "JPEG")
+            exif = stored.getexif()
+            self.assertEqual(len(exif), 0)
+            self.assertEqual(exif.get_ifd(ExifTags.IFD.GPSInfo), {})
+        self.assertEqual((photo.image_width, photo.image_height), (20, 40))
+
+    def test_large_photo_is_reduced_to_2560(self):
+        photo = self.add("grande.jpg", make_photo_bytes((4000, 3000)))
+        with Image.open(photo.image.path) as stored:
+            self.assertEqual(stored.size, (2560, 1920))
+        self.assertEqual((photo.image_width, photo.image_height), (2560, 1920))
+
+    def test_transparent_png_stays_png(self):
+        content = make_photo_bytes((30, 30), "PNG", mode="RGBA", color=(0, 0, 0, 0))
+        photo = self.add("logo.png", content, "image/png")
+        self.assertTrue(photo.image.name.endswith(".png"))
+        with Image.open(photo.image.path) as stored:
+            self.assertEqual(stored.format, "PNG")
+            self.assertIn("A", stored.getbands())
+
+    def test_opaque_png_and_webp_become_jpeg(self):
+        for name, image_format in [("plano.png", "PNG"), ("render.webp", "WEBP")]:
+            with self.subTest(name=name):
+                photo = self.add(name, make_photo_bytes((30, 30), image_format))
+                self.assertTrue(photo.image.name.endswith(".jpg"))
+                with Image.open(photo.image.path) as stored:
+                    self.assertEqual(stored.format, "JPEG")
+
+    def test_file_name_is_sanitized_with_right_extension(self):
+        photo = self.add("Fachada Ñuñoa (1).JPEG", make_photo_bytes((30, 30)))
+        base = photo.image.name.rsplit("/", 1)[-1]
+        self.assertRegex(base, r"^fachada-nunoa-1(_\w+)?\.jpg$")
+
+    def test_transparent_png_too_heavy_falls_back_to_jpeg(self):
+        content = make_photo_bytes((30, 30), "PNG", mode="RGBA", color=(0, 0, 0, 0))
+        with mock.patch.object(services, "MAX_STORED_BYTES", 10):
+            photo = self.add("logo.png", content, "image/png")
+        self.assertTrue(photo.image.name.endswith(".jpg"))

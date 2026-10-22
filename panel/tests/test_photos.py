@@ -4,6 +4,7 @@ import tempfile
 from unittest import mock
 
 from PIL import Image
+from cloudinary.exceptions import Error as CloudinaryError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -22,6 +23,7 @@ def make_png_bytes():
 PNG = make_png_bytes()
 GIF = b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
 FORMAT_ERROR = "Formato no soportado: sube fotos JPG, PNG o WebP."
+UPLOAD_ERROR = "No se pudo subir la foto. Inténtalo de nuevo en unos minutos."
 
 
 def png(name):
@@ -168,3 +170,19 @@ class PanelPhotoTests(TestCase):
         )
         self.assertContains(response, 'accept="image/jpeg,image/png,image/webp"')
         self.assertContains(response, "multiple")
+
+    def test_storage_failure_shows_message_without_500(self):
+        for error in (OSError("disco lleno"), CloudinaryError("timeout de Cloudinary")):
+            with self.subTest(error=type(error).__name__):
+                with (
+                    mock.patch(
+                        "django.core.files.storage.FileSystemStorage._save", side_effect=error
+                    ),
+                    self.assertLogs("panel.views", level="ERROR") as logs,
+                ):
+                    response = self.upload(png("a.png"))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, UPLOAD_ERROR)
+                self.assertNotContains(response, str(error))
+                self.assertEqual(ProjectPhoto.objects.count(), 0)
+                self.assertIn("Traceback", logs.output[0])

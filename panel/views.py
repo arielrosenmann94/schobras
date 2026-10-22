@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.db.models import ProtectedError
@@ -25,6 +27,17 @@ from .forms import (
     SiteSettingsForm,
 )
 from .permissions import AdminRequiredMixin, PanelAccessMixin
+
+try:
+    from cloudinary.exceptions import Error as CloudinaryError
+except ImportError:  # cloudinary solo es obligatorio en producción
+    CloudinaryError = OSError
+
+logger = logging.getLogger(__name__)
+
+# Fallas del almacenamiento de fotos (disco local o Cloudinary).
+STORAGE_ERRORS = (CloudinaryError, OSError)
+UPLOAD_ERROR = "No se pudo subir la foto. Inténtalo de nuevo en unos minutos."
 
 
 class PanelLoginView(LoginView):
@@ -108,7 +121,13 @@ class ProjectPhotosView(PanelAccessMixin, View):
         form = PhotoUploadForm(request.POST, request.FILES)
         if not form.is_valid():
             return self.render_page(request, project, form)
-        created = services.add_photos(project, form.cleaned_data["images"])
+        try:
+            created = services.add_photos(project, form.cleaned_data["images"])
+        except STORAGE_ERRORS:
+            # Límite HTTP: se registra el detalle y la editora ve un mensaje claro.
+            logger.exception("No se pudieron guardar las fotos del proyecto %s", project.pk)
+            form.add_error("images", UPLOAD_ERROR)
+            return self.render_page(request, project, form)
         if len(created) == 1:
             messages.success(request, "Foto subida.")
         else:
