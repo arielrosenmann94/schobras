@@ -117,3 +117,33 @@ Región Metropolitana · Región de Valparaíso · Región de O'Higgins
 | WhatsApp inválido | `Número de WhatsApp no válido. Ejemplo: +56 9 1234 5678` |
 | Bloqueo por intentos | `Demasiados intentos. Vuelve a intentarlo en 30 minutos.` |
 | Login fallido | `Correo o contraseña incorrectos.` |
+
+## ⚠️ Pendiente de visto bueno de Ariel (QA vuelta 1)
+
+Textos que ya están en el sitio o en el panel y no estaban en este documento (QA-1.14). No se cambiaron: quedan aquí para que Ariel los apruebe o los corrija en la revisión humana. Cuando los apruebe, se mueven a su sección y se borra esta marca.
+
+### Ya publicados
+
+| Dónde | Texto |
+|---|---|
+| Proyectos (lista): meta descripción | `Obras de arquitectura y construcción de SCHOBRAS.CL en la Región Metropolitana, Valparaíso y O'Higgins.` |
+| Proyecto (detalle): botón de cierre con WhatsApp | `Escríbenos por WhatsApp` |
+| Proyecto (detalle): botón de cierre sin WhatsApp, con teléfono | `Llámanos al {teléfono}` |
+| Proyecto (detalle): botón de cierre solo con correo | `Escríbenos a {correo}` |
+| 403: título | `No tienes acceso a esta página` |
+| 403: texto | `Esta sección es solo para quien administra el sitio.` |
+| 403: botón | `Volver al panel` (con sesión) / `Volver al inicio` (sin sesión) |
+| 500: título | `Algo falló de nuestro lado` |
+| 500: texto | `No pudimos cargar esta página. Vuelve a intentarlo en unos minutos.` |
+
+### Nuevos en la QA vuelta 1
+
+| Dónde | Texto |
+|---|---|
+| 400 (envío rechazado, p. ej. más de 100 fotos de una vez): título de la pestaña | `Algo salió mal \| SCHOBRAS.CL` |
+| 400: título | `Algo salió mal con el envío` |
+| 400: texto | `Si subías fotos, sube de a menos.` |
+| 400: botón | `Volver al inicio` |
+| Panel, foto de más de 40 megapíxeles | `La foto {nombre} tiene demasiados megapíxeles (máximo 40).` |
+| Panel, categoría repetida (sin importar mayúsculas) | `Ya existe una categoría con ese nombre.` |
+| Panel, año fuera de rango | `El año debe estar entre 1950 y {año actual + 2}.` |
