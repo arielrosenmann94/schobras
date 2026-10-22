@@ -24,6 +24,12 @@ class WhatsAppTests(SimpleTestCase):
         )
         self.assertEqual(whatsapp_url("123", "Hola"), "")
 
+    def test_whatsapp_url_encodes_slash(self):
+        self.assertEqual(
+            whatsapp_url("912345678", "Casa 1/2"),
+            "https://wa.me/56912345678?text=Casa%201%2F2",
+        )
+
 
 class SiteSettingsTests(TestCase):
     def test_load_is_singleton(self):

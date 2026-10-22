@@ -18,7 +18,10 @@ class BaseModel(models.Model):
 
 
 class SiteSettings(BaseModel):
-    """Datos de contacto del sitio. Registro único: usar SiteSettings.load()."""
+    """Datos de contacto del sitio (registro único).
+
+    load() para escribir (admin/panel); current() para leer.
+    """
 
     whatsapp = models.CharField("WhatsApp", max_length=20, blank=True)
     phone = models.CharField("teléfono", max_length=20, blank=True)

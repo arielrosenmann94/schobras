@@ -17,4 +17,4 @@ def whatsapp_url(number: str, message: str) -> str:
     normalized = normalize_number(number)
     if not normalized:
         return ""
-    return f"https://wa.me/{normalized}?text={quote(message or '')}"
+    return f"https://wa.me/{normalized}?text={quote(message or '', safe='')}"

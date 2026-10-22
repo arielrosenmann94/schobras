@@ -84,7 +84,8 @@ h1 { font-size: 1.75rem; line-height: 1.2; }
 .badge-published { background: var(--color-anthracite); color: var(--color-white); }
 
 .form { display: grid; gap: var(--space); }
-.form input[type="text"], .form input[type="password"] {
+.form input[type="text"], .form input[type="password"],
+.form input[type="email"], .form input[type="tel"] {
   min-height: 48px;
   padding: var(--space) calc(var(--space) * 1.5);
   border: 2px solid var(--color-anthracite);
