@@ -1,0 +1,30 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Panel{% endblock %} | SCHOBRAS.CL</title>
+  <link rel="stylesheet" href="{% static 'css/panel.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="panel-header">
+    <p class="panel-brand">SCHOBRAS.CL <span>Panel</span></p>
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'panel:logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-secondary">Salir</button>
+    </form>
+    {% endif %}
+  </header>
+  <main id="contenido" class="panel-main">
+    {% if messages %}
+    <ul class="messages" role="status">
+      {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

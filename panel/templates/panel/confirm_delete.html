@@ -1,0 +1,11 @@
+{% extends "panel/base.html" %}
+{% block title %}Eliminar {{ kind }}{% endblock %}
+{% block content %}
+<h1>Eliminar {{ kind }}</h1>
+<p class="card">¿Seguro que quieres eliminar "{{ object }}"? Esta acción no se puede deshacer.</p>
+<form method="post" class="form">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+  <a class="btn btn-secondary" href="{{ cancel_url }}">No, volver</a>
+</form>
+{% endblock %}

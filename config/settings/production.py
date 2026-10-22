@@ -37,6 +37,12 @@ STORAGES["default"] = {"BACKEND": "cloudinary_storage.storage.MediaCloudinarySto
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# Tras el router de Heroku REMOTE_ADDR es la IP del router; axes debe usar la
+# IP real o cinco intentos fallidos de cualquiera bloquearían a todos.
+# AXES_CLIENT_IP_CALLABLE (axes/helpers.py get_client_ip_address) se usa en vez
+# de AXES_IPWARE_*, que exige django-ipware (no instalado ni aprobado).
+AXES_CLIENT_IP_CALLABLE = "panel.client_ip.get_client_ip"
+
 # ── Cookies seguras ────────────────────────────────────────────────────────────
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
