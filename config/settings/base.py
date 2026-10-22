@@ -141,7 +141,7 @@ LOGOUT_REDIRECT_URL = "/"
 
 AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesStandaloneBackend",
-    "django.contrib.auth.backends.ModelBackend",
+    "accounts.backends.EmailOrUsernameBackend",  # correo o nombre de usuario
 ]
 
 # ── Bloqueo por intentos fallidos (django-axes) ────────────────────────────────

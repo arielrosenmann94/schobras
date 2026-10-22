@@ -7,8 +7,8 @@
   {% if form.non_field_errors %}
   <div class="form-error" role="alert">{{ form.non_field_errors|join:" " }}</div>
   {% endif %}
-  <label for="{{ form.username.id_for_label }}">Usuario</label>
-  <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" autocomplete="username" autocapitalize="none" autofocus required>
+  <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+  <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus required>
   <label for="{{ form.password.id_for_label }}">Contraseña</label>
   <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}" autocomplete="current-password" required>
   <input type="hidden" name="next" value="{{ next }}">

@@ -9,10 +9,16 @@ from projects.models import Category, Project
 
 
 class PanelAuthenticationForm(AuthenticationForm):
+    """Ingreso con correo (o nombre de usuario); textos de docs/02-producto/textos-v1.md."""
+
     error_messages = {
         **AuthenticationForm.error_messages,
-        "invalid_login": "Usuario o contraseña incorrectos.",
+        "invalid_login": "Correo o contraseña incorrectos.",
     }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].label = "Correo"
 
 
 class OptionalOrderMixin:
