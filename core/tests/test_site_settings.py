@@ -56,6 +56,10 @@ class SiteContextTests(TestCase):
         self.assertFalse(ctx["has_contact"])
         self.assertFalse(ctx["has_projects"])
 
+    def test_context_does_not_write_to_db(self):
+        self.context()
+        self.assertEqual(SiteSettings.objects.count(), 0)
+
     def test_context_email_only(self):
         settings_obj = SiteSettings.load()
         settings_obj.email = "oficina@example.com"

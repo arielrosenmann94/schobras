@@ -6,7 +6,7 @@ from .whatsapp import whatsapp_url
 
 def site(request):
     """Datos globales del sitio para todas las plantillas."""
-    settings_obj = SiteSettings.load()
+    settings_obj = SiteSettings.current()
     whatsapp_href = whatsapp_url(settings_obj.whatsapp, settings_obj.whatsapp_message)
     return {
         "site": settings_obj,

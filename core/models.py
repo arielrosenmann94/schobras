@@ -42,6 +42,12 @@ class SiteSettings(BaseModel):
         super().save(*args, **kwargs)
 
     @classmethod
+    def current(cls):
+        """Lectura sin escritura: el registro o una instancia sin guardar con valores por defecto."""
+        obj = cls.objects.first()
+        return obj if obj is not None else cls()
+
+    @classmethod
     def load(cls):
         """Devuelve el único registro, creándolo si no existe."""
         obj = cls.objects.first()
