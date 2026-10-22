@@ -33,3 +33,6 @@ htmlcov/
 CLAUDE.local.md
 .claude/settings.local.json
 graphify-out/cache/
+
+# graphify generated caches
+graphify-out/.graphify_*
