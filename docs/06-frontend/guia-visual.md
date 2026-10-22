@@ -21,6 +21,7 @@ Audiencia: desarrollo | agentes
 | `--color-bronze` | `#B57949` | Acento: líneas, números de sección grandes, íconos, isotipo |
 | `--color-cement` | `#A9ABB6` | Fondos de tarjeta, separadores, bloques secundarios |
 | `--color-white` | `#FFFFFF` | Fondo |
+| `--color-danger` | `#8A1F1F` | Solo panel (`static/css/panel.css`): errores y botón de borrar |
 | `--font-sans` | `"Open Sans", system-ui, sans-serif` | Todo el texto (variable woff2 autoalojada) |
 
 Escala tipográfica con contraste fuerte: display muy grande (`clamp(2.75rem, 8vw, 7rem)`) junto a texto de cuerpo pequeño y aireado (1rem–1.125rem, interlineado 1.6). Espaciado en múltiplos de 8 px.

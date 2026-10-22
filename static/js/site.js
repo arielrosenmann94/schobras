@@ -35,7 +35,7 @@
   var menu = toggle && document.getElementById(toggle.getAttribute("aria-controls"));
 
   if (menu) {
-    var outside = document.querySelectorAll("main, footer, .whatsapp-float");
+    var outside = document.querySelectorAll("main, footer, .whatsapp-float, .skip-link");
 
     var setOpen = function (open, returnFocus) {
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
