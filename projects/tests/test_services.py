@@ -126,6 +126,19 @@ class AddPhotosReencodeTests(TestCase):
             self.assertEqual(exif.get_ifd(ExifTags.IFD.GPSInfo), {})
         self.assertEqual((photo.image_width, photo.image_height), (20, 40))
 
+    def test_strips_jpeg_comment(self):
+        # QA-1.8: el comentario COM del JPEG sobrevivía al re-encode.
+        buffer = io.BytesIO()
+        Image.new("RGB", (30, 30), "gray").save(
+            buffer, format="JPEG", comment=b"COMMENT-PERSONAL-DATA"
+        )
+        photo = self.add("gps.jpg", buffer.getvalue())
+        with open(photo.image.path, "rb") as stored_file:
+            found = b"COMMENT-PERSONAL-DATA" in stored_file.read()
+        self.assertFalse(found, "el comentario JPEG quedó en la foto guardada")
+        with Image.open(photo.image.path) as stored:
+            self.assertNotIn("comment", stored.info)
+
     def test_large_photo_is_reduced_to_2560(self):
         photo = self.add("grande.jpg", make_photo_bytes((4000, 3000)))
         with Image.open(photo.image.path) as stored:

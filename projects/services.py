@@ -74,6 +74,8 @@ def _reencode(file) -> ContentFile:
         # El formulario ya decodifica cada foto; esto es defensa en profundidad.
         raise InvalidImageError(file.name) from error
     image = image.convert("RGBA" if transparent else "RGB")
+    # Pillow vuelve a escribir el comentario COM del JPEG original al guardar.
+    image.info.pop("comment", None)
     image.thumbnail((MAX_SIDE, MAX_SIDE))
 
     output = io.BytesIO()
