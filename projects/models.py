@@ -1,10 +1,23 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 from core.models import BaseModel
 
 from .utils import unique_slug
+
+
+MIN_PROJECT_YEAR = 1950
+
+
+def validate_project_year(value):
+    """Año de la obra: desde 1950 hasta dos años más que el actual (obras en curso)."""
+    max_year = timezone.localdate().year + 2
+    if value is not None and not MIN_PROJECT_YEAR <= value <= max_year:
+        raise ValidationError(
+            f"El año debe estar entre {MIN_PROJECT_YEAR} y {max_year}.", code="year_range"
+        )
 
 
 class Category(BaseModel):
@@ -73,7 +86,9 @@ class Project(BaseModel):
         "sistemas constructivos", default=list, blank=True
     )
     area_m2 = models.PositiveIntegerField("superficie (m²)", null=True, blank=True)
-    year = models.PositiveSmallIntegerField("año", null=True, blank=True)
+    year = models.PositiveSmallIntegerField(
+        "año", null=True, blank=True, validators=[validate_project_year]
+    )
     description = models.TextField("descripción", blank=True)
     status = models.CharField(
         "estado", max_length=12, choices=Status.choices, default=Status.DRAFT

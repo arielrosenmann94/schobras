@@ -1,13 +1,16 @@
 import io
 import tempfile
 
+from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import ProtectedError
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
+from django.utils import timezone
 from PIL import Image
 from uuid6 import UUID
 
+from accounts.models import User
 from projects.models import Category, Project, ProjectPhoto
 
 
@@ -97,6 +100,41 @@ class ProjectModelTests(TestCase):
         project = make_project(construction_systems=["magia"])
         with self.assertRaises(ValidationError):
             project.full_clean()
+
+    def test_year_must_be_between_1950_and_two_years_ahead(self):
+        # QA-1.10: "Año 3000" se publicaba; la validación del modelo cubre panel y admin.
+        max_year = timezone.localdate().year + 2
+        message = [f"El año debe estar entre 1950 y {max_year}."]
+        for year in [0, 1800, 1949, max_year + 1, 3000]:
+            with self.subTest(year=year):
+                with self.assertRaises(ValidationError) as raised:
+                    make_project(year=year).full_clean()
+                self.assertEqual(raised.exception.message_dict["year"], message)
+        for year in [1950, max_year, None]:
+            with self.subTest(year=year):
+                make_project(year=year).full_clean()
+
+    def test_admin_form_rejects_year_out_of_range(self):
+        admin_user = User.objects.create_superuser("root", "r@example.com", "pw-12345-x")
+        request = RequestFactory().get("/")
+        request.user = admin_user
+        form_class = admin.site._registry[Project].get_form(request)
+        category = Category.objects.get(name="Residencial")
+        form = form_class(
+            data={
+                "title": "Casa Antigua",
+                "category": category.pk,
+                "intervention_type": "remodel",
+                "commune": "Colina",
+                "region": "metropolitana",
+                "construction_systems": "[]",
+                "year": "1800",
+                "status": "draft",
+                "order": "0",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("El año debe estar entre 1950", form.errors["year"][0])
 
     def test_initial_categories(self):
         names = list(Category.objects.values_list("name", flat=True))

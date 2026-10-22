@@ -3,6 +3,7 @@ import tempfile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from accounts.models import User
 from projects.models import Category, Project, ProjectPhoto
@@ -96,6 +97,13 @@ class PanelProjectTests(TestCase):
             r'<a[^>]*href="%s"[^>]*>SCHOBRAS\.CL <span>Panel</span></a>' % reverse("panel:home"),
         )
         self.assertContains(response, '<link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">')
+
+    def test_year_out_of_range_shows_spanish_message(self):
+        max_year = timezone.localdate().year + 2
+        response = self.client.post(reverse("panel:project_create"), self.form_data(year="3000"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f"El año debe estar entre 1950 y {max_year}.")
+        self.assertFalse(Project.objects.filter(title="Casa Nueva").exists())
 
     def test_category_active_label(self):
         response = self.client.get(reverse("panel:category_create"))
