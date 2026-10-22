@@ -83,8 +83,9 @@ class ProjectDeleteView(PanelAccessMixin, DeleteView):
     extra_context = {"kind": "proyecto", "cancel_url": reverse_lazy("panel:home")}
 
     def form_valid(self, form):
+        services.delete_project(self.object)
         messages.success(self.request, "Proyecto eliminado.")
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ProjectTogglePublishView(PanelAccessMixin, View):

@@ -10,6 +10,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from accounts.models import User
+from projects import services
 from projects.models import Category, Project, ProjectPhoto
 
 
@@ -186,3 +187,25 @@ class PanelPhotoTests(TestCase):
                 self.assertNotContains(response, str(error))
                 self.assertEqual(ProjectPhoto.objects.count(), 0)
                 self.assertIn("Traceback", logs.output[0])
+
+    def test_delete_photo_removes_file(self):
+        (photo,) = self.make_photos(1)
+        storage, name = photo.image.storage, photo.image.name
+        with self.captureOnCommitCallbacks(execute=True):
+            self.client.post(reverse("panel:photo_delete", args=[photo.pk]))
+        self.assertFalse(storage.exists(name))
+
+    def test_delete_project_removes_files(self):
+        photos = self.make_photos(2)
+        storage = photos[0].image.storage
+        names = [photo.image.name for photo in photos]
+        with (
+            mock.patch("panel.views.services.delete_project", wraps=services.delete_project) as spy,
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            response = self.client.post(reverse("panel:project_delete", args=[self.project.pk]))
+        self.assertRedirects(response, reverse("panel:home"))
+        spy.assert_called_once()
+        self.assertFalse(Project.objects.filter(pk=self.project.pk).exists())
+        for name in names:
+            self.assertFalse(storage.exists(name))

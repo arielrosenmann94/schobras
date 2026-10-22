@@ -158,3 +158,34 @@ class AddPhotosReencodeTests(TestCase):
         with mock.patch.object(services, "MAX_STORED_BYTES", 10):
             photo = self.add("logo.png", content, "image/png")
         self.assertTrue(photo.image.name.endswith(".jpg"))
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class DeleteFilesTests(TestCase):
+    def setUp(self):
+        self.project = Project.objects.create(
+            title="Casa Buin",
+            category=Category.objects.get(name="Residencial"),
+            intervention_type=Project.InterventionType.NEW_BUILD,
+            commune="Buin",
+            region=Project.Region.METROPOLITANA,
+        )
+
+    def test_delete_photo_removes_file_after_commit(self):
+        (photo,) = services.add_photos(self.project, [make_image()])
+        storage, name = photo.image.storage, photo.image.name
+        self.assertTrue(storage.exists(name))
+        with self.captureOnCommitCallbacks(execute=True):
+            services.delete_photo(photo)
+        self.assertFalse(storage.exists(name))
+
+    def test_delete_project_removes_project_photos_and_files(self):
+        photos = services.add_photos(self.project, [make_image("a.jpg"), make_image("b.jpg")])
+        storage = photos[0].image.storage
+        names = [photo.image.name for photo in photos]
+        with self.captureOnCommitCallbacks(execute=True):
+            services.delete_project(self.project)
+        self.assertFalse(Project.objects.filter(pk=self.project.pk).exists())
+        self.assertFalse(ProjectPhoto.objects.exists())
+        for name in names:
+            self.assertFalse(storage.exists(name))

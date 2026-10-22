@@ -109,12 +109,34 @@ def move_photo(photo: ProjectPhoto, direction: Literal["up", "down"]) -> None:
                 ProjectPhoto.objects.filter(pk=item.pk).update(order=position)
 
 
+def _delete_files_on_commit(storage, names: list[str]) -> None:
+    """Borra los archivos solo si la transacción se confirma; una falla del storage queda en el log."""
+
+    def delete_files():
+        for name in names:
+            storage.delete(name)
+
+    if names:
+        transaction.on_commit(delete_files, robust=True)
+
+
 def delete_photo(photo: ProjectPhoto) -> None:
     with transaction.atomic():
         was_cover = photo.is_cover
         project_id = photo.project_id
+        storage, name = photo.image.storage, photo.image.name
         photo.delete()
+        _delete_files_on_commit(storage, [name])
         if was_cover:
             first = ProjectPhoto.objects.filter(project=project_id).first()
             if first:
                 ProjectPhoto.objects.filter(pk=first.pk).update(is_cover=True)
+
+
+def delete_project(project: Project) -> None:
+    """Borra el proyecto, sus fotos y, al confirmar, los archivos de esas fotos."""
+    with transaction.atomic():
+        storage = ProjectPhoto._meta.get_field("image").storage
+        names = [photo.image.name for photo in project.photos.all() if photo.image.name]
+        project.delete()
+        _delete_files_on_commit(storage, names)
