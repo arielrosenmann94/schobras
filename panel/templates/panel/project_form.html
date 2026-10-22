@@ -2,8 +2,11 @@
 {% block title %}{% if object %}Editar proyecto{% else %}Nuevo proyecto{% endif %}{% endblock %}
 {% block content %}
 <h1>{% if object %}Editar proyecto{% else %}Nuevo proyecto{% endif %}</h1>
-{% if is_public %}
-<p><a class="btn btn-secondary" href="{{ object.get_absolute_url }}" target="_blank" rel="noopener">Ver en la web</a></p>
+{% if object %}
+<div class="row-actions">
+  {% if is_public %}<a class="btn btn-secondary" href="{{ object.get_absolute_url }}" target="_blank" rel="noopener">Ver en la web</a>{% endif %}
+  {% include "panel/_publish_form.html" with project=object return_to="edit" %}
+</div>
 {% endif %}
 <form method="post" class="form" novalidate>
   {% csrf_token %}

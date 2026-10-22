@@ -101,6 +101,8 @@ class ProjectDeleteView(PanelAccessMixin, DeleteView):
 
 class ProjectTogglePublishView(PanelAccessMixin, View):
     http_method_names = ["post"]
+    # Página a la que vuelve (inicio, fotos o edición): nombres fijos, nunca una URL.
+    RETURN_URLS = {"photos": "panel:project_photos", "edit": "panel:project_edit"}
 
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
@@ -114,6 +116,9 @@ class ProjectTogglePublishView(PanelAccessMixin, View):
                 messages.error(request, error.args[0])
             else:
                 messages.success(request, "El proyecto ya está publicado en la web.")
+        return_to = self.RETURN_URLS.get(request.POST.get("return_to"))
+        if return_to:
+            return redirect(return_to, pk=project.pk)
         return redirect("panel:home")
 
 

@@ -140,6 +140,56 @@ class PanelProjectTests(TestCase):
         edit = self.client.get(reverse("panel:project_edit", args=[project.pk]))
         self.assertNotContains(edit, "Ver en la web")
 
+    def toggle_form_html(self, project, label):
+        return (
+            f'<form method="post" action="{reverse("panel:project_toggle_publish", args=[project.pk])}">'
+        ), f'<button type="submit" class="btn btn-secondary">{label}</button>'
+
+    def test_photos_and_edit_pages_have_publish_button(self):
+        # QA-1.4: el flujo crear -> fotos -> publicar termina donde está Claudia.
+        project = self.make_project()
+        form_tag, button = self.toggle_form_html(project, "Publicar")
+        for name in ["panel:project_photos", "panel:project_edit"]:
+            with self.subTest(page=name):
+                html = self.client.get(reverse(name, args=[project.pk])).content.decode()
+                self.assertTrue(form_tag in html, f"falta el formulario de publicar en {name}")
+                self.assertTrue(button in html, f"falta el botón Publicar en {name}")
+        project.status = Project.Status.PUBLISHED
+        project.save()
+        _, button = self.toggle_form_html(project, "Despublicar")
+        for name in ["panel:project_photos", "panel:project_edit"]:
+            with self.subTest(page=name, status="published"):
+                html = self.client.get(reverse(name, args=[project.pk])).content.decode()
+                self.assertTrue(button in html, f"falta el botón Despublicar en {name}")
+
+    @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+    def test_publish_returns_to_the_page_it_came_from(self):
+        project = self.make_project()
+        self.add_photo(project)
+        url = reverse("panel:project_toggle_publish", args=[project.pk])
+        cases = [
+            ("photos", reverse("panel:project_photos", args=[project.pk])),
+            ("edit", reverse("panel:project_edit", args=[project.pk])),
+            ("https://malo.example/", reverse("panel:home")),
+            ("", reverse("panel:home")),
+        ]
+        for return_to, expected in cases:
+            with self.subTest(return_to=return_to):
+                response = self.client.post(url, {"return_to": return_to})
+                self.assertRedirects(response, expected, fetch_redirect_response=False)
+
+    def test_publish_from_photos_without_photos_shows_message_there(self):
+        project = self.make_project()
+        response = self.client.post(
+            reverse("panel:project_toggle_publish", args=[project.pk]),
+            {"return_to": "photos"},
+            follow=True,
+        )
+        self.assertRedirects(response, reverse("panel:project_photos", args=[project.pk]))
+        self.assertContains(response, "Agrega al menos una foto antes de publicar.")
+        project.refresh_from_db()
+        self.assertEqual(project.status, Project.Status.DRAFT)
+
     def test_toggle_publish_rejects_get(self):
         project = self.make_project()
         response = self.client.get(

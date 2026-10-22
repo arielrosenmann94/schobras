@@ -3,7 +3,10 @@
 {% block title %}Fotos de {{ project.title }}{% endblock %}
 {% block content %}
 <h1>Fotos de {{ project.title }}</h1>
-<p><a class="btn btn-secondary" href="{% url 'panel:project_edit' project.pk %}">Volver al proyecto</a></p>
+<div class="row-actions">
+  <a class="btn btn-secondary" href="{% url 'panel:project_edit' project.pk %}">Volver al proyecto</a>
+  {% include "panel/_publish_form.html" with return_to="photos" %}
+</div>
 <p class="card">Sube solo fotos de obras que el dueño autorizó a publicar. No incluyas números de casa ni patentes.</p>
 
 <form method="post" enctype="multipart/form-data" class="form">

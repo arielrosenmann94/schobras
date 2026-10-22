@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'panel:project_toggle_publish' project.pk %}">
+  {% csrf_token %}
+  <input type="hidden" name="return_to" value="{{ return_to }}">
+  <button type="submit" class="btn btn-secondary">{% if project.status == 'published' %}Despublicar{% else %}Publicar{% endif %}</button>
+</form>
