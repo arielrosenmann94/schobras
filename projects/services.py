@@ -112,6 +112,8 @@ def move_photo(photo: ProjectPhoto, direction: Literal["up", "down"]) -> None:
 def _delete_files_on_commit(storage, names: list[str]) -> None:
     """Borra los archivos solo si la transacción se confirma; una falla del storage queda en el log."""
 
+    names = [name for name in names if name]
+
     def delete_files():
         for name in names:
             storage.delete(name)
@@ -137,6 +139,6 @@ def delete_project(project: Project) -> None:
     """Borra el proyecto, sus fotos y, al confirmar, los archivos de esas fotos."""
     with transaction.atomic():
         storage = ProjectPhoto._meta.get_field("image").storage
-        names = [photo.image.name for photo in project.photos.all() if photo.image.name]
+        names = [photo.image.name for photo in project.photos.all()]
         project.delete()
         _delete_files_on_commit(storage, names)
