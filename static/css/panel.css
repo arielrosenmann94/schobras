@@ -104,3 +104,19 @@ h1 { font-size: 1.75rem; line-height: 1.2; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+.btn-danger { background: var(--color-error); border-color: var(--color-error); color: var(--color-white); }
+.row-actions { display: flex; flex-wrap: wrap; gap: var(--space); width: 100%; }
+.row-actions .btn { flex: 1 1 120px; }
+.field { display: grid; gap: var(--space); }
+.form select, .form input[type="number"], .form textarea {
+  min-height: 48px;
+  padding: var(--space) calc(var(--space) * 1.5);
+  border: 2px solid var(--color-anthracite);
+  border-radius: 6px;
+  font: inherit;
+  width: 100%;
+}
+.form ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space); }
+.form ul label { display: flex; align-items: center; gap: var(--space); min-height: 48px; }
+.form input[type="checkbox"] { width: 24px; height: 24px; flex: none; }

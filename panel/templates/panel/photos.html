@@ -1,0 +1,7 @@
+{% extends "panel/base.html" %}
+{% block title %}Fotos de {{ project.title }}{% endblock %}
+{% block content %}
+<h1>Fotos de {{ project.title }}</h1>
+<p><a class="btn btn-secondary" href="{% url 'panel:project_edit' project.pk %}">Volver al proyecto</a></p>
+<p class="card">Sube solo fotos de obras que el dueño autorizó a publicar. No incluyas números de casa ni patentes.</p>
+{% endblock %}

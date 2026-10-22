@@ -1,0 +1,25 @@
+{% extends "panel/base.html" %}
+{% block title %}Categorías{% endblock %}
+{% block content %}
+<h1>Categorías</h1>
+<nav class="actions" aria-label="Acciones de categorías">
+  <a class="btn btn-primary" href="{% url 'panel:category_create' %}">Nueva categoría</a>
+  <a class="btn btn-secondary" href="{% url 'panel:home' %}">Volver a proyectos</a>
+</nav>
+{% if categories %}
+<ul class="project-list">
+  {% for category in categories %}
+  <li class="card">
+    <span class="project-title">{{ category.name }}</span>
+    {% if not category.is_active %}<span class="badge">Inactiva</span>{% endif %}
+    <div class="row-actions">
+      <a class="btn btn-secondary" href="{% url 'panel:category_edit' category.pk %}">Editar</a>
+      <a class="btn btn-secondary" href="{% url 'panel:category_delete' category.pk %}">Eliminar</a>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="card">Todavía no hay categorías. Crea la primera con el botón "Nueva categoría".</p>
+{% endif %}
+{% endblock %}

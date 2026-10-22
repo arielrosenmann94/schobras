@@ -1,0 +1,8 @@
+{% if form.non_field_errors %}<p class="form-error" role="alert">{{ form.non_field_errors|join:" " }}</p>{% endif %}
+{% for field in form %}
+<div class="field">
+  <label{% if field.widget_type != 'checkboxselectmultiple' %} for="{{ field.id_for_label }}"{% endif %}>{{ field.label }}</label>
+  {{ field }}
+  {% if field.errors %}<p class="form-error" role="alert">{{ field.errors|join:" " }}</p>{% endif %}
+</div>
+{% endfor %}

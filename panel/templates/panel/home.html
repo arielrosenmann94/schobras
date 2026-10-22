@@ -3,8 +3,8 @@
 {% block content %}
 <h1>Proyectos</h1>
 <nav class="actions" aria-label="Acciones del panel">
-  <a class="btn btn-primary" href="#">Nuevo proyecto</a>
-  <a class="btn btn-secondary" href="#">Categorías</a>
+  <a class="btn btn-primary" href="{% url 'panel:project_create' %}">Nuevo proyecto</a>
+  <a class="btn btn-secondary" href="{% url 'panel:categories' %}">Categorías</a>
   {% if user.is_admin_role %}<a class="btn btn-secondary" href="#">Configuración</a>{% endif %}
 </nav>
 {% if projects %}
@@ -13,6 +13,14 @@
   <li class="card">
     <span class="project-title">{{ project.title }}</span>
     <span class="badge badge-{{ project.status }}">{{ project.get_status_display }}</span>
+    <div class="row-actions">
+      <a class="btn btn-secondary" href="{% url 'panel:project_edit' project.pk %}">Editar</a>
+      <a class="btn btn-secondary" href="{% url 'panel:project_photos' project.pk %}">Fotos</a>
+      <form method="post" action="{% url 'panel:project_toggle_publish' project.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary">{% if project.status == 'published' %}Despublicar{% else %}Publicar{% endif %}</button>
+      </form>
+    </div>
   </li>
   {% endfor %}
 </ul>

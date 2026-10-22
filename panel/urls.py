@@ -9,4 +9,17 @@ urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
     path("ingresar/", views.PanelLoginView.as_view(), name="login"),
     path("salir/", LogoutView.as_view(), name="logout"),
+    path("proyectos/nuevo/", views.ProjectCreateView.as_view(), name="project_create"),
+    path("proyectos/<uuid:pk>/", views.ProjectUpdateView.as_view(), name="project_edit"),
+    path("proyectos/<uuid:pk>/eliminar/", views.ProjectDeleteView.as_view(), name="project_delete"),
+    path(
+        "proyectos/<uuid:pk>/publicar/",
+        views.ProjectTogglePublishView.as_view(),
+        name="project_toggle_publish",
+    ),
+    path("proyectos/<uuid:pk>/fotos/", views.ProjectPhotosView.as_view(), name="project_photos"),
+    path("categorias/", views.CategoryListView.as_view(), name="categories"),
+    path("categorias/nueva/", views.CategoryCreateView.as_view(), name="category_create"),
+    path("categorias/<uuid:pk>/", views.CategoryUpdateView.as_view(), name="category_edit"),
+    path("categorias/<uuid:pk>/eliminar/", views.CategoryDeleteView.as_view(), name="category_delete"),
 ]

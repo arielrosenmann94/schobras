@@ -1,0 +1,11 @@
+{% extends "panel/base.html" %}
+{% block title %}{% if object %}Editar categoría{% else %}Nueva categoría{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if object %}Editar categoría{% else %}Nueva categoría{% endif %}</h1>
+<form method="post" class="form" novalidate>
+  {% csrf_token %}
+  {% include "panel/_form_fields.html" %}
+  <button type="submit" class="btn btn-primary">Guardar</button>
+  <a class="btn btn-secondary" href="{% url 'panel:categories' %}">Cancelar</a>
+</form>
+{% endblock %}
