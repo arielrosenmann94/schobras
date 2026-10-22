@@ -7,9 +7,10 @@ from functools import lru_cache
 from django import template
 from django.contrib.staticfiles import finders
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
-from core.whatsapp import whatsapp_url
+from core.whatsapp import normalize_number, whatsapp_url
 
 register = template.Library()
 
@@ -29,6 +30,23 @@ def tel_digits(phone):
     phone = str(phone or "").strip()
     digits = re.sub(r"\D", "", phone)
     return f"+{digits}" if phone.startswith("+") and digits else digits
+
+
+@register.filter
+def wa_display(number):
+    """Celular chileno legible ("912345678" → "+56 9 1234 5678"); si no es válido, el texto tal cual."""
+    normalized = normalize_number(number)
+    if not normalized:
+        return str(number or "")
+    return f"+{normalized[:2]} {normalized[2]} {normalized[3:7]} {normalized[7:]}"
+
+
+@register.filter(needs_autoescape=True)
+def email_wbr(email, autoescape=True):
+    """Correo escapado con un punto de corte tras la "@", para que no se parta a mitad de palabra."""
+    escape = conditional_escape if autoescape else str
+    local, at, domain = str(email or "").partition("@")
+    return mark_safe(f"{escape(local)}{at}<wbr>{escape(domain)}" if at else escape(local))
 
 
 class CaptureNode(template.Node):

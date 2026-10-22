@@ -190,9 +190,9 @@
     <h2 class="home-contact__title" id="contacto-titulo">¿Tienes un proyecto en mente?</h2>
     <p class="lead home-contact__text">Cuéntanos qué quieres construir y conversemos cómo hacerlo realidad.</p>
     <ul class="home-channels" role="list">
-      {% if whatsapp_href %}<li><a class="home-channel" href="{{ whatsapp_href }}" target="_blank" rel="noopener"><span class="home-channel__label">WhatsApp</span> <span class="home-channel__value">{{ site.whatsapp }}</span></a></li>{% endif %}
+      {% if whatsapp_href %}<li><a class="home-channel" href="{{ whatsapp_href }}" target="_blank" rel="noopener"><span class="home-channel__label">WhatsApp</span> <span class="home-channel__value">{{ site.whatsapp|wa_display }}</span></a></li>{% endif %}
       {% with tel=site.phone|tel_digits %}{% if tel %}<li><a class="home-channel" href="tel:{{ tel }}"><span class="home-channel__label">Teléfono</span> <span class="home-channel__value">{{ site.phone }}</span></a></li>{% endif %}{% endwith %}
-      {% if site.email %}<li><a class="home-channel" href="mailto:{{ site.email }}"><span class="home-channel__label">Correo</span> <span class="home-channel__value">{{ site.email }}</span></a></li>{% endif %}
+      {% if site.email %}<li><a class="home-channel" href="mailto:{{ site.email }}"><span class="home-channel__label">Correo</span> <span class="home-channel__value">{{ site.email|email_wbr }}</span></a></li>{% endif %}
     </ul>
   </div>
 </section>

@@ -278,6 +278,14 @@ body::before,
 
 .cota--start { grid-template-columns: auto 1fr; }
 .cota--start::before { display: none; }
+.cota--start::after { grid-column: 2; }
+
+/* Páginas de error: título y texto en un bloque con aire entre ellos. */
+.error-page {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
 
 .rule {
   height: 1px;
@@ -607,6 +615,7 @@ body::before,
   line-height: 1.6;
 }
 
+.site-footer__list li { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--space-1); }
 .site-footer__list li + li { margin-top: var(--space-1); }
 
 .site-footer__list a {
@@ -779,6 +788,11 @@ body::before,
 
 .home-head .heading { margin-top: var(--space-2); }
 
+/* ul[class] anula el padding heredado de la rejilla: la lista vuelve a su eje. */
+@media (min-width: 48em) {
+  .home-grid > ul.home-regions { padding-left: var(--space-3); }
+}
+
 @media (min-width: 48em) {
   .home-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
@@ -897,6 +911,13 @@ body::before,
 @media (min-width: 48em) {
   .home-hero__grid { --mark: clamp(7rem, 15vw, 13rem); }
 
+  /* Sin la cota, el antetítulo usa todo el ancho y no se parte en tres líneas. */
+  .home-hero__eyebrow { max-width: none; }
+
+  .home-hero__actions .btn { flex: 0 0 auto; }
+}
+
+@media (min-width: 64em) {
   /* Antetítulo acotado: una línea de dimensión lo lleva hasta el borde. */
   .home-hero__eyebrow {
     display: flex;
@@ -913,10 +934,6 @@ body::before,
     background: linear-gradient(var(--color-bronze), var(--color-bronze)) 0 50% / 100% 1px no-repeat;
   }
 
-  .home-hero__actions .btn { flex: 0 0 auto; }
-}
-
-@media (min-width: 64em) {
   .home-hero__grid {
     /* Llena la primera pantalla, con tope para monitores muy altos. */
     min-height: min(calc(100svh - var(--header-height) - clamp(2.5rem, 7vw, 5rem) - clamp(3.5rem, 9vw, 7rem)), 48rem);
@@ -946,6 +963,24 @@ body::before,
   .home-hero__actions {
     align-self: end;
     padding-left: var(--space-3);
+  }
+}
+
+/* 64–75em: la mitad de la rejilla no alcanza para dos botones; van bajo el texto. */
+@media (min-width: 64em) and (max-width: 74.99em) {
+  .home-hero__grid {
+    grid-template-rows: auto 1fr auto auto auto;
+    grid-template-areas:
+      "eyebrow eyebrow eyebrow eyebrow"
+      "title   title   title   mark"
+      "level   level   level   mark"
+      "lead    lead    lead    lead"
+      "actions actions actions actions";
+  }
+
+  .home-hero__actions {
+    margin-top: var(--space-4);
+    padding-left: 0;
   }
 }
 
@@ -1100,7 +1135,7 @@ body::before,
   .home-service__list li:first-child { padding-top: 0; }
 }
 
-@media (min-width: 64em) {
+@media (min-width: 75em) {
   /* Los tres ítems lado a lado, cada uno desde su eje. */
   .home-service__list {
     display: grid;
@@ -1401,8 +1436,6 @@ body::before,
     align-self: center;
     margin-right: var(--space-3);
   }
-
-  .home-channel__label { padding-left: var(--space-3); }
 }
 
 /* ── Movimiento del inicio (solo sin movimiento reducido) ──────────────── */
@@ -1453,6 +1486,7 @@ body::before,
   min-height: 2.75rem;
   padding: 0.5rem var(--space-3);
   border: 1px solid var(--color-anthracite);
+  background: var(--color-white);
   font-size: 0.9375rem;
   font-weight: 600;
   text-decoration: none;
@@ -1525,6 +1559,10 @@ body::before,
   max-height: 80vh;
   object-fit: cover;
 }
+
+/* Portada vertical: se ve entera sobre un muro, sin recortarla a una franja. */
+.project__cover--portrait { background: var(--color-anthracite); }
+.project__cover--portrait img { object-fit: contain; }
 
 .project__info {
   display: grid;
