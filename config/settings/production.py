@@ -26,6 +26,13 @@ DATABASES = {
     "default": dj_database_url.config(conn_max_age=600, ssl_require=True),
 }
 
+# ── Admin de Django ───────────────────────────────────────────────────────────
+# Sin default: si faltara la variable, el admin quedaría en /admin/ (o en la
+# raíz del sitio si viniera vacía).
+ADMIN_URL = config("ADMIN_URL", default="")
+if ADMIN_URL.strip("/") in ("", "admin"):
+    raise ImproperlyConfigured("ADMIN_URL es obligatoria en producción y no puede ser admin/")
+
 # ── Fotos en Cloudinary ───────────────────────────────────────────────────────
 # El disco de Heroku es efímero: sin Cloudinary las fotos se perderían.
 if not config("CLOUDINARY_URL", default=""):
