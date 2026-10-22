@@ -200,6 +200,27 @@ class PanelProjectTests(TestCase):
         category = Category.objects.get(name="Ampliaciones")
         self.assertEqual(category.slug, "ampliaciones")
 
+    def test_duplicate_category_name_any_case_rejected(self):
+        # QA-1.11: "residencial" con "Residencial" creaba residencial-2.
+        for name in ["residencial", "CASAS", "Casas"]:
+            with self.subTest(name=name):
+                response = self.client.post(
+                    reverse("panel:category_create"), {"name": name, "is_active": "on"}
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, "Ya existe una categoría con ese nombre.")
+        self.assertEqual(Category.objects.filter(name__iexact="residencial").count(), 1)
+        self.assertEqual(Category.objects.filter(name__iexact="casas").count(), 1)
+
+    def test_edit_category_case_of_own_name_allowed_but_not_other(self):
+        url = reverse("panel:category_edit", args=[self.category.pk])
+        response = self.client.post(url, {"name": "CASAS", "is_active": "on"})
+        self.assertRedirects(response, reverse("panel:categories"))
+        response = self.client.post(url, {"name": "comercial", "is_active": "on"})
+        self.assertContains(response, "Ya existe una categoría con ese nombre.")
+        self.category.refresh_from_db()
+        self.assertEqual(self.category.name, "CASAS")
+
     def test_editor_edits_category(self):
         self.client.post(
             reverse("panel:category_edit", args=[self.category.pk]),

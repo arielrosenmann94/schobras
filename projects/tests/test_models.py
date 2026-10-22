@@ -4,6 +4,7 @@ import tempfile
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import IntegrityError, transaction
 from django.db.models import ProtectedError
 from django.test import RequestFactory, TestCase, override_settings
 from django.utils import timezone
@@ -135,6 +136,16 @@ class ProjectModelTests(TestCase):
         )
         self.assertFalse(form.is_valid())
         self.assertIn("El año debe estar entre 1950", form.errors["year"][0])
+
+    def test_category_name_unique_ignoring_case_in_db(self):
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            Category.objects.create(name="RESIDENCIAL")
+
+    def test_category_full_clean_reports_duplicate_in_spanish(self):
+        # El admin valida las restricciones con full_clean.
+        with self.assertRaises(ValidationError) as raised:
+            Category(name="residencial").full_clean()
+        self.assertIn("Ya existe una categoría con ese nombre.", raised.exception.messages)
 
     def test_initial_categories(self):
         names = list(Category.objects.values_list("name", flat=True))

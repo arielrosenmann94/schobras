@@ -7,7 +7,7 @@ from PIL import Image, ImageOps
 
 from core.models import SiteSettings
 from core.whatsapp import normalize_number
-from projects.models import Category, Project
+from projects.models import DUPLICATE_CATEGORY_ERROR, Category, Project
 from projects.services import IMAGE_ERRORS, MAX_SIDE
 
 
@@ -44,6 +44,13 @@ class CategoryForm(OptionalOrderMixin, forms.ModelForm):
             "order": "Orden (número menor aparece primero)",
             "is_active": "Activa (aparece en la web y al crear proyectos)",
         }
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        duplicates = Category.objects.filter(name__iexact=name).exclude(pk=self.instance.pk)
+        if duplicates.exists():
+            raise forms.ValidationError(DUPLICATE_CATEGORY_ERROR)
+        return name
 
 
 class ProjectForm(OptionalOrderMixin, forms.ModelForm):

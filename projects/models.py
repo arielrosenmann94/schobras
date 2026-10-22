@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.functions import Lower
 from django.urls import reverse
 from django.utils import timezone
 
@@ -20,8 +21,11 @@ def validate_project_year(value):
         )
 
 
+DUPLICATE_CATEGORY_ERROR = "Ya existe una categoría con ese nombre."
+
+
 class Category(BaseModel):
-    name = models.CharField("nombre", max_length=80, unique=True)
+    name = models.CharField("nombre", max_length=80)
     slug = models.SlugField("slug", max_length=80, unique=True, editable=False)
     order = models.PositiveIntegerField("orden", default=0)
     is_active = models.BooleanField("activa", default=True)
@@ -30,6 +34,14 @@ class Category(BaseModel):
         verbose_name = "categoría"
         verbose_name_plural = "categorías"
         ordering = ["order", "name"]
+        constraints = [
+            # "Residencial" y "residencial" serían dos filtros casi iguales en la web.
+            models.UniqueConstraint(
+                Lower("name"),
+                name="projects_category_name_ci_unique",
+                violation_error_message=DUPLICATE_CATEGORY_ERROR,
+            ),
+        ]
 
     def __str__(self):
         return self.name
