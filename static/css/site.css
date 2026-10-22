@@ -1401,6 +1401,9 @@ body::before,
   overflow-wrap: anywhere;
 }
 
+/* QA-2.6: un correo largo cabe entero en la columna; solo corta tras la "@" (<wbr>). */
+.home-channel__value--email { font-size: clamp(1.25rem, 0.9rem + 1.6vw, 2.25rem); }
+
 .home-channel::after {
   content: "";
   flex: none;
