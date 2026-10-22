@@ -32,6 +32,8 @@ htmlcov/
 # ── Claude Code / graphify ───────────────────────────────────────────────────
 CLAUDE.local.md
 .claude/settings.local.json
+.superpowers/
+.worktrees/
 graphify-out/cache/
 
 # graphify generated caches
