@@ -1,4 +1,5 @@
 {% extends "panel/base.html" %}
+{% load image_tags %}
 {% block title %}Fotos de {{ project.title }}{% endblock %}
 {% block content %}
 <h1>Fotos de {{ project.title }}</h1>
@@ -21,7 +22,7 @@
 <ul class="photo-list">
   {% for photo in photos %}
   <li class="card photo-item">
-    <img src="{{ photo.image.url }}" alt="{{ photo.alt }}" width="160" height="120" loading="lazy">
+    <img src="{{ photo.image.url|variant:400 }}" alt="{{ photo.alt }}" {% image_size photo %} loading="lazy">
     <div class="photo-info">
       <p><strong>Foto {{ forloop.counter }}</strong>{% if photo.is_cover %} <span class="badge badge-published">Portada</span>{% endif %}</p>
       <div class="row-actions">

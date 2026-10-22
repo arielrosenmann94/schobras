@@ -209,3 +209,19 @@ class PanelPhotoTests(TestCase):
         self.assertFalse(Project.objects.filter(pk=self.project.pk).exists())
         for name in names:
             self.assertFalse(storage.exists(name))
+
+    def test_thumbnails_use_400px_variant_and_stored_size(self):
+        self.make_photos(1)
+        cloudinary_url = "https://res.cloudinary.com/demo/image/upload/v1/proyectos/f0.jpg"
+        with mock.patch(
+            "django.core.files.storage.FileSystemStorage.url", return_value=cloudinary_url
+        ):
+            response = self.client.get(self.url)
+        self.assertContains(
+            response,
+            'src="https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,c_limit,w_400/v1/proyectos/f0.jpg"',
+        )
+        self.assertRegex(
+            response.content.decode(),
+            r'<img src="[^"]+w_400[^"]+" alt="[^"]+" width="4" height="4" loading="lazy">',
+        )
