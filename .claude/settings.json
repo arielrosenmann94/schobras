@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(graphify query *)"
+    ],
+    "deny": [
+      "Bash(heroku config*)",
+      "Bash(heroku releases:info*)",
+      "Bash(heroku pg:credentials*)",
+      "Bash(heroku run*env*)",
+      "Bash(heroku run*os.environ*)",
+      "Bash(git push*)",
+      "Read(.env*)",
+      "Edit(.env*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/ars/.local/bin/graphify hook-guard search"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/ars/.local/bin/graphify hook-guard read"
+          }
+        ]
+      }
+    ]
+  }
+}
