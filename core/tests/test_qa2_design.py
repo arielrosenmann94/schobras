@@ -44,3 +44,11 @@ class PanelSpacingTests(SimpleTestCase):
         # QA-2.7: en Editar proyecto, Publicar quedaba pegado a "Nombre del proyecto" (0 px).
         body = rule(read("static/css/panel.css"), ".panel-main > .row-actions")
         self.assertIn("margin-bottom: calc(var(--space) * 3)", body)
+
+    def test_file_button_goes_on_its_own_line_on_phones(self):
+        # QA-2.8: a 360-390 px el texto del input se recortaba ("Ningún …cionado").
+        self.assertRegex(
+            read("static/css/panel.css"),
+            r'@media \(max-width: 30em\) \{\s*\.form input\[type="file"\]::file-selector-button \{'
+            r"[^}]*display: block;[^}]*width: 100%;",
+        )

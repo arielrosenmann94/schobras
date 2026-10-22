@@ -172,6 +172,10 @@ fieldset.field label { display: flex; align-items: center; gap: var(--space); mi
   font-weight: 600;
   cursor: pointer;
 }
+/* QA-2.8: en el celular el botón va en su propia línea para que el estado ("Ningún archivo seleccionado") se lea entero. */
+@media (max-width: 30em) {
+  .form input[type="file"]::file-selector-button { display: block; width: 100%; margin: 0 0 var(--space); }
+}
 .form select, .form input[type="number"], .form textarea {
   background: var(--color-white);
   min-height: 48px;
