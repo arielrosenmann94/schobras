@@ -41,7 +41,7 @@ class CategoryForm(OptionalOrderMixin, forms.ModelForm):
         labels = {
             "name": "Nombre",
             "order": "Orden (número menor aparece primero)",
-            "is_active": "Activa (aparece al crear proyectos)",
+            "is_active": "Activa (aparece en la web y al crear proyectos)",
         }
 
 
@@ -147,6 +147,7 @@ class MultipleImageField(forms.FileField):
 class PhotoUploadForm(forms.Form):
     images = MultipleImageField(
         label="Fotos",
+        help_text="Puedes subir varias a la vez; si tu conexión es lenta, sube de a 5.",
         error_messages={"required": "Elige al menos una foto."},
     )
 

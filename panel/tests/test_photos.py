@@ -225,3 +225,12 @@ class PanelPhotoTests(TestCase):
             response.content.decode(),
             r'<img src="[^"]+w_400[^"]+" alt="[^"]+" width="4" height="4" loading="lazy">',
         )
+
+    def test_upload_help_text_linked_to_input(self):
+        html = self.client.get(self.url).content.decode()
+        self.assertIn(
+            '<p class="help" id="id_images_helptext">'
+            "Puedes subir varias a la vez; si tu conexión es lenta, sube de a 5.</p>",
+            html,
+        )
+        self.assertRegex(html, r'<input type="file"[^>]*aria-describedby="id_images_helptext"')

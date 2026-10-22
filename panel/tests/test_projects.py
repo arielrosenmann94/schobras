@@ -89,6 +89,18 @@ class PanelProjectTests(TestCase):
             html=True,
         )
 
+    def test_header_brand_links_home_and_has_favicon(self):
+        response = self.client.get(reverse("panel:categories"))
+        self.assertRegex(
+            response.content.decode(),
+            r'<a[^>]*href="%s"[^>]*>SCHOBRAS\.CL <span>Panel</span></a>' % reverse("panel:home"),
+        )
+        self.assertContains(response, '<link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">')
+
+    def test_category_active_label(self):
+        response = self.client.get(reverse("panel:category_create"))
+        self.assertContains(response, "Activa (aparece en la web y al crear proyectos)")
+
     def test_create_form_lists_only_active_categories(self):
         Category.objects.create(name="Antigua", is_active=False)
         response = self.client.get(reverse("panel:project_create"))
