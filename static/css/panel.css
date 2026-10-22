@@ -82,6 +82,7 @@ h1 { font-size: 1.75rem; line-height: 1.2; }
 
 .badge { padding: 2px calc(var(--space) * 1.5); border: 2px solid var(--color-anthracite); border-radius: 999px; font-size: 0.9375rem; font-weight: 600; }
 .badge-published { background: var(--color-anthracite); color: var(--color-white); }
+.badge-unlisted { border-style: dashed; }
 
 .form { display: grid; gap: var(--space); }
 .form input[type="text"], .form input[type="password"],

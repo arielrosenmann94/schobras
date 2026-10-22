@@ -12,8 +12,15 @@
   {% for project in projects %}
   <li class="card">
     <span class="project-title">{{ project.title }}</span>
+    {% if project.status == 'published' and not project.photo_count %}
+    <span class="badge badge-unlisted">Publicado · sin fotos, no se ve en la web</span>
+    {% else %}
     <span class="badge badge-{{ project.status }}">{{ project.get_status_display }}</span>
+    {% endif %}
     <div class="row-actions">
+      {% if project.status == 'published' and project.photo_count %}
+      <a class="btn btn-secondary" href="{{ project.get_absolute_url }}" target="_blank" rel="noopener">Ver en la web</a>
+      {% endif %}
       <a class="btn btn-secondary" href="{% url 'panel:project_edit' project.pk %}">Editar</a>
       <a class="btn btn-secondary" href="{% url 'panel:project_photos' project.pk %}">Fotos</a>
       <form method="post" action="{% url 'panel:project_toggle_publish' project.pk %}">

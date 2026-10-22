@@ -1,3 +1,5 @@
+import tempfile
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -174,3 +176,60 @@ class PanelProjectTests(TestCase):
         self.client.logout()
         response = self.client.get(reverse("panel:categories"))
         self.assertEqual(response.status_code, 302)
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class PanelPublicStateTests(TestCase):
+    """Publicado sin fotos no se ve en la web: el panel lo dice y no ofrece "Ver en la web"."""
+
+    NO_PHOTOS_BADGE = "Publicado · sin fotos, no se ve en la web"
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.editor = User.objects.create_user(username="claudia", password="x-clave-123")
+        cls.category = Category.objects.create(name="Casas")
+
+    def setUp(self):
+        self.client.force_login(self.editor)
+
+    def make_project(self, title, published, with_photo):
+        project = Project.objects.create(
+            title=title,
+            category=self.category,
+            intervention_type=Project.InterventionType.NEW_BUILD,
+            commune="Vitacura",
+            region=Project.Region.METROPOLITANA,
+            status=Project.Status.PUBLISHED if published else Project.Status.DRAFT,
+        )
+        if with_photo:
+            ProjectPhoto.objects.create(
+                project=project, image=SimpleUploadedFile("a.png", PNG, "image/png"), order=1
+            )
+        return project
+
+    def test_published_without_photos(self):
+        project = self.make_project("Casa Sin Fotos", published=True, with_photo=False)
+        home = self.client.get(reverse("panel:home"))
+        self.assertContains(home, self.NO_PHOTOS_BADGE)
+        self.assertNotContains(home, "Ver en la web")
+        self.assertNotContains(home, project.get_absolute_url())
+        edit = self.client.get(reverse("panel:project_edit", args=[project.pk]))
+        self.assertNotContains(edit, "Ver en la web")
+
+    def test_published_with_photo_links_to_web(self):
+        project = self.make_project("Casa Con Fotos", published=True, with_photo=True)
+        home = self.client.get(reverse("panel:home"))
+        self.assertNotContains(home, self.NO_PHOTOS_BADGE)
+        self.assertContains(home, "Publicado")
+        self.assertContains(home, f'href="{project.get_absolute_url()}"')
+        self.assertContains(home, "Ver en la web")
+        edit = self.client.get(reverse("panel:project_edit", args=[project.pk]))
+        self.assertContains(edit, f'href="{project.get_absolute_url()}"')
+
+    def test_draft_with_photo_has_no_web_link(self):
+        project = self.make_project("Casa Borrador", published=False, with_photo=True)
+        home = self.client.get(reverse("panel:home"))
+        self.assertContains(home, "Borrador")
+        self.assertNotContains(home, "Ver en la web")
+        edit = self.client.get(reverse("panel:project_edit", args=[project.pk]))
+        self.assertNotContains(edit, "Ver en la web")

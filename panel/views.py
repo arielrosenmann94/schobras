@@ -2,7 +2,7 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
-from django.db.models import ProtectedError
+from django.db.models import Count, ProtectedError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -51,7 +51,12 @@ class HomeView(PanelAccessMixin, ListView):
     context_object_name = "projects"
 
     def get_queryset(self):
-        return Project.objects.select_related("category").order_by("-updated_at")
+        # photo_count: un proyecto publicado sin fotos no se ve en la web.
+        return (
+            Project.objects.select_related("category")
+            .annotate(photo_count=Count("photos"))
+            .order_by("-updated_at")
+        )
 
 
 class ProjectCreateView(PanelAccessMixin, CreateView):
@@ -70,6 +75,11 @@ class ProjectUpdateView(PanelAccessMixin, UpdateView):
     form_class = ProjectForm
     template_name = "panel/project_form.html"
     success_url = reverse_lazy("panel:home")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_public"] = Project.objects.published().filter(pk=self.object.pk).exists()
+        return context
 
     def form_valid(self, form):
         messages.success(self.request, "Cambios guardados.")
