@@ -28,3 +28,7 @@ STORAGES["staticfiles"] = {"BACKEND": "django.contrib.staticfiles.storage.Static
 
 # Email local: se imprime en consola.
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Variables inexistentes en plantillas: dejan una marca visible en vez de
+# renderizarse vacías (solo desarrollo; ayuda a detectar errores de contexto).
+TEMPLATES[0]["OPTIONS"]["string_if_invalid"] = "[[variable inexistente: %s]]"

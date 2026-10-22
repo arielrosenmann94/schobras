@@ -9,6 +9,7 @@ Diseño: docs/2026-10-22-web-v1-diseno.md.
 from pathlib import Path
 
 from decouple import config
+from django.utils.csp import CSP
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -64,6 +66,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
+                "django.template.context_processors.csp",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -72,6 +75,25 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+
+# ── Cabeceras de seguridad y CSP (docs/07-appsec/seguridad.md) ────────────────
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+# CSP nativa de Django 6: sin 'unsafe-inline'. Los scripts en línea llevan
+# nonce ({{ csp_nonce }}); los estilos van siempre en archivos estáticos.
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "script-src": [CSP.SELF, CSP.NONCE],
+    "style-src": [CSP.SELF],
+    "img-src": [CSP.SELF, "data:", "https://res.cloudinary.com"],
+    "font-src": [CSP.SELF],
+    "connect-src": [CSP.SELF],
+    "base-uri": [CSP.SELF],
+    "form-action": [CSP.SELF],
+    "frame-ancestors": [CSP.NONE],
+}
 
 # ── Base de datos ──────────────────────────────────────────────────────────────
 # Se define en local.py (SQLite) y production.py (PostgreSQL vía DATABASE_URL).
