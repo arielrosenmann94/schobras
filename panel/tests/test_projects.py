@@ -97,6 +97,13 @@ class PanelProjectTests(TestCase):
         )
         self.assertContains(response, '<link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">')
 
+    def test_lone_checkbox_is_wrapped_by_its_label(self):
+        response = self.client.get(reverse("panel:project_create"))
+        self.assertRegex(
+            response.content.decode(),
+            r'<label class="check" for="id_is_featured">\s*<input type="checkbox"[^>]*id="id_is_featured"[^>]*>\s*<span>Destacado en la portada</span>\s*</label>',
+        )
+
     def test_category_active_label(self):
         response = self.client.get(reverse("panel:category_create"))
         self.assertContains(response, "Activa (aparece en la web y al crear proyectos)")
