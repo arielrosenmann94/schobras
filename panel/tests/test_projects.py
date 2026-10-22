@@ -70,6 +70,25 @@ class PanelProjectTests(TestCase):
         )
         self.assertNotIn("<label>Sistemas constructivos</label>", html)
 
+    def test_error_and_success_messages_are_distinct(self):
+        project = self.make_project()
+        response = self.client.post(
+            reverse("panel:project_toggle_publish", args=[project.pk]), follow=True
+        )
+        self.assertContains(
+            response,
+            '<p class="message message--error" role="alert">Agrega al menos una foto antes de publicar.</p>',
+            html=True,
+        )
+        response = self.client.post(
+            reverse("panel:category_create"), {"name": "Galpones", "order": "1"}, follow=True
+        )
+        self.assertContains(
+            response,
+            '<p class="message message--success" role="status">Categoría creada.</p>',
+            html=True,
+        )
+
     def test_create_form_lists_only_active_categories(self):
         Category.objects.create(name="Antigua", is_active=False)
         response = self.client.get(reverse("panel:project_create"))

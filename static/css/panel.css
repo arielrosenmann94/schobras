@@ -11,6 +11,7 @@
   --color-cement: #a9abb6;
   --color-white: #fff;
   --color-error: #8a1f1f;
+  --color-cement-light: #eaeaed; /* cemento al 25 % sobre blanco */
   --font-sans: "Open Sans", system-ui, sans-serif;
   --space: 8px;
 }
@@ -98,8 +99,38 @@ h1 { font-size: 1.75rem; line-height: 1.2; }
 .form-error { color: var(--color-error); font-weight: 600; }
 .help { color: var(--color-anthracite); font-size: 0.9rem; margin: 0.25rem 0 0; }
 
-.messages { list-style: none; margin: 0 0 calc(var(--space) * 2); padding: 0; }
-.messages li { padding: calc(var(--space) * 1.5); border: 1px solid var(--color-cement); border-radius: 6px; }
+.messages { display: grid; gap: var(--space); margin: 0 0 calc(var(--space) * 2); }
+.message {
+  margin: 0;
+  padding: calc(var(--space) * 1.5) calc(var(--space) * 2);
+  border: 1px solid var(--color-cement);
+  border-left: 4px solid var(--color-bronze);
+  border-radius: 6px;
+}
+.message--error {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--space) * 1.5);
+  border: 2px solid var(--color-anthracite);
+  border-left-width: 8px;
+  background: var(--color-cement-light);
+  font-weight: 600;
+}
+.message--error::before {
+  content: "!";
+  content: "!" / "";
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--color-anthracite);
+  color: var(--color-white);
+  font-weight: 700;
+  line-height: 1;
+}
 
 @media (min-width: 600px) {
   .actions { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
