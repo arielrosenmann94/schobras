@@ -3,6 +3,8 @@ from PIL import Image, UnidentifiedImageError
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
 
+from core.models import SiteSettings
+from core.whatsapp import normalize_number
 from projects.models import Category, Project
 
 
@@ -78,6 +80,30 @@ class ProjectForm(OptionalOrderMixin, forms.ModelForm):
             active |= Q(pk=self.instance.category_id)
         self.fields["category"].queryset = Category.objects.filter(active)
         self.fields["category"].empty_label = "Elige una categoría"
+
+
+class SiteSettingsForm(forms.ModelForm):
+    class Meta:
+        model = SiteSettings
+        fields = ["whatsapp", "phone", "email", "whatsapp_message"]
+        labels = {
+            "whatsapp": "WhatsApp",
+            "phone": "Teléfono",
+            "email": "Correo",
+            "whatsapp_message": "Mensaje de WhatsApp",
+        }
+        help_texts = {
+            "whatsapp": "Celular con o sin +56, por ejemplo +56 9 1234 5678. Si lo dejas vacío, el botón de WhatsApp no aparece en la web.",
+            "phone": "Si lo dejas vacío, el teléfono no aparece en la web.",
+            "email": "Si lo dejas vacío, el correo no aparece en la web.",
+            "whatsapp_message": "Es el texto que ya viene escrito cuando alguien te abre el chat.",
+        }
+
+    def clean_whatsapp(self):
+        value = self.cleaned_data["whatsapp"].strip()
+        if value and not normalize_number(value):
+            raise forms.ValidationError("Número de WhatsApp no válido. Ejemplo: +56 9 1234 5678")
+        return value
 
 
 MAX_PHOTO_BYTES = 15 * 1024 * 1024

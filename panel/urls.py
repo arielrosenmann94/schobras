@@ -22,6 +22,7 @@ urlpatterns = [
     path("fotos/<uuid:pk>/bajar/", views.PhotoDownView.as_view(), name="photo_down"),
     path("fotos/<uuid:pk>/portada/", views.PhotoCoverView.as_view(), name="photo_cover"),
     path("fotos/<uuid:pk>/eliminar/", views.PhotoDeleteView.as_view(), name="photo_delete"),
+    path("configuracion/", views.SiteSettingsView.as_view(), name="settings"),
     path("categorias/", views.CategoryListView.as_view(), name="categories"),
     path("categorias/nueva/", views.CategoryCreateView.as_view(), name="category_create"),
     path("categorias/<uuid:pk>/", views.CategoryUpdateView.as_view(), name="category_edit"),

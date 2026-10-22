@@ -3,6 +3,7 @@
 <div class="field">
   <label{% if field.widget_type != 'checkboxselectmultiple' %} for="{{ field.id_for_label }}"{% endif %}>{{ field.label }}</label>
   {{ field }}
+  {% if field.help_text %}<p class="help">{{ field.help_text }}</p>{% endif %}
   {% if field.errors %}<p class="form-error" role="alert">{{ field.errors|join:" " }}</p>{% endif %}
 </div>
 {% endfor %}

@@ -13,11 +13,18 @@ from django.views.generic import (
     UpdateView,
 )
 
+from core.models import SiteSettings
 from projects import services
 from projects.models import Category, Project, ProjectPhoto
 
-from .forms import CategoryForm, PanelAuthenticationForm, PhotoUploadForm, ProjectForm
-from .permissions import PanelAccessMixin
+from .forms import (
+    CategoryForm,
+    PanelAuthenticationForm,
+    PhotoUploadForm,
+    ProjectForm,
+    SiteSettingsForm,
+)
+from .permissions import AdminRequiredMixin, PanelAccessMixin
 
 
 class PanelLoginView(LoginView):
@@ -198,3 +205,16 @@ class CategoryDeleteView(PanelAccessMixin, DeleteView):
             return HttpResponseRedirect(reverse("panel:categories"))
         messages.success(self.request, "Categoría eliminada.")
         return HttpResponseRedirect(self.get_success_url())
+
+
+class SiteSettingsView(AdminRequiredMixin, UpdateView):
+    form_class = SiteSettingsForm
+    template_name = "panel/settings.html"
+    success_url = reverse_lazy("panel:settings")
+
+    def get_object(self, queryset=None):
+        return SiteSettings.load()
+
+    def form_valid(self, form):
+        messages.success(self.request, "Configuración guardada.")
+        return super().form_valid(form)
