@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load site_tags %}
+
+{% block content %}
+{% comment %}
+  Inicio: una página larga con anclas (nosotros, servicios, proceso, proyectos, contacto).
+  Textos exactos de docs/02-producto/textos-v1.md. Rejilla de 4 columnas alineada a los ejes del plano.
+  La portada no usa .reveal (estaría oculta hasta que cargue site.js): solo el isotipo se arma (.build).
+{% endcomment %}
+
+<section class="home-hero" aria-labelledby="inicio-titulo">
+  <div class="container home-hero__grid">
+    <p class="label home-hero__eyebrow"><span><span>Arquitectura y construcción ·</span> <span>Región Metropolitana ·</span> <span>Valparaíso ·</span> <span>O'Higgins</span></span></p>
+    <h1 class="display home-hero__title" id="inicio-titulo">Diseñamos y construimos tu proyecto.</h1>
+    <div class="home-hero__mark build" aria-hidden="true">{% inline_svg "img/isotipo.svg" %}</div>
+    <div class="home-hero__level" aria-hidden="true"></div>
+    <p class="lead home-hero__lead">Si construyes con nosotros, el proyecto de arquitectura y los trámites municipales van sin costo adicional.</p>
+    {% if has_contact or has_projects %}
+    <div class="home-hero__actions">
+      {% if has_contact %}<a class="btn btn--primary" href="#contacto">Conversemos tu proyecto</a>{% endif %}
+      {% if has_projects %}<a class="btn btn--ghost" href="/proyectos/">Ver proyectos</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section home-section" id="nosotros" aria-labelledby="nosotros-titulo">
+  <div class="container home-grid">
+    <div class="home-head">
+      <span class="section-index" aria-hidden="true">01</span>
+      <h2 class="heading" id="nosotros-titulo">Nosotros</h2>
+    </div>
+    <p class="home-statement reveal">Somos un grupo de profesionales apasionados por la excelencia, con más de 25 años de experiencia en el desarrollo y ejecución de proyectos residenciales, obras civiles y espacios comerciales.</p>
+    <p class="home-about reveal">Trabajamos con seriedad y rigor en cada etapa, con un trato cercano, transparente y personalizado. Combinamos la precisión técnica de la construcción con la funcionalidad y el diseño de la arquitectura, para entregar soluciones duraderas que agregan valor a nuestros clientes y su entorno.</p>
+    <div class="home-vision wall--cement reveal reveal--wall">
+      <h3 class="label">Visión</h3>
+      <p class="home-vision__text">Ser una constructora de referencia por la excelencia técnica de nuestras obras, su durabilidad y la confianza de nuestros clientes: el aliado ideal tanto para familias que buscan concretar su hogar como para empresas e instituciones que requieren infraestructura comercial y civil de alto rendimiento.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section home-section" aria-labelledby="porque-titulo">
+  <div class="container home-grid">
+    <div class="home-head">
+      <span class="section-index" aria-hidden="true">02</span>
+      <h2 class="heading" id="porque-titulo">Por qué SCHOBRAS</h2>
+    </div>
+    <ul class="home-pillars" role="list">
+      <li class="home-pillar home-pillar--main wall reveal reveal--wall">
+        <h3 class="home-pillar__title">Arquitectura y trámites sin costo adicional</h3>
+        <span class="home-dim" aria-hidden="true"></span>
+        <p class="home-pillar__text">Si ejecutas la construcción con nosotros, el proyecto de arquitectura y los trámites en la Dirección de Obras Municipales van incluidos. Continuidad y eficiencia desde el plano hasta la entrega.</p>
+      </li>
+      <li class="home-pillar reveal">
+        <h3 class="subheading">Escuchamos e interpretamos</h3>
+        <p>Entendemos en profundidad lo que necesitas y sueñas, y lo traducimos en un diseño a tu medida y en soluciones constructivas reales.</p>
+      </li>
+      <li class="home-pillar reveal">
+        <h3 class="subheading">Rigor técnico y normativo</h3>
+        <p>Todas nuestras obras cumplen la normativa vigente en sismorresistencia, resistencia al fuego y acondicionamiento térmico: edificaciones seguras, confortables y duraderas.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section home-section" id="servicios" aria-labelledby="servicios-titulo">
+  <div class="container home-grid">
+    <div class="home-head">
+      <span class="section-index" aria-hidden="true">03</span>
+      <h2 class="heading" id="servicios-titulo">Servicios</h2>
+    </div>
+    <div class="home-service reveal">
+      <h3 class="subheading">Diseño y especialidades</h3>
+      <ul class="home-service__list" role="list">
+        <li>Proyecto de arquitectura a la medida.</li>
+        <li>Especialidades: cálculo estructural, agua potable y alcantarillado, electricidad.</li>
+        <li>Gestión de permisos y trámites municipales.</li>
+      </ul>
+    </div>
+    <div class="home-service reveal">
+      <h3 class="subheading">Construcción</h3>
+      <ul class="home-service__list" role="list">
+        <li>Obra nueva desde cero, ampliaciones y remodelaciones.</li>
+        <li>Edificación residencial, comercial e industrial.</li>
+        <li>Llave en mano o con el nivel de terminaciones que necesites.</li>
+      </ul>
+    </div>
+    <div class="home-service reveal">
+      <h3 class="subheading">Cómo construimos</h3>
+      <ul class="home-service__list" role="list">
+        <li>Proyectos personalizados, no viviendas tipo: diseñados según tus necesidades y el emplazamiento de tu terreno.</li>
+        <li>Todos los sistemas constructivos: albañilería, hormigón armado, madera, volcometal, paneles SIP y estructuras metálicas.</li>
+        <li>Cumplimiento normativo en sismorresistencia, resistencia al fuego y acondicionamiento térmico.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section home-section" id="proceso" aria-labelledby="proceso-titulo">
+  <div class="container home-grid">
+    <div class="home-head">
+      <span class="section-index" aria-hidden="true">04</span>
+      <h2 class="heading" id="proceso-titulo">Proceso</h2>
+    </div>
+    <ol class="home-steps" role="list">
+      <li class="home-step reveal">
+        <span class="home-step__number" aria-hidden="true">01</span>
+        <h3 class="home-step__title">Visita técnica y entrevista</h3>
+        <p>Conocemos tu terreno y conversamos contigo para entender tus requerimientos y necesidades.</p>
+      </li>
+      <li class="home-step reveal">
+        <span class="home-step__number" aria-hidden="true">02</span>
+        <h3 class="home-step__title">Presupuesto de arquitectura y especialidades</h3>
+        <p>Te presentamos el presupuesto del proyecto de arquitectura y de las especialidades que correspondan (cálculo, agua, alcantarillado, electricidad).</p>
+      </li>
+      <li class="home-step reveal">
+        <span class="home-step__number" aria-hidden="true">03</span>
+        <h3 class="home-step__title">Estudio y propuesta</h3>
+        <p>Si lo apruebas, estudiamos tu caso y te presentamos una propuesta.</p>
+      </li>
+      <li class="home-step reveal">
+        <span class="home-step__number" aria-hidden="true">04</span>
+        <h3 class="home-step__title">Ajustes en conjunto</h3>
+        <p>Incorporamos tus correcciones y nuestras sugerencias hasta llegar a la versión final.</p>
+      </li>
+      <li class="home-step reveal">
+        <span class="home-step__number" aria-hidden="true">05</span>
+        <h3 class="home-step__title">Proyecto y presupuesto de obra</h3>
+        <p>Te entregamos el proyecto de arquitectura junto con el presupuesto de construcción.</p>
+      </li>
+      <li class="home-step home-step--final wall reveal reveal--wall">
+        <span class="home-step__number" aria-hidden="true">06</span>
+        <h3 class="home-step__title">Construcción con descuento del proyecto</h3>
+        <p>Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+{% if featured_projects %}
+<section class="section home-section" id="proyectos" aria-labelledby="proyectos-titulo">
+  <div class="container home-grid">
+    <div class="home-head home-head--plain">
+      <h2 class="heading" id="proyectos-titulo">Proyectos</h2>
+      <a class="home-more" href="/proyectos/">Ver todos los proyectos</a>
+    </div>
+    <ul class="home-cards" role="list">
+      {% for project in featured_projects %}
+      {% with photo=project.cover_photo %}
+      <li class="reveal">
+        <a class="home-card" href="/proyectos/{{ project.slug }}/">
+          {% if photo %}<span class="home-card__media"><img src="{{ photo.image.url }}" alt="{{ photo.alt }}" width="800" height="600" loading="lazy" decoding="async"></span>{% endif %}
+          <h3 class="home-card__title">{{ project.title }}</h3>
+          <p class="home-card__meta">{{ project.category.name }} · {{ project.commune }}</p>
+        </a>
+      </li>
+      {% endwith %}
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+<section class="section home-section home-section--end" aria-labelledby="zona-titulo">
+  <div class="container home-grid">
+    <div class="home-head">
+      <span class="section-index" aria-hidden="true">05</span>
+      <h2 class="heading" id="zona-titulo">Zona de trabajo</h2>
+    </div>
+    <ul class="home-regions reveal" role="list">
+      <li>Región Metropolitana</li>
+      <li>Región de Valparaíso</li>
+      <li>Región de O'Higgins</li>
+    </ul>
+  </div>
+</section>
+
+{% if has_contact %}
+<section class="home-contact wall--cement" id="contacto" aria-labelledby="contacto-titulo">
+  <div class="container home-grid">
+    <h2 class="home-contact__title" id="contacto-titulo">¿Tienes un proyecto en mente?</h2>
+    <p class="lead home-contact__text">Cuéntanos qué quieres construir y conversemos cómo hacerlo realidad.</p>
+    <ul class="home-channels" role="list">
+      {% if whatsapp_href %}<li><a class="home-channel" href="{{ whatsapp_href }}" target="_blank" rel="noopener"><span class="home-channel__label">WhatsApp</span> <span class="home-channel__value">{{ site.whatsapp }}</span></a></li>{% endif %}
+      {% if site.phone %}<li><a class="home-channel" href="tel:{{ site.phone|tel_digits }}"><span class="home-channel__label">Teléfono</span> <span class="home-channel__value">{{ site.phone }}</span></a></li>{% endif %}
+      {% if site.email %}<li><a class="home-channel" href="mailto:{{ site.email }}"><span class="home-channel__label">Correo</span> <span class="home-channel__value">{{ site.email }}</span></a></li>{% endif %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

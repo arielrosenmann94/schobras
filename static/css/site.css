@@ -760,3 +760,670 @@ body::before,
 
   html.js .reveal:not(.visible) .build * { animation-play-state: paused; }
 }
+
+/* ==========================================================================
+   HOME · página de inicio (core/templates/core/home.html)
+   Rejilla de 4 columnas sin separación: cada columna arranca en su eje del
+   plano (25 · 50 · 75 %). El texto se separa de su eje con --space-3.
+   Muros: Visión (cemento), pilar destacado y paso 6 (antracita), contacto.
+   ========================================================================== */
+
+/* ── Rejilla de secciones ──────────────────────────────────────────────── */
+.home-section { padding-block: var(--section-space) 0; }
+.home-section--end { padding-bottom: var(--section-space); }
+
+.home-grid {
+  display: grid;
+  row-gap: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.home-head .heading { margin-top: var(--space-2); }
+
+@media (min-width: 48em) {
+  .home-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  /* Por defecto, el contenido va de la columna 2 a la 4. */
+  .home-grid > * {
+    grid-column: 2 / -1;
+    padding-left: var(--space-3);
+  }
+
+  /* Bloques a todo el ancho: llevan su propia rejilla de 4 columnas, que
+     coincide con la de la sección porque ocupan el contenedor completo. */
+  .home-grid > .home-head,
+  .home-grid > .home-pillars,
+  .home-grid > .home-service,
+  .home-grid > .home-steps,
+  .home-grid > .home-cards,
+  .home-grid > .home-channels,
+  .home-grid > .home-contact__title {
+    grid-column: 1 / -1;
+    padding-left: 0;
+  }
+
+  .home-head,
+  .home-service {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* Cabecera: número en la columna 1, título desde el eje 2, alineados por la base. */
+  .home-head { align-items: end; align-items: last baseline; }
+  .home-head .section-index { grid-column: 1; }
+  .home-head .heading {
+    grid-column: 2 / -1;
+    margin-top: 0;
+    padding-left: var(--space-3);
+  }
+}
+
+/* ── Portada ───────────────────────────────────────────────────────────── */
+.home-hero {
+  padding-block: clamp(2.5rem, 7vw, 5rem) clamp(3.5rem, 9vw, 7rem);
+}
+
+.home-hero__grid {
+  /* Ancho del isotipo; el resto de sus medidas se derivan del viewBox (180 × 200). */
+  --mark: clamp(4.5rem, 18vw, 8rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "eyebrow eyebrow"
+    "title   title"
+    "level   mark"
+    "lead    lead"
+    "actions actions";
+}
+
+.home-hero__eyebrow {
+  grid-area: eyebrow;
+  max-width: 24rem;
+}
+
+/* Corta entre tramos, nunca dejando un "·" al inicio de línea. */
+.home-hero__eyebrow > span > span { white-space: nowrap; }
+
+.home-hero__title {
+  grid-area: title;
+  max-width: 11em;
+  margin-top: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Isotipo sobre la línea de nivel: su suelo (y = 195, trazo 3) cae justo sobre ella. */
+.home-hero__mark {
+  grid-area: mark;
+  align-self: end;
+  width: var(--mark);
+  margin-top: clamp(2rem, 6vw, 3.5rem);
+  margin-bottom: calc(var(--mark) * -3.5 / 180);
+}
+
+/* Línea de nivel (suelo) con su marca triangular en bronce, como en un corte. */
+.home-hero__level {
+  grid-area: level;
+  align-self: end;
+  position: relative;
+  height: max(1px, calc(var(--mark) * 3 / 180));
+  margin-right: calc(var(--mark) * -4 / 180);
+  background: var(--color-anthracite);
+}
+
+.home-hero__level::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 0.25rem);
+  width: 0.875rem;
+  height: 0.75rem;
+  background: var(--color-bronze);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.home-hero__lead {
+  grid-area: lead;
+  margin-top: clamp(2rem, 5vw, 3rem);
+}
+
+.home-hero__actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.home-hero__actions .btn { flex: 1 1 auto; }
+
+@media (min-width: 48em) {
+  .home-hero__grid { --mark: clamp(7rem, 15vw, 13rem); }
+
+  /* Antetítulo acotado: una línea de dimensión lo lleva hasta el borde. */
+  .home-hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: none;
+  }
+
+  .home-hero__eyebrow::after {
+    content: "";
+    flex: 1 1 2rem;
+    height: 0.6875rem;
+    border-right: 1px solid var(--color-bronze);
+    background: linear-gradient(var(--color-bronze), var(--color-bronze)) 0 50% / 100% 1px no-repeat;
+  }
+
+  .home-hero__actions .btn { flex: 0 0 auto; }
+}
+
+@media (min-width: 64em) {
+  .home-hero__grid {
+    /* Llena la primera pantalla, con tope para monitores muy altos. */
+    min-height: min(calc(100svh - var(--header-height) - clamp(2.5rem, 7vw, 5rem) - clamp(3.5rem, 9vw, 7rem)), 48rem);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+      "eyebrow eyebrow eyebrow eyebrow"
+      "title   title   title   mark"
+      "level   level   level   mark"
+      "lead    lead    actions actions";
+  }
+
+  .home-hero__title {
+    align-self: end;
+    margin-bottom: var(--space-6);
+  }
+
+  /* El edificio arranca en el eje del 75 %; el suelo le llega desde la izquierda. */
+  .home-hero__mark {
+    justify-self: start;
+    margin-top: 0;
+  }
+
+  .home-hero__lead,
+  .home-hero__actions { margin-top: var(--space-6); }
+
+  .home-hero__actions {
+    align-self: end;
+    padding-left: var(--space-3);
+  }
+}
+
+/* ── 01 · Nosotros ─────────────────────────────────────────────────────── */
+.home-statement {
+  max-width: 28em;
+  font-size: clamp(1.375rem, 1.05rem + 1.5vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+}
+
+.home-about { max-width: 36rem; }
+
+/* Visión: un muro de cemento (antracita sobre cemento ≈ 5,5:1). */
+.home-grid > .home-vision {
+  margin-inline: calc(var(--gutter) * -1);
+  padding: var(--space-6) var(--gutter);
+}
+
+.home-vision__text {
+  max-width: 34rem;
+  margin-top: var(--space-2);
+  font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.3125rem);
+  line-height: 1.55;
+}
+
+@media (min-width: 48em) {
+  .home-grid > .home-vision {
+    margin-inline: 0;
+    padding: clamp(2.5rem, 5vw, 4.5rem) var(--space-4);
+  }
+}
+
+@media (min-width: 64em) {
+  .home-grid > .home-about { grid-column: 2 / 4; }
+  .home-grid > .home-vision { grid-column: 3 / -1; }
+}
+
+/* ── 02 · Por qué SCHOBRAS ─────────────────────────────────────────────── */
+.home-pillars {
+  display: grid;
+  row-gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* Pilar protagonista: muro antracita con el titular a gran escala. */
+.home-pillar--main {
+  margin-inline: calc(var(--gutter) * -1);
+  padding: clamp(2.5rem, 8vw, 6rem) var(--gutter);
+}
+
+.home-pillar__title {
+  max-width: 12em;
+  font-size: clamp(2.25rem, 1.4rem + 4.2vw, 5.5rem);
+  font-weight: 300;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+/* Cota de remate bajo el titular (bronce: solo línea, nunca texto). */
+.home-dim {
+  display: block;
+  height: 0.6875rem;
+  margin-block: clamp(1.5rem, 4vw, 3rem);
+  border-inline: 1px solid var(--color-bronze);
+  background: linear-gradient(var(--color-bronze), var(--color-bronze)) 0 50% / 100% 1px no-repeat;
+}
+
+.home-pillar__text {
+  max-width: 34rem;
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+}
+
+.home-pillar:not(.home-pillar--main) {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-anthracite);
+}
+
+.home-pillar:not(.home-pillar--main) p {
+  max-width: 30rem;
+  margin-top: var(--space-2);
+}
+
+@media (min-width: 48em) {
+  .home-pillars { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .home-pillar--main {
+    grid-column: 1 / -1;
+    margin-inline: 0;
+    padding-inline: var(--space-4);
+  }
+
+  .home-pillar:nth-child(2) { grid-column: 1 / 3; padding-right: var(--space-3); }
+  .home-pillar:nth-child(3) { grid-column: 3 / -1; padding-left: var(--space-3); }
+}
+
+@media (min-width: 64em) {
+  /* Dentro del muro, la misma rejilla de 4 ejes que la página. */
+  .home-pillar--main {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-inline: 0;
+  }
+
+  .home-pillar--main > * {
+    grid-column: 1 / -1;
+    margin-inline: var(--space-3);
+  }
+
+  .home-pillar--main > .home-pillar__title { grid-column: 1 / 4; }
+  .home-pillar--main > .home-pillar__text { grid-column: 3 / -1; }
+}
+
+/* ── 03 · Servicios ────────────────────────────────────────────────────── */
+.home-service {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-anthracite);
+}
+
+.home-service__list { margin-top: var(--space-2); }
+
+/* Cada ítem con su marca en bronce, como una referencia de plano. */
+.home-service__list li {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  padding-block: 0.875rem;
+  border-top: 1px solid var(--line);
+}
+
+.home-service__list li:first-child { border-top: 0; }
+
+.home-service__list li::before {
+  content: "";
+  width: 0.875rem;
+  height: 1px;
+  margin-top: 0.8em;
+  background: var(--color-bronze);
+}
+
+@media (min-width: 48em) {
+  .home-service h3 {
+    grid-column: 1;
+    padding-right: var(--space-3);
+  }
+
+  .home-service__list {
+    grid-column: 2 / -1;
+    margin-top: 0;
+    padding-left: var(--space-3);
+  }
+
+  .home-service__list li:first-child { padding-top: 0; }
+}
+
+@media (min-width: 64em) {
+  /* Los tres ítems lado a lado, cada uno desde su eje. */
+  .home-service__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-left: 0;
+  }
+
+  .home-service__list li {
+    display: block;
+    padding: 0 var(--space-3);
+    border-top: 0;
+  }
+
+  .home-service__list li::before {
+    display: block;
+    width: 1.5rem;
+    margin: 0.75rem 0 var(--space-2);
+  }
+}
+
+/* ── 04 · Proceso: una planilla de obra, fila por paso ─────────────────── */
+.home-step {
+  padding-block: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-anthracite);
+}
+
+.home-step__number {
+  display: block;
+  color: var(--color-bronze);
+  font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-step__title {
+  margin-top: var(--space-2);
+  font-size: var(--text-h3);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.home-step p {
+  max-width: 34rem;
+  margin-top: var(--space-1);
+}
+
+/* Paso 6: la obra se levanta. Bronce sobre antracita solo en el número grande. */
+.home-step--final {
+  margin-inline: calc(var(--gutter) * -1);
+  padding: var(--space-4) var(--gutter) var(--space-6);
+  border-top: 0;
+}
+
+@media (min-width: 48em) {
+  .home-step {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: baseline;
+  }
+
+  .home-step > * {
+    grid-column: 2 / -1;
+    padding-left: var(--space-3);
+  }
+
+  .home-step > .home-step__number {
+    grid-column: 1;
+    grid-row: 1;
+    padding-left: 0;
+  }
+
+  .home-step__title { margin-top: 0; }
+
+  .home-step--final {
+    margin-inline: 0;
+    padding: var(--space-4) 0 var(--space-6);
+  }
+
+  .home-step--final > .home-step__number { padding-left: var(--space-3); }
+  .home-step--final > p { padding-right: var(--space-3); }
+}
+
+@media (min-width: 64em) {
+  .home-step__title {
+    grid-column: 2;
+    padding-right: var(--space-3);
+  }
+
+  .home-step > p {
+    grid-column: 3 / -1;
+    grid-row: 1;
+    margin-top: 0;
+  }
+}
+
+/* ── Proyectos destacados ──────────────────────────────────────────────── */
+.home-head--plain .heading { margin-top: 0; }
+
+.home-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  margin-top: var(--space-2);
+  font-weight: 600;
+  text-decoration-color: var(--color-bronze);
+}
+
+.home-more::after {
+  content: "";
+  width: 1.25rem;
+  height: 0.5rem;
+  background:
+    linear-gradient(currentColor, currentColor) 0 50% / 100% 1px no-repeat,
+    linear-gradient(currentColor, currentColor) 100% 0 / 1px 100% no-repeat;
+}
+
+.home-more:hover { text-decoration-thickness: 2px; }
+
+.home-cards {
+  display: grid;
+  row-gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.home-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-card__media {
+  display: block;
+  overflow: hidden;
+  background: var(--color-cement);
+}
+
+.home-card__media img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.home-card__title {
+  margin-top: var(--space-2);
+  font-size: var(--text-h3);
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+.home-card:hover .home-card__title { text-decoration-color: var(--color-bronze); }
+
+.home-card__meta {
+  margin-top: 0.25rem;
+  font-size: var(--text-small);
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 48em) {
+  .home-head--plain .heading { grid-column: 2 / 4; }
+
+  .home-head--plain .home-more {
+    grid-column: 4;
+    justify-self: end;
+    margin-top: 0;
+  }
+
+  /* Dos por fila, simétricas respecto del eje central. */
+  .home-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-3);
+  }
+
+  .home-card__media img { aspect-ratio: 3 / 2; }
+}
+
+@media (min-width: 64em) {
+  /* Tres por fila: la grilla de obras manda sobre los ejes. */
+  .home-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .home-card__media img { aspect-ratio: 4 / 3; }
+}
+
+/* ── 05 · Zona de trabajo ──────────────────────────────────────────────── */
+.home-regions li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: clamp(1rem, 2.5vw, 1.75rem);
+  border-top: 1px solid var(--line);
+  font-size: clamp(1.625rem, 1rem + 3.4vw, 4.25rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.home-regions li:last-child { border-bottom: 1px solid var(--line); }
+
+/* Punto de replanteo: círculo con cruz, en bronce. */
+.home-regions li::before {
+  content: "";
+  flex: none;
+  width: 0.4em;
+  height: 0.4em;
+  border: 1px solid var(--color-bronze);
+  border-radius: 50%;
+  background:
+    linear-gradient(var(--color-bronze), var(--color-bronze)) 50% 50% / 100% 1px no-repeat,
+    linear-gradient(var(--color-bronze), var(--color-bronze)) 50% 50% / 1px 100% no-repeat;
+}
+
+@media (min-width: 48em) {
+  .home-regions li { gap: var(--space-3); }
+}
+
+/* ── Contacto: muro de cemento antes del pie antracita ─────────────────── */
+.home-contact { padding-block: var(--section-space); }
+
+/* Sobre cemento el foco va en antracita (el bronce no contrasta). */
+.home-contact :focus-visible { outline-color: var(--color-anthracite); }
+
+.home-contact__title {
+  max-width: 13em;
+  font-size: clamp(2.5rem, 1.5rem + 5vw, 6.5rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.home-channels { border-bottom: 1px solid var(--color-anthracite); }
+
+.home-channel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-3);
+  min-height: 4rem;
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-anthracite);
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-channel__label {
+  flex: 0 0 100%;
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home-channel__value {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: clamp(1.375rem, 1rem + 2vw, 2.75rem);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+
+.home-channel::after {
+  content: "";
+  flex: none;
+  width: 1.75rem;
+  height: 0.625rem;
+  background:
+    linear-gradient(currentColor, currentColor) 0 50% / 100% 1px no-repeat,
+    linear-gradient(currentColor, currentColor) 100% 0 / 1px 100% no-repeat;
+}
+
+.home-channel:hover {
+  background: var(--color-anthracite);
+  color: var(--color-white);
+}
+
+@media (min-width: 48em) {
+  .home-channel {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: baseline;
+  }
+
+  .home-channel__label { grid-column: 1; }
+
+  .home-channel__value {
+    grid-column: 2 / 4;
+    padding-left: var(--space-3);
+  }
+
+  .home-channel::after {
+    grid-column: 4;
+    justify-self: end;
+    align-self: center;
+    margin-right: var(--space-3);
+  }
+
+  .home-channel__label { padding-left: var(--space-3); }
+}
+
+/* ── Movimiento del inicio (solo sin movimiento reducido) ──────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* La cota del pilar se dibuja: 150 ms + 450 ms = 600 ms. */
+  html.js .reveal .home-dim {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 450ms var(--ease) 150ms;
+  }
+
+  html.js .reveal.visible .home-dim { transform: none; }
+
+  .home-card__media img { transition: transform 500ms var(--ease); }
+  .home-card:hover .home-card__media img { transform: scale(1.03); }
+  .home-card__title { transition: text-decoration-color 200ms var(--ease); }
+
+  .home-channel { transition: background-color 200ms var(--ease), color 200ms var(--ease); }
+  .home-channel::after,
+  .home-more::after { transition: transform 200ms var(--ease); }
+  .home-channel:hover::after,
+  .home-more:hover::after { transform: translateX(0.25rem); }
+}
+/* ── fin HOME ──────────────────────────────────────────────────────────── */

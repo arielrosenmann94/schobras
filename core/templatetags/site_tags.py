@@ -1,4 +1,4 @@
-"""Tags de la plantilla base: WhatsApp, captura de bloques y SVG en línea."""
+"""Tags de la plantilla base: WhatsApp, teléfono, captura de bloques y SVG en línea."""
 import html
 import re
 from functools import lru_cache
@@ -19,6 +19,14 @@ def whatsapp_href(context, message=""):
     if site is None:
         return ""
     return whatsapp_url(site.whatsapp, message or site.whatsapp_message)
+
+
+@register.filter
+def tel_digits(phone):
+    """Número apto para un enlace tel:, con el + inicial y solo dígitos ("+56 (2) 2345-6789" → "+56223456789")."""
+    phone = str(phone or "").strip()
+    digits = re.sub(r"\D", "", phone)
+    return f"+{digits}" if phone.startswith("+") and digits else digits
 
 
 class CaptureNode(template.Node):
