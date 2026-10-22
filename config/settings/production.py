@@ -32,6 +32,9 @@ DATABASES = {
 ADMIN_URL = config("ADMIN_URL", default="")
 if ADMIN_URL.strip("/") in ("", "admin"):
     raise ImproperlyConfigured("ADMIN_URL es obligatoria en producción y no puede ser admin/")
+if not ADMIN_URL.endswith("/") or ADMIN_URL.startswith("/"):
+    # Sin "/" final el admin queda en /gestionlogin/ (QA-2.5); con "/" inicial no responde.
+    raise ImproperlyConfigured("ADMIN_URL debe terminar en / y no empezar con / (p. ej. gestion-x7k2/)")
 
 # ── Fotos en Cloudinary ───────────────────────────────────────────────────────
 # El disco de Heroku es efímero: sin Cloudinary las fotos se perderían.

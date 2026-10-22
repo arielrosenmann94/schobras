@@ -38,6 +38,16 @@ class ProductionAdminUrlTests(SimpleTestCase):
                 self.assertIn("ImproperlyConfigured", result.stderr)
                 self.assertIn("ADMIN_URL", result.stderr)
 
+    def test_rejects_admin_url_without_trailing_slash(self):
+        # QA-2.5: "gestion" dejaba el admin en /gestionlogin/; con "/" al
+        # inicio la ruta nunca coincide (Django quita esa barra de la URL).
+        for value in ["gestion-x7k2", "/gestion-x7k2", "/gestion-x7k2/"]:
+            with self.subTest(value=value):
+                result = self.import_production(value)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("ImproperlyConfigured", result.stderr)
+                self.assertIn("terminar en /", result.stderr)
+
     def test_accepts_custom_admin_url(self):
         result = self.import_production("gestion-x7k2/")
         self.assertEqual(result.returncode, 0, result.stderr)
