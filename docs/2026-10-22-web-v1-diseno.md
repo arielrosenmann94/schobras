@@ -27,7 +27,7 @@ Es la base de una v2.0 (plataforma con Claude/MCP para gestionar la empresa y ge
 ## 2. Objetivos, no-objetivos, anti-objetivos
 
 **Objetivos**
-- Que un visitante entienda en segundos qué hacen (arquitectura + construcción), dónde (RM, Valparaíso, O'Higgins) y su diferencial (proyecto de arquitectura y trámites municipales gratis si construye con ellos).
+- Que un visitante entienda en segundos qué hacen (arquitectura + construcción), dónde (RM, Valparaíso, O'Higgins) y su diferencial (si construye con ellos, el proyecto de arquitectura se descuenta del presupuesto de obra).
 - Que se vea como arquitectura: limpia, minimalista, moderna, con contraste fuerte de escalas. "Como el muro de una casa piloto de las mejores."
 - Que sea **rápida**.
 - Que Claudia pueda cargar proyectos y categorías desde un **backoffice propio** sin saber de tecnología.
@@ -127,8 +127,8 @@ Menú: Nosotros · Servicios · Proceso · Proyectos · Contacto. En celular, me
 
 - Los textos base son los del documento de la clienta (Quiénes somos, Visión, Propuesta de valor). El constructor puede acortarlos y ajustarlos para web manteniendo el sentido; la versión final la revisa Ariel.
 - "Más de 25 años" siempre referido a la **experiencia de los profesionales**, nunca a la empresa.
-- **Frase de portada:** la clienta no tiene eslogan. [decisión de Claude] El constructor propone una frase centrada en "diseñamos y construimos" + el diferencial de arquitectura sin costo; Ariel elige.
-- **Público principal de la portada:** [decisión de Claude] personas y familias que quieren construir, ampliar o remodelar su casa (el documento parte con proyectos residenciales y el diferencial de arquitectura gratis les habla directo). Lo comercial e industrial aparece en Servicios y en las categorías.
+- **Frase de portada:** la clienta no tiene eslogan. [decisión de Claude] El constructor propone una frase centrada en "diseñamos y construimos" + el diferencial de la arquitectura que se descuenta del presupuesto de obra (confirmado por la clienta el 2026-10-23); Ariel elige.
+- **Público principal de la portada:** [decisión de Claude] personas y familias que quieren construir, ampliar o remodelar su casa (el documento parte con proyectos residenciales y el diferencial de la arquitectura descontada de la obra les habla directo). Lo comercial e industrial aparece en Servicios y en las categorías.
 
 ## 7. Datos y backoffice
 
