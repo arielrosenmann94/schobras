@@ -592,6 +592,9 @@ body::before,
   text-transform: uppercase;
 }
 
+/* El RUT nunca se parte; la línea puede cortar en el separador. */
+.site-footer__rut { white-space: nowrap; }
+
 .site-footer__grid {
   display: grid;
   gap: var(--space-4);

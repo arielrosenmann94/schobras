@@ -125,7 +125,7 @@ class BaseTemplateTests(TestCase):
         self.assertNotIn("tel:", html)
         self.assertNotIn("#contacto", html)
 
-    def test_footer_legal_name_no_rut(self):
+    def test_footer_legal_name_and_rut(self):
         _, html = self.get()
         footer = html[html.index("<footer"):]
         self.assertIn("SCHOBRAS.CL", footer)
@@ -133,7 +133,11 @@ class BaseTemplateTests(TestCase):
         # Texto exacto de docs/02-producto/textos-v1.md §Pie.
         self.assertIn("Región Metropolitana · Valparaíso · O'Higgins", footer)
         self.assertIn(f"© {timezone.localdate().year}", footer)
-        self.assertNotIn("RUT", html)
+        # RUT entregado por la clienta el 2026-10-23; sin partirse a mitad del número.
+        self.assertRegex(
+            footer,
+            r'Constructora Schonffeldt SpA\s*·\s*<span class="site-footer__rut">RUT 77\.897\.204-2</span>',
+        )
 
     def test_skip_link_and_landmarks(self):
         _, html = self.get()

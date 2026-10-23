@@ -23,6 +23,7 @@ def _organization_jsonld(request, site):
         "@type": "GeneralContractor",
         "name": "SCHOBRAS.CL",
         "legalName": "Constructora Schonffeldt SpA",
+        "taxID": "77.897.204-2",
         "url": request.build_absolute_uri(reverse("core:home")),
         "areaServed": [{"@type": "AdministrativeArea", "name": name} for name in AREAS_SERVED],
     }

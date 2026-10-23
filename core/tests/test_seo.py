@@ -61,6 +61,7 @@ class SeoTests(TestCase):
         self.assertTrue(nonce)
         self.assertEqual(data["@type"], "GeneralContractor")
         self.assertEqual(data["legalName"], "Constructora Schonffeldt SpA")
+        self.assertEqual(data["taxID"], "77.897.204-2")
         self.assertEqual([a["name"] for a in data["areaServed"]], AREAS)
         self.assertNotIn("address", data)
         self.assertNotIn("telephone", data)
