@@ -5,7 +5,7 @@
   <meta property="og:locale" content="es_CL">
   <meta property="og:type" content="website">
   <meta property="og:title" content="SCHOBRAS.CL | Arquitectura y construcción en RM, Valparaíso y O'Higgins">
-  <meta property="og:description" content="Diseñamos y construimos proyectos residenciales, comerciales e industriales. Proyecto de arquitectura y trámites municipales sin costo adicional si construyes con nosotros.">
+  <meta property="og:description" content="Diseñamos y construimos proyectos residenciales, comerciales e industriales. Si construyes con nosotros, el proyecto de arquitectura se descuenta del presupuesto de obra.">
   <meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% endblock %}
 {% block jsonld %}<script type="application/ld+json" nonce="{{ csp_nonce }}">{{ jsonld|json_ld }}</script>{% endblock %}
@@ -23,7 +23,7 @@
     <h1 class="display home-hero__title" id="inicio-titulo">Diseñamos y construimos tu proyecto.</h1>
     <div class="home-hero__mark build" aria-hidden="true">{% inline_svg "img/isotipo.svg" %}</div>
     <div class="home-hero__level" aria-hidden="true"></div>
-    <p class="lead home-hero__lead">Si construyes con nosotros, el proyecto de arquitectura y los trámites municipales van sin costo adicional.</p>
+    <p class="lead home-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
     {% if has_contact or has_projects %}
     <div class="home-hero__actions">
       {% if has_contact %}<a class="btn btn--primary" href="#contacto">Conversemos tu proyecto</a>{% endif %}
@@ -56,9 +56,9 @@
     </div>
     <ul class="home-pillars" role="list">
       <li class="home-pillar home-pillar--main wall reveal reveal--wall">
-        <h3 class="home-pillar__title">Arquitectura y trámites sin costo adicional</h3>
+        <h3 class="home-pillar__title">La arquitectura se descuenta de tu obra</h3>
         <span class="home-dim" aria-hidden="true"></span>
-        <p class="home-pillar__text">Si ejecutas la construcción con nosotros, el proyecto de arquitectura y los trámites en la Dirección de Obras Municipales van incluidos. Continuidad y eficiencia desde el plano hasta la entrega.</p>
+        <p class="home-pillar__text">Pagas el proyecto de arquitectura al inicio y, si ejecutas la construcción con nosotros, su valor se descuenta del presupuesto de obra. Además gestionamos los trámites en la Dirección de Obras Municipales: continuidad y eficiencia desde el plano hasta la entrega.</p>
       </li>
       <li class="home-pillar reveal">
         <h3 class="subheading">Escuchamos e interpretamos</h3>

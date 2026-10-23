@@ -63,11 +63,18 @@ class HomeTests(TestCase):
         )
         self.assertRegex(html, r"<h1[^>]*>\s*Diseñamos y construimos tu proyecto.\s*</h1>")
         self.assertIn(
-            "Si construyes con nosotros, el proyecto de arquitectura y los trámites municipales van sin costo adicional.",
+            '<p class="lead home-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura'
+            " se descuenta del presupuesto de la obra.</p>",
+            html,
+        )
+        self.assertIn(
+            "Pagas el proyecto de arquitectura al inicio y, si ejecutas la construcción con nosotros, su valor"
+            " se descuenta del presupuesto de obra. Además gestionamos los trámites en la Dirección de Obras"
+            " Municipales: continuidad y eficiencia desde el plano hasta la entrega.",
             html,
         )
         for text in (
-            "Arquitectura y trámites sin costo adicional",
+            "La arquitectura se descuenta de tu obra",
             "Escuchamos e interpretamos",
             "Rigor técnico y normativo",
             "Diseño y especialidades",
@@ -77,6 +84,12 @@ class HomeTests(TestCase):
             "Llave en mano o con el nivel de terminaciones que necesites.",
         ):
             self.assertIn(text, html)
+
+    def test_architecture_offer_not_free(self):
+        # La clienta confirmó el 2026-10-23: la arquitectura se paga y se descuenta; no es gratis.
+        html = self.get().lower()
+        self.assertNotIn("sin costo", html)
+        self.assertNotIn("incluid", html)
 
     def test_home_has_no_mision(self):
         html = self.get()

@@ -10,6 +10,10 @@ from projects.models import Project, ProjectPhoto
 from projects.tests.test_models import make_image, make_project
 
 HOME_TITLE = "SCHOBRAS.CL | Arquitectura y construcción en RM, Valparaíso y O'Higgins"
+HOME_DESCRIPTION = (
+    "Diseñamos y construimos proyectos residenciales, comerciales e industriales. "
+    "Si construyes con nosotros, el proyecto de arquitectura se descuenta del presupuesto de obra."
+)
 AREAS = [
     "Región Metropolitana de Santiago",
     "Región de Valparaíso",
@@ -83,7 +87,8 @@ class SeoTests(TestCase):
         home = self.client.get("/").content.decode()
         self.assertIn(f"<title>{HOME_TITLE}</title>", home)
         self.assertIn('property="og:title"', home)
-        self.assertIn('property="og:description"', home)
+        self.assertIn(f'<meta name="description" content="{HOME_DESCRIPTION}">', home)
+        self.assertIn(f'<meta property="og:description" content="{HOME_DESCRIPTION}">', home)
         project = publish("Casa Chicureo")
         detail = self.client.get(project.get_absolute_url()).content.decode()
         self.assertIn("<title>Casa Chicureo en Colina | SCHOBRAS.CL</title>", detail)
