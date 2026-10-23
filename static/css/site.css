@@ -140,9 +140,10 @@ a {
   html { scroll-behavior: smooth; }
 }
 
-/* ── Plano: ejes verticales finos detrás del contenido ───────────────────
-   El cuerpo lleva los ejes fijos; los "muros" (fondos sólidos) los tapan.
-   .axes los repite sobre un muro oscuro. */
+/* ── Plano: el marco de dos líneas finas detrás del contenido ─────────────
+   Solo los dos bordes, medio margen por fuera del contenido: nunca cruzan
+   una letra. El cuerpo lleva el marco fijo; los "muros" (fondos sólidos) lo
+   tapan. .axes lo repite sobre un muro oscuro. */
 body::before,
 .axes::before {
   content: "";
@@ -151,11 +152,9 @@ body::before,
   bottom: 0;
   left: 50%;
   z-index: -1;
-  width: min(100% - 2 * var(--gutter), var(--max-width) - 2 * var(--gutter));
+  width: min(100% - var(--gutter), var(--max-width) - var(--gutter));
   transform: translateX(-50%);
   border-inline: 1px solid var(--axes-color, var(--line));
-  background:
-    linear-gradient(var(--axes-color, var(--line)), var(--axes-color, var(--line))) 50% 0 / 1px 100% no-repeat;
   opacity: 0.6;
   pointer-events: none;
 }
@@ -167,16 +166,6 @@ body::before,
 }
 
 .axes::before { position: absolute; opacity: 1; }
-
-@media (min-width: 48em) {
-  body::before,
-  .axes::before {
-    background:
-      linear-gradient(var(--axes-color, var(--line)), var(--axes-color, var(--line))) 25% 0 / 1px 100% no-repeat,
-      linear-gradient(var(--axes-color, var(--line)), var(--axes-color, var(--line))) 50% 0 / 1px 100% no-repeat,
-      linear-gradient(var(--axes-color, var(--line)), var(--axes-color, var(--line))) 75% 0 / 1px 100% no-repeat;
-  }
-}
 
 /* ── Utilidades de composición ──────────────────────────────────────────── */
 .container {
@@ -643,7 +632,7 @@ body::before,
 @media (min-width: 48em) {
   .site-footer__brand { flex-direction: row; align-items: flex-end; gap: clamp(1.5rem, 3vw, 2.5rem); }
 
-  /* Columnas sin separación: cada una arranca justo en su eje del plano. */
+  /* Columnas sin separación: cada una arranca en su cuarto de la grilla. */
   .site-footer__grid { grid-template-columns: repeat(4, 1fr); column-gap: 0; }
   .site-footer__grid > .site-footer__col { grid-column: span 2; }
   .site-footer__grid > .site-footer__col + .site-footer__col { padding-left: var(--space-2); }
