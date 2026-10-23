@@ -2,10 +2,10 @@
 
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
-Última revisión: 2026-10-22
-Versión del documento: 1.0.0
-Tipo de cambio más reciente: major
-Notas del último cambio: textos iniciales, adaptados del documento de la clienta y sus respuestas
+Última revisión: 2026-10-23
+Versión del documento: 1.1.0
+Tipo de cambio más reciente: minor
+Notas del último cambio: oferta de arquitectura (se paga y se descuenta) y RUT en el pie, según respuestas-cliente-2026-10-23.md
 Fuente de verdad: sí (texto exacto que va en la web)
 Documentos relacionados: ../cliente/caracteristicas-pag-web.md, ../../respuestas-cliente-2026-10-22.md, ../2026-10-22-web-v1-diseno.md §5–6
 Objetivo: fijar palabra por palabra los textos de la web para que el código no los invente
@@ -18,7 +18,7 @@ Audiencia: desarrollo | agentes
 ## Metadatos
 
 - Título inicio: `SCHOBRAS.CL | Arquitectura y construcción en RM, Valparaíso y O'Higgins`
-- Descripción inicio: `Diseñamos y construimos proyectos residenciales, comerciales e industriales. Proyecto de arquitectura y trámites municipales sin costo adicional si construyes con nosotros.`
+- Descripción inicio: `Diseñamos y construimos proyectos residenciales, comerciales e industriales. Si construyes con nosotros, el proyecto de arquitectura se descuenta del presupuesto de obra.` ⚠️ (reescrita el 2026-10-23: la arquitectura se paga al inicio y se descuenta)
 - Título detalle: `{título} en {comuna} | SCHOBRAS.CL`
 - Título lista: `Proyectos | SCHOBRAS.CL`
 
@@ -30,7 +30,7 @@ Nosotros · Servicios · Proceso · Proyectos (solo si hay proyectos publicados)
 
 - Antetítulo: `Arquitectura y construcción · Región Metropolitana · Valparaíso · O'Higgins`
 - H1: `Diseñamos y construimos tu proyecto.` ⚠️ alternativa para Ariel: `Del plano a la obra, con un solo equipo.`
-- Bajada: `Si construyes con nosotros, el proyecto de arquitectura y los trámites municipales van sin costo adicional.` ⚠️ pendiente de que Claudia confirme si se cobra y descuenta o nunca se cobra.
+- Bajada: `Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.` ⚠️ Reescrita el 2026-10-23. Claudia confirmó que la arquitectura se paga al inicio y se descuenta del presupuesto de obra; ya no se dice "sin costo" ni "incluido".
 - Botón principal: `Conversemos tu proyecto` (solo si hay contacto)
 - Botón secundario: `Ver proyectos` (solo si hay proyectos)
 
@@ -45,7 +45,7 @@ Ser una constructora de referencia por la excelencia técnica de nuestras obras,
 
 ## 02 · Por qué SCHOBRAS
 
-1. **Arquitectura y trámites sin costo adicional** (destacado) — Si ejecutas la construcción con nosotros, el proyecto de arquitectura y los trámites en la Dirección de Obras Municipales van incluidos. Continuidad y eficiencia desde el plano hasta la entrega.
+1. **La arquitectura se descuenta de tu obra** (destacado) ⚠️ — Pagas el proyecto de arquitectura al inicio y, si ejecutas la construcción con nosotros, su valor se descuenta del presupuesto de obra. Además gestionamos los trámites en la Dirección de Obras Municipales: continuidad y eficiencia desde el plano hasta la entrega.
 2. **Escuchamos e interpretamos** — Entendemos en profundidad lo que necesitas y sueñas, y lo traducimos en un diseño a tu medida y en soluciones constructivas reales.
 3. **Rigor técnico y normativo** — Todas nuestras obras cumplen la normativa vigente en sismorresistencia, resistencia al fuego y acondicionamiento térmico: edificaciones seguras, confortables y duraderas.
 
@@ -97,7 +97,7 @@ Región Metropolitana · Región de Valparaíso · Región de O'Higgins
 
 ## Pie
 
-`SCHOBRAS.CL` · `Constructora Schonffeldt SpA` · `Región Metropolitana · Valparaíso · O'Higgins` · canales configurados · `© {año}`
+`SCHOBRAS.CL` · `Constructora Schonffeldt SpA` · `RUT 77.897.204-2` · `Región Metropolitana · Valparaíso · O'Higgins` · canales configurados · `© {año}`
 
 ## 404
 

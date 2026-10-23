@@ -36,6 +36,7 @@ Audiencia: desarrollo | agentes | arquitectura
 
 - [cliente/caracteristicas-pag-web.md](cliente/caracteristicas-pag-web.md) — transcripción del documento de identidad de marca (original: `../características pág web.docx`).
 - [../respuestas-cliente-2026-10-22.md](../respuestas-cliente-2026-10-22.md) — respuestas al cuestionario.
+- [../respuestas-cliente-2026-10-23.md](../respuestas-cliente-2026-10-23.md) — respuestas a las preguntas pendientes de la v1.0 (oferta de arquitectura, contacto, permisos de fotos, RUT).
 - [../decisiones-v1.md](../decisiones-v1.md) — bitácora de decisiones de Ariel.
 
 ## Versiones
@@ -43,7 +44,7 @@ Audiencia: desarrollo | agentes | arquitectura
 | Versión | Alcance | Estado |
 |---|---|---|
 | v1.0 | Web informativa + catálogo de proyectos + panel | en desarrollo, entrega 2026-10-26 |
-| v1.1 | Redes sociales, cifras, ubicación, equipo/testimonios, logo definitivo | diseñada (draft), fecha por definir |
+| v1.1 | Redes sociales, cifras, ubicación, equipo/testimonios, logo definitivo, panel PWA con ingreso por huella (passkeys) | diseñada (draft), fecha por definir |
 | v2.0 | Conector MCP + motor de planos con Claude | diseñada (draft); requiere reunión con Claudia (§13) antes del spike F0 |
 
 ## Cuándo debe actualizarse

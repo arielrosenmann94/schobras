@@ -19,3 +19,15 @@ Decisiones tomadas por Ariel. Este documento se irá completando hasta convertir
 - **Entorno agéntico:** las reglas y protecciones al estilo admindf (CLAUDE.md, AGENTS.md, `.claude/settings.json` con deny de secretos Heroku y `git push`) entran en v1; el conector MCP y el resto del entorno agéntico de admindf son parte de v2.0.
 - **Servicios como única puerta de escritura** (`projects/services.py`): los usa el panel hoy y la API del conector v2.0 mañana.
 - **Seguridad y calidad:** CSP nativa de Django 6, cabeceras, WCAG 2.2 AA, bronce solo en elementos grandes (3,6:1 sobre blanco), backups diarios de Postgres, gates del DoD en cada task, el agente nunca hace push ni deploy.
+
+## 2026-10-22 — v1.1
+
+- **Panel instalable (PWA) con inicio por huella digital** (WebAuthn/passkeys), igual que iterap y admindf: huella como acción principal del login, contraseña como respaldo. Se implementa copiando y adaptando `iterap/accounts/webauthn_utils.py`, sus vistas, JS, manifest y service worker. Se activa cuando `schobras.cl` esté conectado (las passkeys quedan atadas al dominio). Detalle: `docs/2026-10-22-web-v1.1-diseno.md` §2.6.
+
+## 2026-10-23 — respuestas finales de la clienta (respuestas-cliente-2026-10-23.md)
+
+- **Oferta de arquitectura:** se paga al inicio y se descuenta del presupuesto de obra. La web deja de decir "sin costo adicional" e "incluido". Los trámites municipales se mencionan como gestión nuestra, sin hablar de precio. Los textos nuevos quedan ⚠️ para el visto bueno de Ariel.
+- **Contacto:** WhatsApp y teléfono +56 9 4028 0657, y correo temporal oficina@claudiaarquitecta.cl. Son datos de Configuración del sitio y se cargan después del deploy, no en el código.
+- **RUT** 77.897.204-2: va en el pie y en el JSON-LD (`taxID`).
+- **Fotos:** se publican solo las obras con autorización escrita del dueño (un correo o un WhatsApp, guardado).
+- **Pendiente:** el acceso al registrador de schobras.cl, para el dominio y para Google Workspace.

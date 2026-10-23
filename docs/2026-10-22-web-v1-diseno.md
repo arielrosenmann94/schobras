@@ -88,7 +88,7 @@ Menú: Nosotros · Servicios · Proceso · Proyectos · Contacto. En celular, me
 ### 5.1 Inicio (`/`) — una página larga con anclas
 1. **Portada:** nombre, frase principal (ver §6), botón principal "Conversemos tu proyecto" (→ contacto) y secundario "Ver proyectos" (si hay proyectos publicados).
 2. **Nosotros:** texto "Quiénes somos" + **Visión** (sin Misión).
-3. **Por qué SCHOBRAS:** los tres pilares de la propuesta de valor. El primero, *proyecto de arquitectura y trámites municipales sin costo si construyes con nosotros*, es el protagonista visual.
+3. **Por qué SCHOBRAS:** los tres pilares de la propuesta de valor. El primero, *el proyecto de arquitectura se paga al inicio y se descuenta del presupuesto de obra si construyes con nosotros* (confirmado por la clienta el 2026-10-23), es el protagonista visual.
 4. **Servicios:**
    - Diseño de arquitectura y especialidades: cálculo estructural, sanitarios (agua y alcantarillado), eléctricos.
    - Construcción: obra nueva desde cero, ampliaciones y remodelaciones.
@@ -107,7 +107,7 @@ Menú: Nosotros · Servicios · Proceso · Proyectos · Contacto. En celular, me
 6. **Proyectos destacados:** hasta 6 proyectos marcados como destacados. La sección **no aparece** si no hay proyectos publicados [decisión de Claude].
 7. **Zona de trabajo:** Región Metropolitana, Región de Valparaíso, Región de O'Higgins.
 8. **Contacto:** bloque final con llamado a la acción. Muestra WhatsApp, teléfono y correo **solo si están configurados** (ver §7.3).
-9. **Pie:** logo, "Constructora Schonffeldt SpA", zona de trabajo, contacto, año. Sin redes en v1.0. RUT no se muestra hasta tenerlo [decisión de Claude].
+9. **Pie:** logo, "Constructora Schonffeldt SpA", zona de trabajo, contacto, año. Sin redes en v1.0. RUT 77.897.204-2 junto a la razón social (entregado por la clienta el 2026-10-23).
 
 ### 5.2 Proyectos (`/proyectos/`)
 - Grilla de proyectos publicados, más recientes o por orden manual primero.
@@ -175,13 +175,14 @@ Protecciones para la editora [decisión de Claude]:
 
 ## 8. Pendientes de la clienta (no bloquean el lanzamiento)
 - Logo en vector (y retoque final).
-- Número de teléfono / WhatsApp.
+- ~~Número de teléfono / WhatsApp.~~ Entregado el 2026-10-23: +56 9 4028 0657 (se carga en Configuración del sitio).
 - Contratar Google Workspace para info@schobras.cl y correos por persona.
 - Acceso a la cuenta del dominio (Registrar.eu o el revendedor) para apuntar el DNS.
 - Fotos de obras con sus nombres (las carga ella o Ariel desde el panel).
-- RUT de la empresa.
-- **Confirmar la oferta de arquitectura:** ¿no se cobra nunca si construye con ellos, o se cobra al inicio y se descuenta del presupuesto de obra? Define el titular de la portada.
-- **Contacto temporal:** ¿se usa su teléfono actual y oficina@claudiaarquitecta.cl hasta que estén el número nuevo e info@schobras.cl?
+- ~~RUT de la empresa.~~ Entregado el 2026-10-23: 77.897.204-2.
+- ~~Confirmar la oferta de arquitectura.~~ Respondido el 2026-10-23: se paga al inicio y se descuenta del presupuesto de obra.
+- ~~Contacto temporal.~~ Respondido el 2026-10-23: número nuevo +56 9 4028 0657 y, mientras no esté info@schobras.cl, oficina@claudiaarquitecta.cl. Pide Google Workspace lo antes posible.
+- **Autorización de los dueños para publicar fotos** (2026-10-23): todavía no la tiene; la conseguirá para algunas obras. Debe ser por escrito (un correo o un WhatsApp del dueño basta) y quedar guardada.
 
 **Nombre de marca:** decidido por Ariel el 2026-10-22: **SCHOBRAS.CL** (reemplaza "OBRAS SCH" / "SCH OBRAS").
 
