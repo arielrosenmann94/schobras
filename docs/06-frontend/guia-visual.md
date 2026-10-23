@@ -39,7 +39,8 @@ Verificar el contraste también en `:hover` y `:focus-visible`.
 
 ## Dirección visual
 
-- **Lenguaje de plano:** líneas finas tipo cota/grilla, ejes, mucho blanco.
+- **Lenguaje de plano:** líneas finas tipo cota/grilla, mucho blanco. El fondo lleva solo el marco de dos líneas, medio margen por fuera del contenido: ninguna línea de fondo cruza texto (revisión de Ariel, ronda 1).
+- **Pestaña lateral «Cotiza tu proyecto»:** fija al borde derecho, centrada en el alto, texto vertical de abajo hacia arriba; antracita con texto blanco y el canto interior en bronce (solo línea). 44 px de ancho; con ella, el contenido deja libre su carril (`--gutter-end`), así nunca tapa texto. Queda bajo el encabezado y el menú móvil, y bajo el visor de fotos.
 - **Muros:** bloques sólidos de antracita/cemento que estructuran la página.
 - **Movimiento:** revelado al hacer scroll (bloques que "suben" como muros con `clip-path`/`transform`), líneas que se dibujan, el isotipo armándose con sus verticales (`.rebar`, `stroke-dashoffset`). Una sola vez, rápido (≤ 600 ms), `transform`/`opacity` solamente.
 - **Portada sin foto** en la v1.0: composición tipográfica + isotipo.
@@ -50,7 +51,7 @@ Verificar el contraste también en `:hover` y `:focus-visible`.
 - Enlace "Saltar al contenido" (`href="#contenido"`) como primer elemento enfocable.
 - Landmarks: `<header>`, `<nav aria-label="Principal">`, `<main id="contenido">`, `<footer>`.
 - Un solo `<h1>` por página; jerarquía de títulos sin saltos.
-- Botones solo-ícono con `aria-label` (WhatsApp: "Escríbenos por WhatsApp").
+- Botones solo-ícono con `aria-label`. La pestaña lateral de WhatsApp lleva texto visible (`Cotiza tu proyecto`) y un `aria-label` que empieza con ese texto (`Cotiza tu proyecto por WhatsApp`, WCAG 2.5.3).
 - `:focus-visible` siempre visible (contorno antracita/bronce de 3 px con separación).
 - Áreas táctiles ≥ 44 × 44 px (panel: botones ≥ 48 px de alto).
 - Menú móvil: `aria-expanded`, `aria-controls`, cierre con Esc, foco devuelto al botón.

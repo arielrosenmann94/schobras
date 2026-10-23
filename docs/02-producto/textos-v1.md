@@ -92,7 +92,7 @@ Región Metropolitana · Región de Valparaíso · Región de O'Higgins
 - Título: `¿Tienes un proyecto en mente?`
 - Texto: `Cuéntanos qué quieres construir y conversemos cómo hacerlo realidad.`
 - Etiquetas: `WhatsApp`, `Teléfono`, `Correo`
-- Botón flotante: `aria-label="Escríbenos por WhatsApp"`
+- Pestaña lateral (WhatsApp, borde derecho, solo si hay WhatsApp válido): texto `Cotiza tu proyecto` ⚠️ · `aria-label="Cotiza tu proyecto por WhatsApp"`
 - Mensaje WhatsApp por defecto: `Hola, quiero conversar sobre un proyecto.`
 
 ## Pie
@@ -158,3 +158,10 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 | Página caducada: botón | `Volver al panel` |
 | Proyecto (detalle): nombre accesible de cada miniatura (lector de pantalla) | `Ver foto {n} de {total}` |
 | 403 (web y panel): título de la pestaña | `No tienes acceso \| SCHOBRAS.CL` |
+
+### Nuevos en la revisión de Ariel (ronda 1)
+
+| Dónde | Texto |
+|---|---|
+| Pestaña lateral de WhatsApp (reemplaza al botón flotante): texto visible | `Cotiza tu proyecto` |
+| Pestaña lateral: nombre accesible (empieza con el texto visible) | `Cotiza tu proyecto por WhatsApp` |

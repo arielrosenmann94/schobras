@@ -56,6 +56,9 @@
   --space-16: 8rem;
 
   --gutter: clamp(1rem, 4vw, 3rem);
+  /* Margen derecho: con la pestaña lateral crece para dejarle su carril. */
+  --gutter-end: var(--gutter);
+  --tab-width: 2.75rem;
   --max-width: 90rem;
   --header-height: 4rem;
   --section-space: clamp(5rem, 12vw, 10rem);
@@ -132,7 +135,7 @@ a {
 .wall :focus-visible,
 .site-footer :focus-visible,
 .menu-open .site-header :focus-visible,
-.whatsapp-float:focus-visible {
+.cta-tab:focus-visible {
   outline-color: var(--color-bronze);
 }
 
@@ -150,10 +153,9 @@ body::before,
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 50%;
+  left: calc(max(var(--gutter), (100% - var(--max-width)) / 2 + var(--gutter)) - var(--gutter) / 2);
   z-index: -1;
-  width: min(100% - var(--gutter), var(--max-width) - var(--gutter));
-  transform: translateX(-50%);
+  width: calc(min(100% - var(--gutter) - var(--gutter-end), var(--max-width) - 2 * var(--gutter)) + var(--gutter));
   border-inline: 1px solid var(--axes-color, var(--line));
   opacity: 0.6;
   pointer-events: none;
@@ -169,8 +171,9 @@ body::before,
 
 /* ── Utilidades de composición ──────────────────────────────────────────── */
 .container {
-  width: min(100% - 2 * var(--gutter), var(--max-width) - 2 * var(--gutter));
-  margin-inline: auto;
+  width: min(100% - var(--gutter) - var(--gutter-end), var(--max-width) - 2 * var(--gutter));
+  margin-left: max(var(--gutter), (100% - var(--max-width)) / 2 + var(--gutter));
+  margin-right: auto;
 }
 
 .section { padding-block: var(--section-space); }
@@ -522,7 +525,7 @@ body::before,
     border-bottom-color: transparent;
   }
 
-  html.menu-open .whatsapp-float { visibility: hidden; }
+  html.menu-open .cta-tab { visibility: hidden; }
 }
 
 @media (min-width: 64em) {
@@ -557,8 +560,7 @@ body::before,
 
 /* ── Pie: el muro final, con la marca a escala de placa ───────────────── */
 .site-footer {
-  /* Abajo deja aire para que el botón flotante no tape el último enlace. */
-  padding-block: var(--section-space) calc(var(--space-4) + 4.5rem);
+  padding-block: var(--section-space) var(--space-4);
   background: var(--color-anthracite);
   color: var(--color-white);
   font-size: var(--text-small);
@@ -638,32 +640,46 @@ body::before,
   .site-footer__grid > .site-footer__col + .site-footer__col { padding-left: var(--space-2); }
 }
 
-/* ── Botón flotante de WhatsApp ────────────────────────────────────────── */
-.whatsapp-float {
+/* ── Pestaña lateral «Cotiza tu proyecto» (WhatsApp) ─────────────────────
+   Pegada al borde derecho y centrada en el alto; el texto se lee de abajo
+   hacia arriba. Con la pestaña, el contenido deja libre su carril
+   (--gutter-end), así nunca queda texto ni botón debajo. */
+.has-cta-tab {
+  --gutter-end: max(var(--gutter), var(--tab-width) + 0.25rem + env(safe-area-inset-right, 0px));
+}
+
+.cta-tab {
   position: fixed;
-  right: max(var(--space-2), env(safe-area-inset-right));
-  bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  top: 50%;
+  right: env(safe-area-inset-right, 0px);
   z-index: 40;
-  display: grid;
-  place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: var(--tab-width);
+  padding-block: var(--space-2) var(--space-3);
   background: var(--color-anthracite);
   color: var(--color-white);
-  box-shadow:
-    inset 0 -3px 0 var(--color-bronze),
-    0 0 0 1px var(--line-on-dark),
-    0 1rem 2rem -1rem var(--color-anthracite);
+  text-decoration: none;
+  /* Bronce solo como línea: el canto que mira al contenido. */
+  box-shadow: inset 3px 0 0 var(--color-bronze), 0 0 0 1px var(--line-on-dark);
+  transform: translateY(-50%);
 }
-.whatsapp-float__icon { width: 1.75rem; height: 1.75rem; }
 
-@media (min-width: 64em) {
-  .site-footer { padding-bottom: var(--space-4); }
+.cta-tab:hover { box-shadow: inset 6px 0 0 var(--color-bronze), 0 0 0 1px var(--line-on-dark); }
 
-  .whatsapp-float {
-    right: var(--space-4);
-    bottom: var(--space-4);
-  }
+.cta-tab__icon { flex: none; width: 1.5rem; height: 1.5rem; }
+
+.cta-tab__text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* ── Movimiento (solo si el usuario no pidió reducirlo) ──────────────────
@@ -681,8 +697,7 @@ body::before,
   .menu-toggle__icon::after,
   .site-nav__link::after { transition: transform 300ms var(--ease); }
   .site-nav__link--cta { transition: background-color 200ms var(--ease), color 200ms var(--ease); }
-  .whatsapp-float { transition: transform 200ms var(--ease); }
-  .whatsapp-float:hover { transform: translateY(-2px); }
+  .cta-tab { transition: box-shadow 200ms var(--ease); }
 
   /* Menú móvil: el muro baja; al cerrar, se oculta después de subir. */
   html.js .site-nav { transition: clip-path 450ms var(--ease), visibility 0s linear 450ms; }
@@ -986,8 +1001,8 @@ body::before,
 
 /* Visión: un muro de cemento (antracita sobre cemento ≈ 5,5:1). */
 .home-grid > .home-vision {
-  margin-inline: calc(var(--gutter) * -1);
-  padding: var(--space-6) var(--gutter);
+  margin-inline: calc(var(--gutter) * -1) calc(var(--gutter-end) * -1);
+  padding: var(--space-6) var(--gutter-end) var(--space-6) var(--gutter);
 }
 
 .home-vision__text {
@@ -1017,8 +1032,8 @@ body::before,
 
 /* Pilar protagonista: muro antracita con el titular a gran escala. */
 .home-pillar--main {
-  margin-inline: calc(var(--gutter) * -1);
-  padding: clamp(2.5rem, 8vw, 6rem) var(--gutter);
+  margin-inline: calc(var(--gutter) * -1) calc(var(--gutter-end) * -1);
+  padding: clamp(2.5rem, 8vw, 6rem) var(--gutter-end) clamp(2.5rem, 8vw, 6rem) var(--gutter);
 }
 
 .home-pillar__title {
@@ -1175,8 +1190,8 @@ body::before,
 
 /* Paso 6: la obra se levanta. Bronce sobre antracita solo en el número grande. */
 .home-step--final {
-  margin-inline: calc(var(--gutter) * -1);
-  padding: var(--space-4) var(--gutter) var(--space-6);
+  margin-inline: calc(var(--gutter) * -1) calc(var(--gutter-end) * -1);
+  padding: var(--space-4) var(--gutter-end) var(--space-6) var(--gutter);
   border-top: 0;
 }
 

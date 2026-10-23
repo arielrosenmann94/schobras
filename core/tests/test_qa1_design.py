@@ -77,7 +77,7 @@ class StaticDesignTests(SimpleTestCase):
         self.assertIn("background: var(--color-white)", self.rule(self.read("static/css/site.css"), ".projects__chip"))
 
     def test_menu_open_makes_skip_link_inert(self):
-        self.assertIn('main, footer, .whatsapp-float, .skip-link', self.read("static/js/site.js"))
+        self.assertIn('main, footer, .cta-tab, .skip-link', self.read("static/js/site.js"))
 
     def test_site_js_under_budget(self):
         self.assertLess(len(self.read("static/js/site.js").encode()), 20 * 1024)

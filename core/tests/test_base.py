@@ -26,17 +26,42 @@ class BaseTemplateTests(TestCase):
         self.assertEqual(response.status_code, 200)
         return response, response.content.decode()
 
-    def test_no_whatsapp_no_button(self):
+    def test_no_whatsapp_no_cta_tab(self):
         _, html = self.get()
         self.assertNotIn("wa.me", html)
-        self.assertNotIn("Escríbenos por WhatsApp", html)
+        self.assertNotIn("cta-tab", html)
+        self.assertNotIn("Cotiza tu proyecto", html)
 
-    def test_whatsapp_button_with_aria_label(self):
+    def test_cta_tab_with_visible_text_and_aria_label(self):
         configure(whatsapp="+56 9 1234 5678")
         _, html = self.get()
-        self.assertIn("https://wa.me/56912345678", html)
-        self.assertIn('aria-label="Escríbenos por WhatsApp"', html)
-        self.assertRegex(html, r'<a[^>]*rel="noopener"[^>]*aria-label="Escríbenos por WhatsApp"')
+        tab = re.search(r'<a class="cta-tab"[^>]*>.*?</a>', html, re.S)
+        self.assertIsNotNone(tab)
+        tag = re.match(r"<a[^>]*>", tab.group(0)).group(0)
+        self.assertIn('href="https://wa.me/56912345678?', tag)
+        self.assertIn('target="_blank"', tag)
+        self.assertIn('rel="noopener"', tag)
+        self.assertIn('aria-label="Cotiza tu proyecto por WhatsApp"', tag)
+        # WCAG 2.5.3: el nombre accesible empieza con el texto visible.
+        visible = re.search(r'<span class="cta-tab__text">([^<]+)</span>', tab.group(0)).group(1)
+        self.assertEqual(visible, "Cotiza tu proyecto")
+        self.assertTrue("Cotiza tu proyecto por WhatsApp".startswith(visible))
+        self.assertIn('aria-hidden="true"', tab.group(0))
+        self.assertNotIn("whatsapp-float", html)
+
+    def test_cta_tab_reserves_its_lane_only_when_shown(self):
+        _, html = self.get()
+        self.assertIn("<body>", html)
+        configure(whatsapp="912345678")
+        _, html = self.get()
+        self.assertIn('<body class="has-cta-tab">', html)
+
+    def test_phone_and_email_without_whatsapp_no_cta_tab(self):
+        configure(phone="+56 2 2345 6789", email="oficina@example.com")
+        _, html = self.get()
+        self.assertNotIn("cta-tab", html)
+        self.assertIn('href="tel:+56223456789"', html)
+        self.assertIn('href="mailto:oficina@example.com"', html)
 
     def test_whatsapp_default_message(self):
         configure(whatsapp="912345678")
@@ -47,12 +72,14 @@ class BaseTemplateTests(TestCase):
         configure(whatsapp="912345678")
         _, html = self.get("/hija/")
         self.assertIn("text=Hola%2C%20vi%20el%20proyecto%20Casa%20O%27Higgins%20y%20quiero", html)
+        self.assertRegex(html, r'<a class="cta-tab" href="[^"]*text=Hola%2C%20vi%20el%20proyecto%20Casa%20O%27Higgins')
         self.assertNotIn("conversar%20sobre%20un%20proyecto", html)
 
-    def test_invalid_whatsapp_no_button(self):
+    def test_invalid_whatsapp_no_cta_tab(self):
         configure(whatsapp="123")
         _, html = self.get()
-        self.assertNotIn("Escríbenos por WhatsApp", html)
+        self.assertNotIn("cta-tab", html)
+        self.assertNotIn("Cotiza tu proyecto", html)
 
     def test_menu_hides_projects_when_none(self):
         _, html = self.get()
