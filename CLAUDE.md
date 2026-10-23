@@ -39,6 +39,10 @@
 
 Conventional Commits `tipo(alcance): descripción` en imperativo, < 20 archivos por commit. Ver @.agents/CODING_AGENT_RULES.md §5.
 
+## Cronómetro de trabajo (webar)
+
+Siempre: al empezar a trabajar, buscar una sesión de **webar** (`ListAgents`) y pedirle **iniciar** el cronómetro (schobras › Web informativa › "Desarrollo"). Al terminar, pedirle **detenerlo**. Si no hay ninguna sesión de webar, avisar a Ariel. Quién lo pide y el detalle: @docs/09-qa-dod/qa-circular-v1.md §Cronómetro.
+
 ## Advertencias específicas
 
 - La clienta (Claudia Schonffeldt) no es técnica: el panel debe ser imposible de romper (confirmaciones, no borrar categorías con proyectos, sin acceso a configuración).

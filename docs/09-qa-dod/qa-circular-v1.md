@@ -2,10 +2,10 @@
 
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
-Última revisión: 2026-10-22
-Versión del documento: 1.0.0
-Tipo de cambio más reciente: major
-Notas del último cambio: protocolo inicial pedido por Ariel
+Última revisión: 2026-10-23
+Versión del documento: 1.1.0
+Tipo de cambio más reciente: minor
+Notas del último cambio: regla del cronómetro de webar (iniciar al empezar, detener al terminar)
 Fuente de verdad: sí
 Documentos relacionados: definition-of-done.md, ../../.agents/CODING_AGENT_RULES.md, ../superpowers/plans/2026-10-22-web-v1.md
 Objetivo: definir cómo la sesión revisora (QA) y la sesión implementadora iteran hasta que la v1.0 esté lista para revisión humana
@@ -31,6 +31,16 @@ Audiencia: agentes | qa | desarrollo
 6. Los 🟡 que queden se listan para Ariel; él decide si se arreglan antes de mostrar a la clienta.
 
 Reglas del ciclo: la implementadora no hace push ni deploy en ningún momento; la revisora no corrige código de la aplicación (solo puede proponer el cambio); cada mensaje entre sesiones termina pidiendo explícitamente la devolución.
+
+## Cronómetro de trabajo (webar) — regla de Ariel, 2026-10-23
+
+El tiempo de trabajo en schobras se registra en el cronómetro de webar: proyecto **schobras › Web informativa**, tarea **"Desarrollo"**. **Siempre:**
+
+1. **Al empezar a trabajar** (una tarea nueva, una entrega o una vuelta de QA, también cuando la pide Ariel directamente): buscar con `ListAgents` una sesión de **webar** (el nombre cambia: webar-32, webar-93…) y pedirle **iniciar** el cronómetro. Si ya hay un tramo abierto de schobras, no se abre otro. La sesión de webar responde con el número de sesión del cronómetro y la hora.
+2. **Al terminar** (el "QA OK — listo para revisión humana", o cuando el trabajo queda terminado o en espera de Ariel): pedirle a la sesión de webar que lo **detenga** (stop). La pausa se usa solo si el trabajo sigue enseguida.
+3. **Lo pide una sola sesión, para que no haya avisos dobles:** la revisora (documentación/QA). La implementadora solo verifica con webar que el aviso llegó, y lo pide ella únicamente si la revisora no está.
+4. **Si no hay ninguna sesión de webar abierta**, se le avisa a Ariel en el mismo momento. No se deja el trabajo sin registrar en silencio.
+5. Ariel puede no estar en pantalla: el inicio y el stop se piden igual, sin esperarlo.
 
 ## Lista de QA
 
