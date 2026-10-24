@@ -41,7 +41,14 @@ Conventional Commits `tipo(alcance): descripción` en imperativo, < 20 archivos 
 
 ## Cronómetro de trabajo (webar)
 
-Siempre: al empezar a trabajar, buscar una sesión de **webar** (`ListAgents`) y pedirle **iniciar** el cronómetro (schobras › Web informativa › "Desarrollo"). Al terminar, pedirle **detenerlo**. Si no hay ninguna sesión de webar, avisar a Ariel. Quién lo pide y el detalle: @docs/09-qa-dod/qa-circular-v1.md §Cronómetro.
+Siempre, **antes de la primera acción del trabajo** (antes de leer código o correr comandos): buscar una sesión de **webar** (`ListAgents`) y pedirle **iniciar** el cronómetro en schobras › Web informativa, **en la tarea que corresponde al tipo de trabajo**:
+
+| Trabajo | Tarea en webar |
+|---|---|
+| Programar, corregir, QA, documentación | "Desarrollo" (#1058) |
+| Preparar o hacer el despliegue (Heroku, GitHub, dominio, runbook) | "Deploy" (#1129) |
+
+Si el trabajo cambia de tipo a mitad de camino, pedir stop del tramo actual e inicio en la otra tarea (nunca dos tramos abiertos). Al terminar, pedirle **detenerlo** (stop; pausa solo si se sigue enseguida). Si no hay ninguna sesión de webar, avisar a Ariel. Quién lo pide y el detalle: @docs/09-qa-dod/qa-circular-v1.md §Cronómetro.
 
 ## Advertencias específicas
 

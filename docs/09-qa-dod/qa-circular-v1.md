@@ -3,9 +3,9 @@
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-23
-Versión del documento: 1.1.0
+Versión del documento: 1.2.0
 Tipo de cambio más reciente: minor
-Notas del último cambio: regla del cronómetro de webar (iniciar al empezar, detener al terminar)
+Notas del último cambio: cronómetro antes de la primera acción y en la tarea según el tipo de trabajo (Desarrollo / Deploy)
 Fuente de verdad: sí
 Documentos relacionados: definition-of-done.md, ../../.agents/CODING_AGENT_RULES.md, ../superpowers/plans/2026-10-22-web-v1.md
 Objetivo: definir cómo la sesión revisora (QA) y la sesión implementadora iteran hasta que la v1.0 esté lista para revisión humana
@@ -34,9 +34,9 @@ Reglas del ciclo: la implementadora no hace push ni deploy en ningún momento; l
 
 ## Cronómetro de trabajo (webar) — regla de Ariel, 2026-10-23
 
-El tiempo de trabajo en schobras se registra en el cronómetro de webar: proyecto **schobras › Web informativa**, tarea **"Desarrollo"**. **Siempre:**
+El tiempo de trabajo en schobras se registra en el cronómetro de webar: proyecto **schobras › Web informativa**, en la tarea según el tipo de trabajo: **"Desarrollo"** (#1058: programar, corregir, QA, documentación) o **"Deploy"** (#1129: preparar o hacer el despliegue, GitHub, Heroku, dominio, runbook). **Siempre:**
 
-1. **Al empezar a trabajar** (una tarea nueva, una entrega o una vuelta de QA, también cuando la pide Ariel directamente): buscar con `ListAgents` una sesión de **webar** (el nombre cambia: webar-32, webar-93…) y pedirle **iniciar** el cronómetro. Si ya hay un tramo abierto de schobras, no se abre otro. La sesión de webar responde con el número de sesión del cronómetro y la hora.
+1. **Al empezar a trabajar, antes de la primera acción** (una tarea nueva, una entrega, una vuelta de QA o un deploy, también cuando la pide Ariel directamente): buscar con `ListAgents` una sesión de **webar** (el nombre cambia: webar-32, webar-93…) y pedirle **iniciar** el cronómetro **en la tarea que corresponde**. Si el trabajo cambia de tipo (p. ej. de Desarrollo a Deploy), se pide stop del tramo y uno nuevo en la otra tarea; nunca dos tramos abiertos. Si ya hay un tramo abierto de schobras, no se abre otro. La sesión de webar responde con el número de sesión del cronómetro y la hora.
 2. **Al terminar** (el "QA OK — listo para revisión humana", o cuando el trabajo queda terminado o en espera de Ariel): pedirle a la sesión de webar que lo **detenga** (stop). La pausa se usa solo si el trabajo sigue enseguida.
 3. **Lo pide una sola sesión, para que no haya avisos dobles:** la revisora (documentación/QA). La implementadora solo verifica con webar que el aviso llegó, y lo pide ella únicamente si la revisora no está.
 4. **Si no hay ninguna sesión de webar abierta**, se le avisa a Ariel en el mismo momento. No se deja el trabajo sin registrar en silencio.
