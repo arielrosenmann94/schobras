@@ -398,6 +398,12 @@ body::before,
   line-height: 1;
 }
 
+/* Bajo 384 px, SCHOBRAS.CL (11 letras) y «Menú» no caben en una fila con el
+   espaciado completo: se aprieta solo el espaciado del logotipo (D10-1). */
+@media (max-width: 23.99em) {
+  .brand__word { letter-spacing: 0.2em; margin-right: -0.2em; }
+}
+
 /* Isotipo: volúmenes en el color del texto; fierros y amarras en bronce. */
 .isotype { width: 100%; height: auto; overflow: visible; }
 .isotype .rebar,

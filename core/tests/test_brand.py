@@ -1,4 +1,7 @@
 import re
+from pathlib import Path
+
+from django.conf import settings
 
 from django.template.loader import render_to_string
 from django.test import RequestFactory, TestCase, override_settings
@@ -64,3 +67,14 @@ class BrandEverywhereTests(TestCase):
         editor = User.objects.create_user("editora", "e@example.com", "pw-12345-x")
         self.client.force_login(editor)
         self.assert_branded(self.client.get(reverse("panel:home")).content.decode(), "panel")
+
+
+class WordmarkNarrowScreenTests(TestCase):
+    """D10-1: con SCHOBRAS.CL (11 letras) el encabezado se partía en dos filas a 360-368 px."""
+
+    def test_wordmark_tightens_letter_spacing_below_24em(self):
+        css = (Path(settings.BASE_DIR) / "static" / "css" / "site.css").read_text(encoding="utf-8")
+        self.assertRegex(
+            css,
+            r"@media \(max-width: 23\.99em\) \{\s*\.brand__word \{ letter-spacing: 0\.2em; margin-right: -0\.2em; \}",
+        )
