@@ -2,10 +2,10 @@
 
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
-Última revisión: 2026-10-22
-Versión del documento: 1.0.0
-Tipo de cambio más reciente: major
-Notas del último cambio: runbook inicial de la v1.0
+Última revisión: 2026-10-23
+Versión del documento: 1.1.0
+Tipo de cambio más reciente: minor
+Notas del último cambio: primer despliegue sin dominio propio (*.herokuapp.com, sin indexar); schobras.cl se conecta después
 Fuente de verdad: sí
 Documentos relacionados: ../07-appsec/seguridad.md, ../../../iterap_com/docs/12-runbooks/deploy_heroku.md, ../../../iterap/docs/11-runbooks/HEROKU_PRODUCTION_DEPLOY.md
 Objetivo: pasos exactos para crear, desplegar, verificar y revertir la app en Heroku
@@ -19,7 +19,9 @@ Audiencia: ops | desarrollo
 ## 0. Antes de empezar
 
 - Gates de producción de `docs/09-qa-dod/definition-of-done.md` en verde.
-- `git status` limpio en `main`.
+- `main` al día y subido a GitHub (`git push origin main`).
+
+**Primero va sin dominio propio** (decisión de Ariel, 2026-10-23): la web queda en el host que asigna Heroku (`schobras-<sufijo>.herokuapp.com`) y **no se indexa** en buscadores (`SEARCH_INDEXING` apagado: `robots.txt` con `Disallow: /` y cabecera `X-Robots-Tag: noindex, nofollow`). schobras.cl se conecta en la §5.
 
 ## 1. Crear la app (una vez)
 
@@ -33,16 +35,24 @@ heroku addons:create cloudinary:starter -a schobras     # define CLOUDINARY_URL 
 
 ## 2. Config vars (en tu terminal; nunca las imprimas después)
 
+Las apps nuevas de Heroku tienen un host con sufijo aleatorio (`schobras-<sufijo>.herokuapp.com`). Se lee de `heroku domains` (no muestra secretos) y se usa en `ALLOWED_HOSTS` y `CSRF_TRUSTED_ORIGINS`:
+
 ```bash
+HEROKU_HOST="$(heroku domains -a schobras --json | python3 -c 'import json,sys; print(next(d["hostname"] for d in json.load(sys.stdin) if d["kind"] == "heroku"))')"
+echo "$HEROKU_HOST"     # debe verse como schobras-xxxxxxxxxxxx.herokuapp.com
+
+ADMIN_PATH="$(python3 -c 'import secrets; print(secrets.token_urlsafe(12))')/"
+echo "Ruta del admin: https://$HEROKU_HOST/$ADMIN_PATH"   # guárdala en tu gestor de contraseñas
+
 heroku config:set -a schobras \
   DJANGO_SETTINGS_MODULE=config.settings.production \
   SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(64))')" \
-  ADMIN_URL="$(python3 -c 'import secrets; print(secrets.token_urlsafe(12))')/" \
-  ALLOWED_HOSTS="schobras.herokuapp.com,schobras.cl,www.schobras.cl" \
-  CSRF_TRUSTED_ORIGINS="https://schobras.herokuapp.com,https://schobras.cl,https://www.schobras.cl"
+  ADMIN_URL="$ADMIN_PATH" \
+  ALLOWED_HOSTS="$HEROKU_HOST" \
+  CSRF_TRUSTED_ORIGINS="https://$HEROKU_HOST"
 ```
 
-Guarda el `ADMIN_URL` en tu gestor de contraseñas. Para comprobar que una variable existe: `heroku config:get VAR -a schobras | wc -c` (nunca sin `| wc -c`).
+`SEARCH_INDEXING` no se define: en producción viene apagado. Para comprobar que una variable existe: `heroku config:get VAR -a schobras | wc -c` (nunca sin `| wc -c`).
 
 ## 3. Desplegar
 
@@ -62,7 +72,7 @@ heroku run python manage.py createsuperuser -a schobras  # solo la primera vez
 heroku logs --tail -a schobras              # sin errores al navegar
 ```
 
-- Abrir `https://schobras.herokuapp.com/` (inicio, `/proyectos/`, `/robots.txt`, `/sitemap.xml`, una URL inexistente → 404 con marca).
+- Abrir `https://$HEROKU_HOST/` (inicio, `/proyectos/`, `/sitemap.xml`, una URL inexistente → 404 con marca). `/robots.txt` debe decir `Disallow: /` y `curl -sI https://$HEROKU_HOST/ | grep -i x-robots-tag` debe mostrar `noindex, nofollow`.
 - En el admin: cargar **Configuración del sitio** con al menos un canal (WhatsApp/teléfono/correo).
 - En el admin: crear a Claudia (oficina@claudiaarquitecta.cl, rol Editora) y probar `/panel/ingresar/`.
 - Lighthouse móvil (Chrome DevTools): rendimiento y accesibilidad ≥ 90.
@@ -73,7 +83,13 @@ heroku logs --tail -a schobras              # sin errores al navegar
 heroku domains:add schobras.cl -a schobras
 heroku domains:add www.schobras.cl -a schobras
 heroku certs:auto:enable -a schobras
+heroku config:set -a schobras \
+  ALLOWED_HOSTS="$HEROKU_HOST,schobras.cl,www.schobras.cl" \
+  CSRF_TRUSTED_ORIGINS="https://$HEROKU_HOST,https://schobras.cl,https://www.schobras.cl" \
+  SEARCH_INDEXING=True
 ```
+
+Con `SEARCH_INDEXING=True` vuelven `robots.txt` normal (con `Sitemap:`) y la indexación; comprobar que `curl -sI https://schobras.cl/` ya no trae `X-Robots-Tag`.
 
 En el registrador (Registrar.eu o su revendedor): registros que indique `heroku domains` (ALIAS/ANAME o CNAME). `www` redirige (301) a `schobras.cl` con `core.middleware.CanonicalHostMiddleware`, activo solo en producción; basta con apuntar ambos nombres a Heroku.
 
