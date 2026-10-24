@@ -83,6 +83,9 @@ heroku logs --tail -a schobras              # sin errores al navegar
 heroku domains:add schobras.cl -a schobras
 heroku domains:add www.schobras.cl -a schobras
 heroku certs:auto:enable -a schobras
+# Se vuelve a leer el host: esta sección puede correrse otro día, en otra terminal.
+HEROKU_HOST="$(heroku domains -a schobras --json | python3 -c 'import json,sys; print(next(d["hostname"] for d in json.load(sys.stdin) if d["kind"] == "heroku"))')"
+test -n "$HEROKU_HOST" || { echo "No se pudo leer el host de Heroku"; exit 1; }
 heroku config:set -a schobras \
   ALLOWED_HOSTS="$HEROKU_HOST,schobras.cl,www.schobras.cl" \
   CSRF_TRUSTED_ORIGINS="https://$HEROKU_HOST,https://schobras.cl,https://www.schobras.cl" \
