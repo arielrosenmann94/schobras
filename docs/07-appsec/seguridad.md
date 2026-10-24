@@ -27,7 +27,7 @@ Audiencia: seguridad | desarrollo | agentes | ops
 ## Configuración obligatoria
 
 - **CSP nativa Django 6** (`django.middleware.csp.ContentSecurityPolicyMiddleware`, `SECURE_CSP`):
-  `default-src 'self'`; `script-src 'self' 'nonce-…'`; `style-src 'self'`; `img-src 'self' data: https://res.cloudinary.com`; `font-src 'self'`; `connect-src 'self'`; `frame-ancestors 'none'`; `base-uri 'self'`; `form-action 'self'`. Sin `unsafe-inline` ni `unsafe-eval`. Implementación de referencia: `iterap/erp/settings/base.py`.
+  `default-src 'self'`; `script-src 'self' 'nonce-…'`; `style-src 'self'`; `img-src 'self' data: https://res.cloudinary.com` (con S3 pasa a ser el host del bucket, ADR-0006); `font-src 'self'`; `connect-src 'self'`; `frame-ancestors 'none'`; `base-uri 'self'`; `form-action 'self'`. Sin `unsafe-inline` ni `unsafe-eval`. Implementación de referencia: `iterap/erp/settings/base.py`.
 - `X_FRAME_OPTIONS = "DENY"`, `SECURE_CONTENT_TYPE_NOSNIFF = True`, `SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"`.
 - Producción: `SECURE_SSL_REDIRECT`, cookies `Secure`/`HttpOnly`/`SameSite=Lax`, HSTS 1 año con subdominios. **Preload apagado** hasta que el dominio esté estable (warning W021 esperado).
 - `SECRET_KEY` ≥ 50 caracteres, solo por variable de entorno.
@@ -39,7 +39,8 @@ Audiencia: seguridad | desarrollo | agentes | ops
 |---|---|---|
 | `SECRET_KEY` | config var Heroku | Ariel |
 | `DATABASE_URL` | add-on Postgres | Heroku |
-| `CLOUDINARY_URL` | add-on Cloudinary | Heroku |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` (usuario IAM solo para el bucket de fotos) | config vars Heroku | Ariel (ADR-0006, pendiente) |
+| `AWS_STORAGE_BUCKET_NAME` / `AWS_S3_REGION_NAME` | config vars Heroku | Ariel |
 | `ADMIN_URL` | config var Heroku | Ariel |
 
 Reglas:
@@ -58,7 +59,7 @@ Versiones exactas (`==`). `pip-audit -r requirements.txt` sin vulnerabilidades a
 
 ## Backups
 
-`heroku pg:backups:schedule DATABASE_URL --at '04:00 America/Santiago'` (diario). Fotos: Cloudinary.
+`heroku pg:backups:schedule DATABASE_URL --at '04:00 America/Santiago'` (diario). Fotos: S3 (ADR-0006); evaluar el versionado del bucket como respaldo.
 
 ## Cómo validar que sigue vigente
 

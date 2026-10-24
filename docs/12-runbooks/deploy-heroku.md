@@ -14,7 +14,7 @@ Audiencia: ops | desarrollo
 ---
 
 > **Solo Ariel ejecuta este runbook.** El agente no corre `heroku create`, no hace push y no despliega.
-> Cuentas: Heroku y Cloudinary a nombre de Claudia Schonffeldt, pagadas con la tarjeta de la empresa; Ariel con acceso de colaborador.
+> Cuentas: Heroku y (cuando se implemente) Amazon S3 a nombre de Claudia Schonffeldt, pagadas con la tarjeta de la empresa; Ariel con acceso de colaborador.
 
 ## 0. Antes de empezar
 

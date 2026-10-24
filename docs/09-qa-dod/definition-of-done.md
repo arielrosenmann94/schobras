@@ -42,7 +42,7 @@ Si `except Exception` aparece, solo se acepta en un límite HTTP documentado y c
 ```bash
 DJANGO_SETTINGS_MODULE=config.settings.production \
 DATABASE_URL=postgres://u:p@h:5432/x SECRET_KEY="$(openssl rand -base64 48)" \
-CLOUDINARY_URL=cloudinary://k:s@demo ADMIN_URL=gestion-x7k2/ \
+ADMIN_URL=gestion-x7k2/ ALLOWED_HOSTS=schobras-56c5d3fa8536.herokuapp.com \
 $PY manage.py check --deploy          # solo W021 (preload, intencional); sin ADMIN_URL o con admin/ falla a propósito
 # mismas variables:
 $PY manage.py collectstatic --noinput --dry-run

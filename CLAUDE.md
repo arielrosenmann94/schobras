@@ -55,7 +55,7 @@ Si el trabajo cambia de tipo a mitad de camino, pedir stop del tramo actual e in
 - La clienta (Claudia Schonffeldt) no es técnica: el panel debe ser imposible de romper (confirmaciones, no borrar categorías con proyectos, sin acceso a configuración).
 - Ningún modelo tiene campo de dirección (privacidad de los clientes de la constructora).
 - El bronce `#B57949` sobre blanco no cumple contraste AA para texto normal: solo en líneas, íconos y texto ≥ 24 px.
-- Las fotos van a Cloudinary en producción; en local, a `media/`.
+- Las fotos van a Amazon S3 en producción (ADR-0006, pendiente: hasta entonces producción corre con `PHOTO_UPLOADS_ENABLED=False`); en local, a `media/`.
 
 ## graphify
 

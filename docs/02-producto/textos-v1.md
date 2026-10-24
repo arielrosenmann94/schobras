@@ -117,6 +117,7 @@ Región Metropolitana · Región de Valparaíso · Región de O'Higgins
 | WhatsApp inválido | `Número de WhatsApp no válido. Ejemplo: +56 9 1234 5678` |
 | Bloqueo por intentos | `Demasiados intentos. Vuelve a intentarlo en 30 minutos.` |
 | Login fallido | `Correo o contraseña incorrectos.` |
+| Subida de fotos apagada (producción sin almacenamiento, hasta S3) ⚠️ | `La subida de fotos se habilita muy pronto.` |
 
 ## ⚠️ Pendiente de visto bueno de Ariel (QA vueltas 1 y 2)
 

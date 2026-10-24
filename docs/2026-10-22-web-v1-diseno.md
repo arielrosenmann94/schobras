@@ -20,7 +20,7 @@ Es la base de una v2.0 (plataforma con Claude/MCP para gestionar la empresa y ge
 
 **Costos:** el desarrollo no tiene costo para la clienta (no se menciona). Ella paga los servicios externos: Google Workspace y Heroku (dos aplicaciones: la web y el backend).
 
-**Cuentas:** Heroku y Cloudinary se crean a nombre de Claudia, pagadas con la tarjeta de la empresa; Ariel recibe acceso para operar (decidido por Ariel, 2026-10-22).
+**Cuentas:** Heroku y el almacenamiento de fotos (Amazon S3 desde el 2026-10-23, ADR-0006; antes Cloudinary) se crean a nombre de Claudia, pagadas con la tarjeta de la empresa; Ariel recibe acceso para operar (decidido por Ariel, 2026-10-22).
 
 **Prioridad para el lunes** (decidido por Ariel): la web pública informativa primero; el panel después. Se espera alcanzar todo, pero si algo se atrasa, el panel es lo que se corre, y mientras tanto Ariel carga proyectos.
 
@@ -57,7 +57,7 @@ Es la base de una v2.0 (plataforma con Claude/MCP para gestionar la empresa y ge
 
 - **Stack:** Django (decisión de Ariel), alineado con iterap y admindf (revisados 2026-10-22):
   - Python 3.12, **Django 6.0.x**, PostgreSQL con `psycopg[binary]` 3 y `dj-database-url`, `python-decouple` para variables de entorno, settings separados `base` / `production` (como iterap), `gunicorn`, `whitenoise` para estáticos, despliegue en **Heroku** con `Procfile` (`release`: migrate; Heroku corre collectstatic en el build). Versiones fijadas en `requirements.txt`.
-  - **Fotos:** el disco de Heroku se borra en cada despliegue, así que las fotos necesitan almacenamiento externo. [decisión de Claude] **Cloudinary** (ya usado en webar): entrega cada foto redimensionada y en WebP/AVIF automáticamente, que es lo que más pesa en la velocidad. Alternativa: S3 con `boto3` como en iterap, generando los tamaños con Pillow.
+  - **Fotos:** el disco de Heroku se borra en cada despliegue, así que las fotos necesitan almacenamiento externo. [decisión de Claude] **Cloudinary** (ya usado en webar): entrega cada foto redimensionada y en WebP/AVIF automáticamente, que es lo que más pesa en la velocidad. Alternativa: S3 con `boto3` como en iterap, generando los tamaños con Pillow. **Actualización 2026-10-23 (Ariel): se usa S3** (`django-storages` + `boto3`, `sa-east-1`, variantes WebP con Pillow); ver ADR-0006.
   - Pensando en v2.0: iterap ya tiene un servidor MCP (`mcp_server_iterap.py`, paquete `mcp`) y admindf su conector; la v1 no lo incluye, pero los modelos deben quedar listos para exponerlos igual.
 - **Dominio:** schobras.cl (titular Claudia Schonffeldt, registrador Registrar.eu). `www.schobras.cl` redirige a `schobras.cl` [decisión de Claude]. HTTPS obligatorio.
 - **Identidad de marca** (documento de la clienta):
@@ -148,7 +148,7 @@ Menú: Nosotros · Servicios · Proceso · Proyectos · Contacto. En celular, me
 - **No existe campo de dirección.** A propósito.
 
 **Foto de proyecto**
-- proyecto, imagen (Cloudinary), orden, es portada, texto alternativo (si se deja vacío, se usa el título del proyecto).
+- proyecto, imagen (S3 en producción, ADR-0006), orden, es portada, texto alternativo (si se deja vacío, se usa el título del proyecto).
 - tipo (opcional): obra terminada / en proceso / render.
 
 **Configuración del sitio** (registro único)

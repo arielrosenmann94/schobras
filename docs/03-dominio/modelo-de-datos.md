@@ -84,7 +84,7 @@ Carga inicial: Residencial (1), Comercial (2), Industrial (3).
 | Campo | Tipo | Nota |
 |---|---|---|
 | `project` | `FK(Project, CASCADE, related_name="photos")` | |
-| `image` | `ImageField(upload_to="proyectos/%Y/%m/")` | Cloudinary en producción |
+| `image` | `ImageField(upload_to="proyectos/%Y/%m/")` | S3 en producción (ADR-0006) |
 | `order` | `PositiveIntegerField` | |
 | `is_cover` | `BooleanField` | Máximo una por proyecto |
 | `alt_text` | `CharField(200, blank)` | Vacío → se usa el título |

@@ -15,7 +15,7 @@ Audiencia: arquitectura | desarrollo | agentes
 
 ## Stack
 
-Python 3.12 · Django 6.0.6 · PostgreSQL (Heroku `essential-0`) / SQLite (local) · WhiteNoise · gunicorn · Cloudinary (fotos) · `uuid6` · `django-axes`. Sin frameworks de frontend; CSS y JS propios. Alineado con iterap e iterap_com.
+Python 3.12 · Django 6.0.6 · PostgreSQL (Heroku `essential-0`) / SQLite (local) · WhiteNoise · gunicorn · Amazon S3 `sa-east-1` con `django-storages` + `boto3` (fotos, ADR-0006; pendiente) · `uuid6` · `django-axes`. Sin frameworks de frontend; CSS y JS propios. Alineado con iterap e iterap_com.
 
 ## Estructura
 
@@ -45,7 +45,7 @@ docs/              documentación (índice en docs/README.md)
 ## Flujo de datos
 
 ```
-Visitante ──GET──▶ vistas públicas ──▶ Project.objects.published() ──▶ plantillas (Cloudinary f_auto,q_auto,w_N)
+Visitante ──GET──▶ vistas públicas ──▶ Project.objects.published() ──▶ plantillas (variantes WebP 400/800/1600 en S3)
 Claudia ──POST──▶ panel (CBV + forms) ──▶ projects/services.py ──▶ modelos
 Ariel ──▶ admin de Django ──▶ acciones que llaman a services.py
 (v2.0) Claude Desktop ──MCP──▶ API Django ──▶ projects/services.py
@@ -56,17 +56,18 @@ Ariel ──▶ admin de Django ──▶ acciones que llaman a services.py
 | ADR | Tema |
 |---|---|
 | [ADR-0001](adr/ADR-0001-uuid-v7.md) | PK UUID v7 |
-| [ADR-0002](adr/ADR-0002-cloudinary.md) | Fotos en Cloudinary (add-on de Heroku a nombre de la clienta) |
+| [ADR-0002](adr/ADR-0002-cloudinary.md) | ~~Fotos en Cloudinary~~ (reemplazado por ADR-0006) |
 | [ADR-0003](adr/ADR-0003-idioma-codigo.md) | Código en inglés, interfaz en español |
 | [ADR-0004](adr/ADR-0004-servicios-unica-puerta.md) | `services.py` como única puerta de escritura |
 | [ADR-0005](adr/ADR-0005-panel-propio.md) | Backoffice propio en vez del admin de Django |
+| [ADR-0006](adr/ADR-0006-fotos-s3.md) | Fotos en Amazon S3 `sa-east-1` con variantes WebP de Pillow |
 
 ## Entornos
 
 | Entorno | Settings | Base de datos | Fotos |
 |---|---|---|---|
 | Local | `config.settings.local` | SQLite | `media/` |
-| Producción | `config.settings.production` | Postgres (`DATABASE_URL`) | Cloudinary (`CLOUDINARY_URL`) |
+| Producción | `config.settings.production` | Postgres (`DATABASE_URL`) | S3 (ADR-0006). Hasta implementarlo: sin almacenamiento y `PHOTO_UPLOADS_ENABLED=False` |
 
 ## Cuándo debe actualizarse
 

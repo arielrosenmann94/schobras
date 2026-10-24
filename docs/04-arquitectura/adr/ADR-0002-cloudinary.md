@@ -1,6 +1,8 @@
-# ADR-0002 — Fotos en Cloudinary
+# ADR-0002 — Fotos en Cloudinary (reemplazado)
 
-Estado: active
+> **Reemplazado el 2026-10-23 por [ADR-0006](ADR-0006-fotos-s3.md):** Ariel dejó Cloudinary fuera; las fotos irán a S3. El código mantiene la rama de Cloudinary hasta que S3 esté implementado.
+
+Estado: superseded por ADR-0006 (S3), 2026-10-23
 Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-22
 Versión del documento: 1.0.0
