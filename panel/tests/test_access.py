@@ -49,7 +49,7 @@ class PanelAccessTests(QuietAxesMixin, TestCase):
         response = self.client.get(reverse("panel:home"))
         self.assertContains(
             response,
-            '<span class="panel-brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>',
+            '<span class="brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>',
             html=False,
         )
 

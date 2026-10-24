@@ -51,7 +51,7 @@ body {
 }
 .panel-brand { margin: 0; font-weight: 700; }
 /* SCH (Schonffeldt) aparte, en bronce: que la marca no se lea "sobras". */
-.panel-brand__sch { color: var(--color-bronze); }
+.brand__sch { color: var(--color-bronze); }
 .panel-brand__sub { font-weight: 400; }
 .panel-brand a { display: inline-flex; align-items: center; gap: 0.3em; min-height: 44px; color: inherit; text-decoration: none; }
 

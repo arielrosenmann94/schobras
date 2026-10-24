@@ -48,12 +48,12 @@ class FooterContactTests(TestCase):
 class ErrorPageLayoutTests(TestCase):
     def test_404_heading_and_text_live_in_a_spaced_block(self):
         html = self.client.get("/no-existe/").content.decode()
-        self.assertRegex(html, r'<header class="error-page">\s*<p class="label">SCHOBRAS.CL</p>\s*<h1')
+        self.assertRegex(html, r'<header class="error-page">\s*<p class="label"><span class="brand__sch">SCH</span>OBRAS\.CL</p>\s*<h1')
 
     def test_500_heading_and_text_live_in_a_spaced_block(self):
         handler = get_resolver().resolve_error_handler(500)
         html = handler(RequestFactory().get("/")).content.decode()
-        self.assertRegex(html, r'<header class="error-page">\s*<p class="label">SCHOBRAS.CL</p>\s*<h1')
+        self.assertRegex(html, r'<header class="error-page">\s*<p class="label"><span class="brand__sch">SCH</span>OBRAS\.CL</p>\s*<h1')
 
 
 class StaticDesignTests(SimpleTestCase):

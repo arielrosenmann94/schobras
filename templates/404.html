@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load site_tags %}
 {% block title %}Esta página no existe | SCHOBRAS.CL{% endblock %}
 {% block og %}
   <meta property="og:site_name" content="SCHOBRAS.CL">
@@ -10,7 +11,7 @@
 <section class="section">
   <div class="container">
     <header class="error-page">
-      <p class="label">SCHOBRAS.CL</p>
+      <p class="label">{% brand_name %}</p>
       <h1 class="display">Esta página no existe</h1>
       <p class="lead">Puede que el enlace esté mal escrito o que el proyecto ya no esté publicado.</p>
     </header>

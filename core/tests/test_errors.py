@@ -94,7 +94,7 @@ class PermissionDeniedPageTests(TestCase):
         self.assertTemplateUsed(response, "panel/403.html")
         self.assertTemplateUsed(response, "panel/base.html")
         self.assertTemplateNotUsed(response, "base.html")
-        self.assertContains(response, '<span class="panel-brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>', status_code=403)
+        self.assertContains(response, '<span class="brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>', status_code=403)
         self.assertContains(response, "Esta sección es solo para quien administra el sitio.", status_code=403)
         self.assertContains(response, '<meta name="robots" content="noindex, nofollow">', status_code=403)
 
@@ -126,7 +126,7 @@ class CsrfFailurePageTests(TestCase):
         html = response.content.decode()
         self.assertIn('<html lang="es-CL">', html)
         self.assertIn("<title>La página caducó | SCHOBRAS.CL</title>", html)
-        self.assertIn('<span class="panel-brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>', html)
+        self.assertIn('<span class="brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>', html)
         self.assertIn("<h1>La página caducó</h1>", html)
         self.assertIn("Por seguridad, el formulario venció. Vuelve al panel e inténtalo de nuevo.", html)
         self.assertIn(f'href="{reverse("panel:home")}">Volver al panel</a>', html)

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load image_tags %}
+{% load image_tags site_tags %}
 {% block title %}Proyectos | SCHOBRAS.CL{% endblock %}
 {% block meta_description %}Obras de arquitectura y construcción de SCHOBRAS.CL en la Región Metropolitana, Valparaíso y O'Higgins.{% endblock %}
 {% block og %}
@@ -13,7 +13,7 @@
 <section class="section projects axes">
   <div class="container">
     <header class="projects__head">
-      <p class="label">SCHOBRAS.CL</p>
+      <p class="label">{% brand_name %}</p>
       <h1 class="display">Proyectos</h1>
       <div class="cota cota--start" aria-hidden="true"></div>
     </header>

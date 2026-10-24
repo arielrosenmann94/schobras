@@ -1,4 +1,4 @@
-{% load static %}<!doctype html>
+{% load static site_tags %}<!doctype html>
 <html lang="es-CL">
 <head>
   <meta charset="utf-8">
@@ -15,7 +15,7 @@
     <div class="site-header__bar container">
       <a class="brand" href="/" aria-label="SCHOBRAS.CL, inicio">
         <img class="brand__mark" src="{% static 'img/isotipo.svg' %}" alt="" width="32" height="36">
-        <span class="brand__word"><span class="brand__sch">SCH</span>OBRAS.CL</span>
+        <span class="brand__word">{% brand_name %}</span>
       </a>
     </div>
   </header>
@@ -23,7 +23,7 @@
     <section class="section">
       <div class="container">
         <header class="error-page">
-          <p class="label">SCHOBRAS.CL</p>
+          <p class="label">{% brand_name %}</p>
           <h1 class="display">No pudimos procesar esta solicitud</h1>
           <p class="lead">Vuelve atrás e inténtalo de nuevo.</p>
         </header>

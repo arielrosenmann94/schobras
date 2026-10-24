@@ -24,6 +24,12 @@ def whatsapp_href(context, message=""):
     return whatsapp_url(site.whatsapp, message or site.whatsapp_message)
 
 
+@register.simple_tag
+def brand_name(domain=True):
+    """Marca con SCH en bronce (.brand__sch) para que no se lea "sobras": SCHOBRAS.CL o, con domain=False, SCHOBRAS."""
+    return mark_safe('<span class="brand__sch">SCH</span>OBRAS' + (".CL" if domain else ""))
+
+
 @register.filter
 def tel_digits(phone):
     """Número apto para un enlace tel:, con el + inicial y solo dígitos ("+56 (2) 2345-6789" → "+56223456789")."""
