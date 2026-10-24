@@ -177,7 +177,11 @@ class StaticAssetsTests(SimpleTestCase):
         return (Path(settings.BASE_DIR) / "static" / relative).read_text(encoding="utf-8")
 
     def test_all_motion_respects_reduced_motion(self):
-        """Toda transition/animation vive dentro de @media (prefers-reduced-motion: no-preference)."""
+        """Toda transition/animation vive dentro de @media (prefers-reduced-motion: no-preference).
+
+        Única excepción: animaciones instantáneas (duración 0s), que no mueven nada;
+        p. ej. el respaldo que muestra la pestaña del inicio si site.js falla.
+        """
         stack, outside = [], []
         for number, line in enumerate(self.read("css/site.css").splitlines(), 1):
             for char in line:
@@ -185,9 +189,17 @@ class StaticAssetsTests(SimpleTestCase):
                     stack.append("prefers-reduced-motion: no-preference" in line)
                 elif char == "}":
                     stack.pop()
-            if re.match(r"\s*(transition|animation)\s*:", line) and not any(stack):
+            instant = re.match(r"\s*animation\s*:\s*[\w-]+\s+0s\b", line)
+            if re.match(r"\s*(transition|animation)\s*:", line) and not any(stack) and not instant:
                 outside.append(number)
         self.assertEqual(outside, [])
+
+    def test_deferred_cta_tab_has_css_failsafe(self):
+        """Si site.js no arma la pestaña del inicio, CSS la muestra sola a los 4 s."""
+        css = self.read("css/site.css")
+        self.assertRegex(css, r"\.cta-tab--deferred:not\(\.is-revealed\) \{[^}]*animation: cta-failsafe 0s 4s forwards;")
+        self.assertIn(".cta-tab--deferred.is-armed:not(.is-revealed) { animation: none; }", css)
+        self.assertIn('tab.classList.add("is-armed")', self.read("js/site.js"))
 
     def test_js_class_added_last(self):
         """Si algo falla antes, html.js no se activa y el contenido .reveal queda visible."""
