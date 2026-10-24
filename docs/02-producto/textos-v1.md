@@ -22,6 +22,12 @@ Audiencia: desarrollo | agentes
 - Título detalle: `{título} en {comuna} | SCHOBRAS.CL`
 - Título lista: `Proyectos | SCHOBRAS.CL`
 
+## Marca (regla de Ariel, 2026-10-23)
+
+- **Junto solo como dominio:** `SCHOBRAS.CL`. El nombre suelto se escribe **separado**: `SCH OBRAS` (así no se lee "sobras").
+- **En texto visible**, `SCH` va en bronce (clase `.brand__sch`) y `OBRAS` / `OBRAS.CL` en el color del texto, con el mismo peso. En plantillas se escribe con la etiqueta `{% brand_name %}` (dominio) o `{% brand_name domain=False %}` (nombre suelto), nunca a mano.
+- En texto plano (title, metas, JSON-LD, aria-label, alt) va sin estilo: `SCHOBRAS.CL`.
+
 ## Menú
 
 Nosotros · Servicios · Proceso · Proyectos (solo si hay proyectos publicados) · Contacto (solo si hay un canal configurado)
@@ -43,7 +49,7 @@ Trabajamos con seriedad y rigor en cada etapa, con un trato cercano, transparent
 **Visión**
 Ser una constructora de referencia por la excelencia técnica de nuestras obras, su durabilidad y la confianza de nuestros clientes: el aliado ideal tanto para familias que buscan concretar su hogar como para empresas e instituciones que requieren infraestructura comercial y civil de alto rendimiento.
 
-## 02 · Por qué SCHOBRAS
+## 02 · Por qué SCH OBRAS
 
 1. **La arquitectura se descuenta de tu obra** (destacado) ⚠️ — Pagas el proyecto de arquitectura al inicio y, si ejecutas la construcción con nosotros, su valor se descuenta del presupuesto de obra. Además gestionamos los trámites en la Dirección de Obras Municipales: continuidad y eficiencia desde el plano hasta la entrega.
 2. **Escuchamos e interpretamos** — Entendemos en profundidad lo que necesitas y sueñas, y lo traducimos en un diseño a tu medida y en soluciones constructivas reales.

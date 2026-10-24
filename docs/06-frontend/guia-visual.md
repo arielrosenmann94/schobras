@@ -26,6 +26,10 @@ Audiencia: desarrollo | agentes
 
 Escala tipográfica con contraste fuerte: display muy grande (`clamp(2.75rem, 8vw, 7rem)`) junto a texto de cuerpo pequeño y aireado (1rem–1.125rem, interlineado 1.6). Espaciado en múltiplos de 8 px.
 
+## Marca en pantalla
+
+`SCH` en bronce y `OBRAS.CL` (o ` OBRAS`, separado, cuando no es el dominio) en el color del texto, con el mismo peso: el corte de color evita que se lea "sobras". Siempre con `{% brand_name %}` (`core/templatetags/site_tags.py`). El bronce en el wordmark es **logotipo**, exento del criterio 1.4.3 de contraste; fuera de la marca rige la tabla de abajo. Sobre antracita (pie) se usa igual. El wordmark del encabezado tiene que caber en una sola fila con el botón "Menú" desde 360 px.
+
 ## Contraste (WCAG 2.2 AA)
 
 | Combinación | Ratio aprox. | Permitido para |
