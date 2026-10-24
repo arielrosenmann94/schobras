@@ -176,12 +176,12 @@ Protecciones para la editora [decisión de Claude]:
 ## 8. Pendientes de la clienta (no bloquean el lanzamiento)
 - Logo en vector (y retoque final).
 - ~~Número de teléfono / WhatsApp.~~ Entregado el 2026-10-23: +56 9 4028 0657 (se carga en Configuración del sitio).
-- Contratar Google Workspace para info@schobras.cl y correos por persona.
+- ~~Contratar Google Workspace para info@schobras.cl y correos por persona.~~ El 2026-10-23 el correo público pasó a ser **oficina@schobras.cl** (cargado en Configuración del sitio de producción).
 - Acceso a la cuenta del dominio (Registrar.eu o el revendedor) para apuntar el DNS.
 - Fotos de obras con sus nombres (las carga ella o Ariel desde el panel).
 - ~~RUT de la empresa.~~ Entregado el 2026-10-23: 77.897.204-2.
 - ~~Confirmar la oferta de arquitectura.~~ Respondido el 2026-10-23: se paga al inicio y se descuenta del presupuesto de obra.
-- ~~Contacto temporal.~~ Respondido el 2026-10-23: número nuevo +56 9 4028 0657 y, mientras no esté info@schobras.cl, oficina@claudiaarquitecta.cl. Pide Google Workspace lo antes posible.
+- ~~Contacto temporal.~~ Respondido el 2026-10-23: número nuevo +56 9 4028 0657 y, mientras no esté info@schobras.cl, oficina@claudiaarquitecta.cl. Pide Google Workspace lo antes posible. **Actualizado el mismo día: correo público oficina@schobras.cl.**
 - **Autorización de los dueños para publicar fotos** (2026-10-23): todavía no la tiene; la conseguirá para algunas obras. Debe ser por escrito (un correo o un WhatsApp del dueño basta) y quedar guardada.
 
 **Nombre de marca:** decidido por Ariel el 2026-10-22: **SCHOBRAS.CL** (reemplaza "OBRAS SCH" / "SCH OBRAS").

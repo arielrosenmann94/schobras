@@ -31,3 +31,9 @@ Decisiones tomadas por Ariel. Este documento se irá completando hasta convertir
 - **RUT** 77.897.204-2: va en el pie y en el JSON-LD (`taxID`).
 - **Fotos:** se publican solo las obras con autorización escrita del dueño (un correo o un WhatsApp, guardado).
 - **Pendiente:** el acceso al registrador de schobras.cl, para el dominio y para Google Workspace.
+
+## 2026-10-23 (noche) — correo público y deploy
+
+- **Correo público de contacto:** **oficina@schobras.cl**, en reemplazo del temporal oficina@claudiaarquitecta.cl. Está cargado en Configuración del sitio de producción. El usuario de Claudia para entrar al panel sigue siendo oficina@claudiaarquitecta.cl.
+- **Primer deploy:** en `schobras-56c5d3fa8536.herokuapp.com`, sin dominio propio y sin indexar (`SEARCH_INDEXING`). Las fotos van a S3 (ADR-0006); hasta que esté, la subida queda apagada.
+- **Pestaña "Cotiza tu proyecto" en el inicio:** aparece al llegar a Nosotros, no sobre la portada, y no se vuelve a ocultar.
