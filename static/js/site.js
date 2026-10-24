@@ -47,6 +47,7 @@
         }
       }, { rootMargin: "0px 0px -50% 0px" });
       tabObserver.observe(trigger);
+      tab.classList.add("is-armed");
     }
   }
 

@@ -674,12 +674,18 @@ body::before,
 
 /* En el inicio la pestaña espera fuera de la portada y aparece al llegar a la
    primera sección (site.js agrega .is-revealed y ya no la quita). Se oculta
-   solo si hay JS: sin JS (o en navegadores sin la media query) queda visible. */
+   solo si hay JS: sin JS (o en navegadores sin la media query) queda visible.
+   Respaldo: si site.js no la arma (.is-armed) en 4 s porque falló o no cargó,
+   cta-failsafe la muestra igual; el CTA nunca queda oculto para siempre. */
+@keyframes cta-failsafe { to { visibility: visible; clip-path: none; } }
+
 @media (scripting: enabled) {
   .cta-tab--deferred:not(.is-revealed) {
     visibility: hidden;
     clip-path: inset(100% 0 0 0);
+    animation: cta-failsafe 0s 4s forwards;
   }
+  .cta-tab--deferred.is-armed:not(.is-revealed) { animation: none; }
 }
 
 .cta-tab__icon { flex: none; width: 1.5rem; height: 1.5rem; }
@@ -717,7 +723,7 @@ body::before,
   .cta-tab--deferred.is-revealed {
     transition: clip-path var(--duration) var(--ease), box-shadow 200ms var(--ease);
   }
-  .cta-tab--deferred:not(.is-revealed) > * { opacity: 0; }
+  .cta-tab--deferred.is-armed:not(.is-revealed) > * { opacity: 0; }
   .cta-tab--deferred.is-revealed > * {
     transition: opacity 250ms var(--ease) calc(var(--duration) - 150ms);
   }
