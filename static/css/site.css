@@ -385,6 +385,10 @@ body::before,
 
 .brand__mark { width: 2rem; flex: none; }
 
+/* SCH (Schonffeldt) en bronce y OBRAS.CL en el color del texto, para que la
+   marca se lea "SCH · OBRAS" y no "sobras". Mismo peso: solo cambia el color. */
+.brand__sch { color: var(--color-bronze); }
+
 .brand__word {
   /* Compensa el espaciado final para que el bloque quede alineado al eje. */
   margin-right: -0.32em;

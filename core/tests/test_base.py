@@ -63,6 +63,12 @@ class BaseTemplateTests(TestCase):
         self.assertIn('href="tel:+56223456789"', html)
         self.assertIn('href="mailto:oficina@example.com"', html)
 
+    def test_wordmark_separates_sch_from_obras(self):
+        """Que no se lea "sobras": SCH (Schonffeldt) aparte, en bronce, y OBRAS.CL."""
+        _, html = self.get()
+        self.assertIn('<span class="brand__word"><span class="brand__sch">SCH</span>OBRAS.CL</span>', html)
+        self.assertIn('<p class="site-footer__word"><span class="brand__sch">SCH</span>OBRAS.CL</p>', html)
+
     def test_whatsapp_default_message(self):
         configure(whatsapp="912345678")
         _, html = self.get()
@@ -128,7 +134,7 @@ class BaseTemplateTests(TestCase):
     def test_footer_legal_name_and_rut(self):
         _, html = self.get()
         footer = html[html.index("<footer"):]
-        self.assertIn("SCHOBRAS.CL", footer)
+        self.assertIn('<span class="brand__sch">SCH</span>OBRAS.CL', footer)
         self.assertIn("Constructora Schonffeldt SpA", footer)
         # Texto exacto de docs/02-producto/textos-v1.md §Pie.
         self.assertIn("Región Metropolitana · Valparaíso · O'Higgins", footer)

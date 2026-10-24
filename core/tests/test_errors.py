@@ -26,6 +26,11 @@ class ServerErrorPageTests(SimpleTestCase):
         self.assertNotRegex(html, "sty" + 'le="')
 
 
+    def test_500_wordmark_separates_sch(self):
+        handler = get_resolver().resolve_error_handler(500)
+        html = handler(RequestFactory().get("/")).content.decode()
+        self.assertIn('<span class="brand__word"><span class="brand__sch">SCH</span>OBRAS.CL</span>', html)
+
 @override_settings(DEBUG=False, ALLOWED_HOSTS=["testserver"])
 class BadRequestPageTests(TestCase):
     """QA-1.13: el 400 salía como "Bad Request (400)" en inglés y sin marca."""
@@ -38,6 +43,7 @@ class BadRequestPageTests(TestCase):
         self.assertIn('<html lang="es-CL">', html)
         self.assertIn('<meta name="robots" content="noindex">', html)
         self.assertIn("SCHOBRAS", html)
+        self.assertIn('<span class="brand__word"><span class="brand__sch">SCH</span>OBRAS.CL</span>', html)
         # QA-2.3: cualquier 400 (p. ej. Host inválido) decía "envío" y "fotos".
         self.assertIn("No pudimos procesar esta solicitud", html)
         self.assertIn("Vuelve atrás e inténtalo de nuevo.", html)
@@ -88,7 +94,7 @@ class PermissionDeniedPageTests(TestCase):
         self.assertTemplateUsed(response, "panel/403.html")
         self.assertTemplateUsed(response, "panel/base.html")
         self.assertTemplateNotUsed(response, "base.html")
-        self.assertContains(response, "SCHOBRAS.CL <span>Panel</span>", status_code=403)
+        self.assertContains(response, '<span class="panel-brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>', status_code=403)
         self.assertContains(response, "Esta sección es solo para quien administra el sitio.", status_code=403)
         self.assertContains(response, '<meta name="robots" content="noindex, nofollow">', status_code=403)
 
@@ -120,7 +126,7 @@ class CsrfFailurePageTests(TestCase):
         html = response.content.decode()
         self.assertIn('<html lang="es-CL">', html)
         self.assertIn("<title>La página caducó | SCHOBRAS.CL</title>", html)
-        self.assertIn("SCHOBRAS.CL <span>Panel</span>", html)
+        self.assertIn('<span class="panel-brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>', html)
         self.assertIn("<h1>La página caducó</h1>", html)
         self.assertIn("Por seguridad, el formulario venció. Vuelve al panel e inténtalo de nuevo.", html)
         self.assertIn(f'href="{reverse("panel:home")}">Volver al panel</a>', html)

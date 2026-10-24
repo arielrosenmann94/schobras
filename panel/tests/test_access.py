@@ -44,6 +44,15 @@ class PanelAccessTests(QuietAxesMixin, TestCase):
         self.assertContains(response, "Categorías")
         self.assertNotContains(response, "Configuración")
 
+    def test_panel_wordmark_separates_sch(self):
+        self.client.force_login(self.editor)
+        response = self.client.get(reverse("panel:home"))
+        self.assertContains(
+            response,
+            '<span class="panel-brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>',
+            html=False,
+        )
+
     def test_admin_sees_settings_button(self):
         self.client.force_login(self.admin)
         response = self.client.get(reverse("panel:home"))
