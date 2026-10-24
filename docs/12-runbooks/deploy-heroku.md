@@ -3,9 +3,9 @@
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-23
-Versión del documento: 1.1.0
+Versión del documento: 1.2.0
 Tipo de cambio más reciente: minor
-Notas del último cambio: primer despliegue sin dominio propio (*.herokuapp.com, sin indexar); schobras.cl se conecta después
+Notas del último cambio: diagnóstico del primer deploy (releases concurrentes, contacto vacío) y qué puede hacer el agente en Heroku
 Fuente de verdad: sí
 Documentos relacionados: ../07-appsec/seguridad.md, ../../../iterap_com/docs/12-runbooks/deploy_heroku.md, ../../../iterap/docs/11-runbooks/HEROKU_PRODUCTION_DEPLOY.md
 Objetivo: pasos exactos para crear, desplegar, verificar y revertir la app en Heroku
@@ -75,9 +75,19 @@ heroku logs --tail -a schobras              # sin errores al navegar
 ```
 
 - Abrir `https://$HEROKU_HOST/` (inicio, `/proyectos/`, `/sitemap.xml`, una URL inexistente → 404 con marca). `/robots.txt` debe decir `Disallow: /` y `curl -sI https://$HEROKU_HOST/ | grep -i x-robots-tag` debe mostrar `noindex, nofollow`.
-- En el admin: cargar **Configuración del sitio** con al menos un canal (WhatsApp/teléfono/correo).
+- En el panel (`/panel/` → Configuración) o en el admin: cargar **Configuración del sitio** con al menos un canal (WhatsApp/teléfono/correo). **Sin esto no aparecen la pestaña "Cotiza tu proyecto", el botón de WhatsApp ni el bloque de Contacto**: la base de producción nace vacía. Se comprueba con `curl -s https://$HEROKU_HOST/ | grep -o 'https://wa.me/[0-9]*'`.
 - En el admin: crear a Claudia (oficina@claudiaarquitecta.cl, rol Editora) y probar `/panel/ingresar/`.
 - Lighthouse móvil (Chrome DevTools): rendimiento y accesibilidad ≥ 90.
+
+### Si `heroku releases` muestra "release command failed"
+
+1. Ver qué release está **sirviendo**: `heroku releases -a schobras` (la cabecera dice `Current: vNN`). Si la fallida no es la actual, la web sigue en la anterior.
+2. Leer la salida del `migrate`: `heroku logs -a schobras -d release -n 200` (o `heroku releases:output vNN -a schobras`; nunca `releases:info`).
+3. Causas vistas:
+   - **Dos releases del mismo commit casi al mismo tiempo** (p. ej. un `config:set` o un add-on justo antes del push): las dos corren `migrate` en paralelo y una falla con `relation "…" already exists`. Si la otra terminó bien (`Current` apunta a ella y `showmigrations` no tiene `[ ]`), **no hay daño ni hay que hacer nada**. Pasó en el primer deploy (v9 bien, v10 fallida, 2026-10-23).
+   - Falta una variable: `ImproperlyConfigured` por `ADMIN_URL`, `UndefinedValueError` por `SECRET_KEY`, base sin `DATABASE_URL`.
+   - Falta `DJANGO_SETTINGS_MODULE`: `manage.py` cae en `config.settings.local` y el `migrate` del release corre contra SQLite, no contra Postgres.
+4. Corregida la causa: `heroku releases:retry -a schobras` o un nuevo `git push heroku main`.
 
 ## 5. Dominio (cuando Claudia entregue el acceso al registrador)
 
@@ -106,6 +116,17 @@ heroku rollback vNN -a schobras
 
 Si la release fallida migró la base, revisar la migración antes de volver a desplegar; restaurar backup solo si hubo pérdida de datos: `heroku pg:backups:restore <backup> DATABASE_URL -a schobras`.
 
-## 7. Prohibido
+## 7. Qué puede hacer el agente (Claude Code) en Heroku
+
+| Puede (solo lectura, no imprime secretos) | No puede (bloqueado o reservado a Ariel) |
+|---|---|
+| `heroku apps`, `heroku addons`, `heroku domains`, `heroku buildpacks`, `heroku ps` | `git push` (origin o heroku) y cualquier deploy: `.claude/settings.json` lo bloquea |
+| `heroku releases`, `heroku logs` (incl. `-d release`), `heroku releases:output` | `heroku config*`, también `config:set` y `config:get … \| wc -c`: bloqueado; para saber si una variable existe, preguntar a Ariel |
+| `heroku run … showmigrations` y otros comandos de solo lectura | Escribir en la base de producción con `heroku run … shell` o `loaddata`: el modo automático lo bloquea; Ariel lo hace desde el panel |
+| `curl` al host público para verificar cabeceras, robots y contenido | Crear recursos que cuestan dinero (`apps:create`, `addons:create`) sin que Ariel lo pida explícitamente |
+
+El agente prepara los comandos exactos y verifica después; Ariel los corre. El host de la app se lee con `heroku domains` (las apps nuevas tienen sufijo aleatorio: `schobras-56c5d3fa8536.herokuapp.com`).
+
+## 8. Prohibido
 
 `heroku config` (sin `:get … | wc -c`), `heroku releases:info`, `heroku pg:credentials`, `heroku run env`. Ver `docs/07-appsec/seguridad.md`.
