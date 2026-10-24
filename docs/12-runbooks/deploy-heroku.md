@@ -85,14 +85,13 @@ heroku domains:add www.schobras.cl -a schobras
 heroku certs:auto:enable -a schobras
 # Se vuelve a leer el host: esta sección puede correrse otro día, en otra terminal.
 HEROKU_HOST="$(heroku domains -a schobras --json | python3 -c 'import json,sys; print(next(d["hostname"] for d in json.load(sys.stdin) if d["kind"] == "heroku"))')"
-test -n "$HEROKU_HOST" || { echo "No se pudo leer el host de Heroku"; exit 1; }
-heroku config:set -a schobras \
+test -n "$HEROKU_HOST" && heroku config:set -a schobras \
   ALLOWED_HOSTS="$HEROKU_HOST,schobras.cl,www.schobras.cl" \
   CSRF_TRUSTED_ORIGINS="https://$HEROKU_HOST,https://schobras.cl,https://www.schobras.cl" \
   SEARCH_INDEXING=True
 ```
 
-Con `SEARCH_INDEXING=True` vuelven `robots.txt` normal (con `Sitemap:`) y la indexación; comprobar que `curl -sI https://schobras.cl/` ya no trae `X-Robots-Tag`.
+Si `HEROKU_HOST` viene vacío, el `config:set` no se ejecuta (sin cerrar la terminal): revisar `heroku domains -a schobras`. Con `SEARCH_INDEXING=True` vuelven `robots.txt` normal (con `Sitemap:`) y la indexación; comprobar que `curl -sI https://schobras.cl/` ya no trae `X-Robots-Tag`.
 
 En el registrador (Registrar.eu o su revendedor): registros que indique `heroku domains` (ALIAS/ANAME o CNAME). `www` redirige (301) a `schobras.cl` con `core.middleware.CanonicalHostMiddleware`, activo solo en producción; basta con apuntar ambos nombres a Heroku.
 
