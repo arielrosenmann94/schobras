@@ -51,3 +51,23 @@ class AdminActionTests(TestCase):
         self.full.refresh_from_db()
         self.assertEqual(self.empty.status, Project.Status.DRAFT)
         self.assertEqual(self.full.status, Project.Status.PUBLISHED)
+
+
+class AdminPhotoInlineTests(TestCase):
+    def inline_can_add(self):
+        from django.contrib import admin
+        from django.test import RequestFactory
+
+        from projects.admin import ProjectPhotoInline
+
+        request = RequestFactory().get("/")
+        request.user = get_user_model().objects.create_superuser("root", "r@example.com", "pw-12345-x")
+        return ProjectPhotoInline(Project, admin.site).has_add_permission(request, None)
+
+    @override_settings(PHOTO_UPLOADS_ENABLED=False)
+    def test_no_photo_uploads_from_admin_while_disabled(self):
+        self.assertFalse(self.inline_can_add())
+
+    @override_settings(PHOTO_UPLOADS_ENABLED=True)
+    def test_photo_uploads_from_admin_while_enabled(self):
+        self.assertTrue(self.inline_can_add())

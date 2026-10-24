@@ -29,6 +29,9 @@ ADMIN_URL = config("ADMIN_URL", default="admin/")
 # *.herokuapp.com; se enciende al conectar schobras.cl (runbook §5).
 SEARCH_INDEXING = config("SEARCH_INDEXING", default=True, cast=bool)
 
+# Subida de fotos (panel y admin). Producción la apaga si no hay almacenamiento externo.
+PHOTO_UPLOADS_ENABLED = True
+
 # ── Aplicaciones ───────────────────────────────────────────────────────────────
 DJANGO_APPS = [
     "django.contrib.admin",

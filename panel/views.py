@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, ProtectedError
@@ -127,7 +128,13 @@ class ProjectPhotosView(PanelAccessMixin, View):
 
     def render_page(self, request, project, form):
         photos = project.photos.all()
-        return render(request, self.template_name, {"project": project, "photos": photos, "form": form})
+        context = {
+            "project": project,
+            "photos": photos,
+            "form": form,
+            "uploads_enabled": settings.PHOTO_UPLOADS_ENABLED,
+        }
+        return render(request, self.template_name, context)
 
     def get(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
@@ -135,6 +142,8 @@ class ProjectPhotosView(PanelAccessMixin, View):
 
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
+        if not settings.PHOTO_UPLOADS_ENABLED:
+            return self.render_page(request, project, PhotoUploadForm())
         form = PhotoUploadForm(request.POST, request.FILES)
         if not form.is_valid():
             return self.render_page(request, project, form)

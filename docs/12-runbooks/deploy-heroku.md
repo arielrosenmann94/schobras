@@ -30,7 +30,9 @@ heroku create schobras --region us
 heroku buildpacks:set heroku/python -a schobras
 heroku addons:create heroku-postgresql:essential-0 -a schobras
 heroku pg:backups:schedule DATABASE_URL --at '04:00 America/Santiago' -a schobras
-heroku addons:create cloudinary:starter -a schobras     # define CLOUDINARY_URL (obligatoria: sin ella la app no arranca, "Falta CLOUDINARY_URL")
+# Fotos: en este primer deploy de muestra NO hay almacenamiento externo (S3 viene
+# después). Sin él la web arranca, pero el panel y el admin no aceptan fotos
+# ("La subida de fotos se habilita muy pronto."), porque el disco de Heroku se borra.
 ```
 
 ## 2. Config vars (en tu terminal; nunca las imprimas después)

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin, messages
 
 from . import services
@@ -8,6 +9,9 @@ class ProjectPhotoInline(admin.TabularInline):
     model = ProjectPhoto
     extra = 1
     fields = ("image", "order", "is_cover", "alt_text", "kind")
+
+    def has_add_permission(self, request, obj=None):
+        return settings.PHOTO_UPLOADS_ENABLED and super().has_add_permission(request, obj)
 
 
 @admin.register(Category)

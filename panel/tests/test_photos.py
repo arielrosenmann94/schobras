@@ -27,6 +27,7 @@ PNG = make_png_bytes()
 GIF = b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
 FORMAT_ERROR = "Formato no soportado: sube fotos JPG, PNG o WebP."
 UPLOAD_ERROR = "No se pudo subir la foto. Inténtalo de nuevo en unos minutos."
+UPLOADS_DISABLED = "La subida de fotos se habilita muy pronto."
 
 
 def png(name):
@@ -286,6 +287,19 @@ class PanelPhotoTests(TestCase):
         )
         self.assertContains(response, 'accept="image/jpeg,image/png,image/webp"')
         self.assertContains(response, "multiple")
+
+    @override_settings(PHOTO_UPLOADS_ENABLED=False)
+    def test_uploads_disabled_hides_form_and_explains(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, UPLOADS_DISABLED)
+        self.assertNotContains(response, 'type="file"')
+
+    @override_settings(PHOTO_UPLOADS_ENABLED=False)
+    def test_uploads_disabled_post_saves_nothing(self):
+        response = self.upload(png("a.png"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, UPLOADS_DISABLED)
+        self.assertEqual(self.project.photos.count(), 0)
 
     def test_storage_failure_shows_message_without_500(self):
         for error in (OSError("disco lleno"), CloudinaryError("timeout de Cloudinary")):

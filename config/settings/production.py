@@ -41,11 +41,14 @@ if not ADMIN_URL.endswith("/") or ADMIN_URL.startswith("/"):
     raise ImproperlyConfigured("ADMIN_URL debe terminar en / y no empezar con / (p. ej. gestion-x7k2/)")
 
 # ── Fotos en Cloudinary ───────────────────────────────────────────────────────
-# El disco de Heroku es efímero: sin Cloudinary las fotos se perderían.
-if not config("CLOUDINARY_URL", default=""):
-    raise ImproperlyConfigured("Falta CLOUDINARY_URL")
-INSTALLED_APPS += ["cloudinary_storage", "cloudinary"]  # noqa: F405
-STORAGES["default"] = {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"}  # noqa: F405
+# El disco de Heroku es efímero: sin almacenamiento externo las fotos se
+# perderían, así que la web arranca igual pero sin subida de fotos (primer
+# deploy de muestra, 2026-10-23; S3 viene después).
+if config("CLOUDINARY_URL", default=""):
+    INSTALLED_APPS += ["cloudinary_storage", "cloudinary"]  # noqa: F405
+    STORAGES["default"] = {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"}  # noqa: F405
+else:
+    PHOTO_UPLOADS_ENABLED = False
 
 # ── SSL / HTTPS (Heroku) ──────────────────────────────────────────────────────
 SECURE_SSL_REDIRECT = True

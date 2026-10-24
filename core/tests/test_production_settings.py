@@ -83,3 +83,40 @@ class ProductionSearchIndexingTests(SimpleTestCase):
 
     def test_indexing_on_when_enabled(self):
         self.assertEqual(self.production_value(SEARCH_INDEXING="True"), "True")
+
+
+class ProductionPhotoStorageTests(SimpleTestCase):
+    """Sin almacenamiento de fotos la web arranca igual, pero sin subida de fotos."""
+
+    def production_value(self, **extra):
+        env = {
+            key: value for key, value in os.environ.items() if key not in ("CLOUDINARY_URL", "SEARCH_INDEXING")
+        }
+        env.update(SECRET_KEY="x" * 50, DATABASE_URL="sqlite:///:memory:", ADMIN_URL="gestion-x7k2/", **extra)
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "import sys, config.settings.production as p; "
+                "sys.stdout.write(f\"{p.PHOTO_UPLOADS_ENABLED} {p.STORAGES['default']['BACKEND']}\")",
+            ],
+            cwd=settings.BASE_DIR,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout.strip()
+
+    def test_starts_without_photo_storage_and_disables_uploads(self):
+        self.assertEqual(
+            self.production_value(),
+            "False django.core.files.storage.FileSystemStorage",
+        )
+
+    def test_cloudinary_enables_uploads(self):
+        self.assertEqual(
+            self.production_value(CLOUDINARY_URL="cloudinary://key:secret@demo"),
+            "True cloudinary_storage.storage.MediaCloudinaryStorage",
+        )

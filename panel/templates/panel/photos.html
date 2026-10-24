@@ -9,6 +9,7 @@
 </div>
 <p class="card">Sube solo fotos de obras que el dueño autorizó a publicar. No incluyas números de casa ni patentes.</p>
 
+{% if uploads_enabled %}
 <form method="post" enctype="multipart/form-data" class="form">
   {% csrf_token %}
   <div class="field">
@@ -21,6 +22,9 @@
   </div>
   <button type="submit" class="btn btn-primary">Subir fotos</button>
 </form>
+{% else %}
+<p class="card">La subida de fotos se habilita muy pronto.</p>
+{% endif %}
 
 {% if photos %}
 <ul class="photo-list">
