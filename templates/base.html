@@ -25,6 +25,6 @@
     {% block content %}{% endblock %}
   </main>
   {% include "includes/footer.html" %}
-  {% if wa_href %}{% include "includes/whatsapp.html" %}{% endif %}
+  {% if wa_href %}{% block cta_tab %}{% include "includes/whatsapp.html" %}{% endblock %}{% endif %}
 </body>
 </html>

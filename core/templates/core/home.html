@@ -10,6 +10,9 @@
 {% endblock %}
 {% block jsonld %}<script type="application/ld+json" nonce="{{ csp_nonce }}">{{ jsonld|json_ld }}</script>{% endblock %}
 
+{% comment %}En el inicio la pestaña aparece al llegar a la primera sección (site.js), no sobre la portada.{% endcomment %}
+{% block cta_tab %}{% include "includes/whatsapp.html" with deferred=True %}{% endblock %}
+
 {% block content %}
 {% comment %}
   Inicio: una página larga con anclas (nosotros, servicios, proceso, proyectos, contacto).

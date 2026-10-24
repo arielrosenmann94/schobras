@@ -91,6 +91,22 @@ class HomeTests(TestCase):
         self.assertNotIn("sin costo", html)
         self.assertNotIn("incluid", html)
 
+    def test_cta_tab_deferred_until_first_section_on_home(self):
+        configure(whatsapp="912345678")
+        html = self.get()
+        self.assertRegex(html, r'<a class="cta-tab cta-tab--deferred" href="https://wa\.me/56912345678')
+        # El disparador existe: la cabecera de la primera sección, debajo de la portada.
+        self.assertLess(html.index('class="home-hero"'), html.index('class="home-head"'))
+
+    def test_cta_tab_not_deferred_outside_home(self):
+        configure(whatsapp="912345678")
+        publish("Casa Diferida")
+        for url in (reverse("projects:list"), "/no-existe/"):
+            with self.subTest(url=url):
+                html = self.client.get(url).content.decode()
+                self.assertIn('<a class="cta-tab" href=', html)
+                self.assertNotIn("cta-tab--deferred", html)
+
     def test_home_has_no_mision(self):
         html = self.get()
         self.assertNotIn("misión", html.lower())

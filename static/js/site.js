@@ -30,6 +30,26 @@
     each(items, function (el) { observer.observe(el); });
   }
 
+  /* Pestaña «Cotiza tu proyecto» del inicio: aparece cuando la primera sección
+     entra en pantalla (o si ya quedó atrás al cargar) y no se vuelve a ocultar. */
+  var tab = document.querySelector(".cta-tab--deferred");
+  var trigger = document.querySelector(".home-head");
+  var revealTab = function () { tab.classList.add("is-revealed"); };
+  if (tab) {
+    if (!trigger || !("IntersectionObserver" in window)) {
+      revealTab();
+    } else {
+      var tabObserver = new IntersectionObserver(function (entries) {
+        var entry = entries[0];
+        if (entry.isIntersecting || entry.boundingClientRect.top < 0) {
+          revealTab();
+          tabObserver.disconnect();
+        }
+      }, { rootMargin: "0px 0px -50% 0px" });
+      tabObserver.observe(trigger);
+    }
+  }
+
   /* Menú de pantalla completa (celular y tablet) */
   var toggle = document.querySelector("[data-menu-toggle]");
   var menu = toggle && document.getElementById(toggle.getAttribute("aria-controls"));

@@ -672,6 +672,16 @@ body::before,
 
 .cta-tab:hover { box-shadow: inset 6px 0 0 var(--color-bronze), 0 0 0 1px var(--line-on-dark); }
 
+/* En el inicio la pestaña espera fuera de la portada y aparece al llegar a la
+   primera sección (site.js agrega .is-revealed y ya no la quita). Se oculta
+   solo si hay JS: sin JS (o en navegadores sin la media query) queda visible. */
+@media (scripting: enabled) {
+  .cta-tab--deferred:not(.is-revealed) {
+    visibility: hidden;
+    clip-path: inset(100% 0 0 0);
+  }
+}
+
 .cta-tab__icon { flex: none; width: 1.5rem; height: 1.5rem; }
 
 .cta-tab__text {
@@ -701,6 +711,16 @@ body::before,
   .site-nav__link::after { transition: transform 300ms var(--ease); }
   .site-nav__link--cta { transition: background-color 200ms var(--ease), color 200ms var(--ease); }
   .cta-tab { transition: box-shadow 200ms var(--ease); }
+
+  /* Pestaña del inicio: sube desde su base como un muro y después aparecen
+     el ícono y el texto. */
+  .cta-tab--deferred.is-revealed {
+    transition: clip-path var(--duration) var(--ease), box-shadow 200ms var(--ease);
+  }
+  .cta-tab--deferred:not(.is-revealed) > * { opacity: 0; }
+  .cta-tab--deferred.is-revealed > * {
+    transition: opacity 250ms var(--ease) calc(var(--duration) - 150ms);
+  }
 
   /* Menú móvil: el muro baja; al cerrar, se oculta después de subir. */
   html.js .site-nav { transition: clip-path 450ms var(--ease), visibility 0s linear 450ms; }
