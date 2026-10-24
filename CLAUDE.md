@@ -45,10 +45,15 @@ Siempre, **antes de la primera acción del trabajo** (antes de leer código o co
 
 | Trabajo | Tarea en webar |
 |---|---|
-| Programar, corregir, QA, documentación | "Desarrollo" (#1058) |
-| Preparar o hacer el despliegue (Heroku, GitHub, dominio, runbook) | "Deploy" (#1129) |
+| Programar, corregir, QA de código | "Desarrollo" (#1058) |
+| Documentar: docs/, ADR, runbooks, CLAUDE.md, skills de agentes | "Documentación" (#1057) |
+| Preparar o hacer el despliegue (Heroku, GitHub, dominio, verificación en producción) | "Deploy" (#1129) |
 
 Si el trabajo cambia de tipo a mitad de camino, pedir stop del tramo actual e inicio en la otra tarea (nunca dos tramos abiertos). Al terminar, pedirle **detenerlo** (stop; pausa solo si se sigue enseguida). Si no hay ninguna sesión de webar, avisar a Ariel. Quién lo pide y el detalle: @docs/09-qa-dod/qa-circular-v1.md §Cronómetro.
+
+## Skills del proyecto (`.claude/skills/`)
+
+- `schobras-deploy-heroku`: cualquier trabajo de deploy, verificación o diagnóstico en Heroku. Apunta al runbook `docs/12-runbooks/deploy-heroku.md`, que es la fuente de verdad.
 
 ## Advertencias específicas
 
