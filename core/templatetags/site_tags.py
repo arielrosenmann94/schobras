@@ -26,8 +26,13 @@ def whatsapp_href(context, message=""):
 
 @register.simple_tag
 def brand_name(domain=True):
-    """Marca con SCH en bronce (.brand__sch) para que no se lea "sobras": SCHOBRAS.CL o, con domain=False, SCHOBRAS."""
-    return mark_safe('<span class="brand__sch">SCH</span>OBRAS' + (".CL" if domain else ""))
+    """Marca con SCH en bronce (.brand__sch) para que no se lea "sobras".
+
+    Junto solo como dominio (SCHOBRAS.CL); el nombre suelto va separado: SCH OBRAS.
+    """
+    if domain:
+        return mark_safe('<span class="brand__sch">SCH</span>OBRAS.CL')
+    return mark_safe('<span class="brand__sch">SCH</span> OBRAS')
 
 
 @register.filter

@@ -25,7 +25,12 @@ def visible_plain_brand(html):
 class BrandNameTagTests(TestCase):
     def test_brand_name_separates_sch(self):
         self.assertEqual(brand_name(), f"{WORDMARK}.CL")
-        self.assertEqual(brand_name(domain=False), WORDMARK)
+        # Junto solo en el dominio; el nombre suelto va separado (Ariel, 2026-10-23).
+        self.assertEqual(brand_name(domain=False), '<span class="brand__sch">SCH</span> OBRAS')
+
+    def test_home_section_02_says_sch_obras_separated(self):
+        html = self.client.get("/").content.decode()
+        self.assertIn('>Por qué <span class="brand__sch">SCH</span> OBRAS</h2>', html)
 
 
 @override_settings(DEBUG=False, ALLOWED_HOSTS=["testserver"])
