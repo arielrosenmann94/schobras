@@ -25,6 +25,10 @@ AUTH_USER_MODEL = "accounts.User"
 # no dejarla en /admin/ en producción.
 ADMIN_URL = config("ADMIN_URL", default="admin/")
 
+# Buscadores: en producción se apaga por defecto mientras la web viva en
+# *.herokuapp.com; se enciende al conectar schobras.cl (runbook §5).
+SEARCH_INDEXING = config("SEARCH_INDEXING", default=True, cast=bool)
+
 # ── Aplicaciones ───────────────────────────────────────────────────────────────
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -59,6 +63,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.csp.ContentSecurityPolicyMiddleware",
+    "core.middleware.NoIndexMiddleware",
     "axes.middleware.AxesMiddleware",  # siempre al final
 ]
 

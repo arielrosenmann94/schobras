@@ -45,6 +45,22 @@ class SeoTests(TestCase):
         self.assertRegex(body, r"(?m)^Sitemap: http://testserver/sitemap\.xml$")
         self.assertNotIn("gestion-secreta", body)
 
+    @override_settings(SEARCH_INDEXING=False)
+    def test_robots_disallows_everything_while_indexing_off(self):
+        body = self.client.get("/robots.txt").content.decode()
+        self.assertRegex(body, r"(?m)^Disallow: /$")
+        self.assertNotIn("Sitemap:", body)
+
+    @override_settings(SEARCH_INDEXING=False)
+    def test_noindex_header_while_indexing_off(self):
+        for path in ("/", "/proyectos/", "/no-existe/"):
+            with self.subTest(path=path):
+                self.assertEqual(self.client.get(path)["X-Robots-Tag"], "noindex, nofollow")
+
+    @override_settings(SEARCH_INDEXING=True)
+    def test_no_noindex_header_while_indexing_on(self):
+        self.assertNotIn("X-Robots-Tag", self.client.get("/"))
+
     def test_sitemap_published_only(self):
         visible = publish("Casa Visible")
         make_project(title="Borrador Oculto")

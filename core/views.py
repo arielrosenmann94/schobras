@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -54,6 +55,8 @@ def home(request):
 
 @require_GET
 def robots(request):
+    if not settings.SEARCH_INDEXING:
+        return HttpResponse("User-agent: *\nDisallow: /\n", content_type="text/plain")
     lines = [
         "User-agent: *",
         "Disallow: /panel/",

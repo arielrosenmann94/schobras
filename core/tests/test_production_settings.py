@@ -51,3 +51,35 @@ class ProductionAdminUrlTests(SimpleTestCase):
     def test_accepts_custom_admin_url(self):
         result = self.import_production("gestion-x7k2/")
         self.assertEqual(result.returncode, 0, result.stderr)
+
+
+class ProductionSearchIndexingTests(SimpleTestCase):
+    """Sin dominio propio (herokuapp) la web no se indexa hasta que se active SEARCH_INDEXING."""
+
+    def production_value(self, **extra):
+        env = {
+            key: value for key, value in os.environ.items() if key != "SEARCH_INDEXING"
+        }
+        env.update(
+            SECRET_KEY="x" * 50,
+            CLOUDINARY_URL="cloudinary://key:secret@demo",
+            DATABASE_URL="sqlite:///:memory:",
+            ADMIN_URL="gestion-x7k2/",
+            **extra,
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", "import sys, config.settings.production as p; sys.stdout.write(str(p.SEARCH_INDEXING))"],
+            cwd=settings.BASE_DIR,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout.strip()
+
+    def test_indexing_off_by_default(self):
+        self.assertEqual(self.production_value(), "False")
+
+    def test_indexing_on_when_enabled(self):
+        self.assertEqual(self.production_value(SEARCH_INDEXING="True"), "True")

@@ -22,6 +22,10 @@ MIDDLEWARE.insert(1, "core.middleware.CanonicalHostMiddleware")  # noqa: F405
 ALLOWED_HOSTS = csv_config("ALLOWED_HOSTS", "schobras.cl,www.schobras.cl")
 CSRF_TRUSTED_ORIGINS = csv_config("CSRF_TRUSTED_ORIGINS", "https://schobras.cl,https://www.schobras.cl")
 
+# Sin dominio propio la web no se indexa (evita contenido duplicado con
+# schobras.cl). Al conectar el dominio: SEARCH_INDEXING=True.
+SEARCH_INDEXING = config("SEARCH_INDEXING", default=False, cast=bool)
+
 DATABASES = {
     "default": dj_database_url.config(conn_max_age=600, ssl_require=True),
 }
