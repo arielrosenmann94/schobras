@@ -81,6 +81,14 @@ class HomeDesignTests(TestCase):
             self.assertIn(text, stages)
         self.assertNotIn("v2-hero3d.min.js\"></script>", html)
 
+    def test_hero_is_a_house_not_the_process_one(self):
+        """Claudia (2026-10-25): la portada es una casa bien terminada, distinta de la del Proceso (12,00 m)."""
+        _, html = self.get()
+        hero = re.search(r'<section class="v2-hero"[^>]*>.*?</section>', html, re.S).group(0)
+        self.assertIn(">17,00</text>", hero)
+        self.assertIn(">11,00</text>", hero)
+        self.assertNotIn(">24,00</text>", hero)
+
     def test_drawings_are_decorative(self):
         _, html = self.get()
         for svg_class in ("v2-plan", "v2-stage"):

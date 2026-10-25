@@ -1,33 +1,36 @@
 <svg class="v2-plan__svg" viewBox="0 0 760 600" focusable="false">
-  <!-- Planta de la obra industrial de la portada: nave de 24,00 × 16,00 m (22 px = 1 m) con marcos en los ejes A–G cada 4 m y oficinas de dos pisos al frente. Es el plano que la escena 3D levanta con el scroll. -->
+  <!-- Planta de la casa de la portada: un piso en L de 17,00 × 11,00 m (30 px = 1 m), con terraza y piscina. Es el plano que la escena 3D levanta con el scroll. -->
   <g class="pl-axes">
-    <path d="M116 40 V584 M204 40 V584 M292 40 V584 M380 40 V584 M468 40 V584 M556 40 V584 M644 40 V584"/>
+    <path d="M120 44 V580 M285 44 V580 M450 44 V580 M630 44 V580 M84 90 H690 M84 300 H690 M84 420 H690"/>
   </g>
   <g class="pl-bubbles">
-    <circle cx="116" cy="22" r="15"/><circle cx="204" cy="22" r="15"/><circle cx="292" cy="22" r="15"/><circle cx="380" cy="22" r="15"/><circle cx="468" cy="22" r="15"/><circle cx="556" cy="22" r="15"/><circle cx="644" cy="22" r="15"/>
-    <text x="116" y="28">A</text><text x="204" y="28">B</text><text x="292" y="28">C</text><text x="380" y="28">D</text><text x="468" y="28">E</text><text x="556" y="28">F</text><text x="644" y="28">G</text>
+    <circle cx="120" cy="24" r="15"/><circle cx="285" cy="24" r="15"/><circle cx="450" cy="24" r="15"/><circle cx="630" cy="24" r="15"/>
+    <text x="120" y="30">A</text><text x="285" y="30">B</text><text x="450" y="30">C</text><text x="630" y="30">D</text>
   </g>
   <g class="pl-dim">
-    <path d="M116 58 H644 M116 50 V74 M644 50 V74 M108 66 L124 50 M636 66 L652 50"/>
-    <path d="M70 80 V432 M62 80 H100 M62 432 H100 M62 88 L78 72 M62 440 L78 424"/>
+    <path d="M120 62 H630 M120 54 V78 M630 54 V78 M112 70 L128 54 M622 70 L638 54"/>
+    <path d="M70 90 V420 M62 90 H100 M62 420 H100 M62 98 L78 82 M62 428 L78 412"/>
   </g>
   <g class="pl-dim-text">
-    <text x="380" y="48">24,00</text>
-    <text x="58" y="256" transform="rotate(-90 58 256)">16,00</text>
-  </g>
-  <path class="pl-walls" fill-rule="evenodd" d="M116 80 H644 V432 H116 Z M121 85 V427 H639 V85 Z"/>
-  <path class="pl-walls" d="M331 432 h5 v117 h-5 z"/>
-  <g class="pl-walls">
-    <rect x="111" y="75" width="10" height="12"/><rect x="199" y="75" width="10" height="12"/><rect x="287" y="75" width="10" height="12"/><rect x="375" y="75" width="10" height="12"/><rect x="463" y="75" width="10" height="12"/><rect x="551" y="75" width="10" height="12"/><rect x="639" y="75" width="10" height="12"/>
-    <rect x="111" y="425" width="10" height="12"/><rect x="199" y="425" width="10" height="12"/><rect x="287" y="425" width="10" height="12"/><rect x="375" y="425" width="10" height="12"/><rect x="463" y="425" width="10" height="12"/><rect x="551" y="425" width="10" height="12"/><rect x="639" y="425" width="10" height="12"/>
-    <rect x="117" y="437" width="7" height="7"/><rect x="223" y="437" width="7" height="7"/><rect x="328" y="437" width="7" height="7"/>
-    <rect x="117" y="545" width="7" height="7"/><rect x="223" y="545" width="7" height="7"/><rect x="328" y="545" width="7" height="7"/>
-  </g>
-  <g class="pl-cut">
-    <rect x="446" y="425" width="132" height="9"/>
+    <text x="375" y="52">17,00</text>
+    <text x="58" y="255" transform="rotate(-90 58 255)">11,00</text>
   </g>
   <g class="pl-openings">
-    <path d="M116 547 H336 M116 551 H336 M114 432 V551 M118 432 V551"/>
-    <path class="pl-swing" d="M446 430 H578"/>
+    <path d="M120 314 H450 M120 328 H450 M120 342 H450 M120 356 H450 M120 370 H450 M120 384 H450 M120 398 H450 M120 412 H450 M120 426 H450 M120 435 H450 M120 300 V435"/>
+    <path d="M150 480 H390 V552 H150 Z M141 471 H399 V561 H141 Z"/>
+  </g>
+  <path class="pl-walls" fill-rule="evenodd" d="M120 90 H630 V420 H450 V300 H120 Z M126 96 V294 H444 V96 Z M456 96 V414 H624 V96 Z"/>
+  <g class="pl-cut">
+    <rect x="132" y="292" width="306" height="10"/>
+    <rect x="180" y="88" width="150" height="10"/>
+    <rect x="118" y="164" width="10" height="33"/>
+    <rect x="118" y="228" width="10" height="54"/>
+    <rect x="622" y="210" width="10" height="60"/>
+    <rect x="474" y="412" width="132" height="10"/>
+    <rect x="448" y="315" width="10" height="90"/>
+  </g>
+  <g class="pl-openings">
+    <path d="M132 297 H438 M180 93 H330 M123 228 V282 M627 210 V270 M474 417 H606 M453 315 V405"/>
+    <path class="pl-swing" d="M126 164 H159 A33 33 0 0 1 126 197"/>
   </g>
 </svg>
