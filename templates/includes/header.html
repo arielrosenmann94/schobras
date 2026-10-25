@@ -1,6 +1,6 @@
-{% load site_tags %}<header class="site-header">
+{% load site_tags %}{% home_url as home %}<header class="site-header">
   <div class="site-header__bar container">
-    <a class="brand" href="{% url 'core:home' %}" aria-label="SCHOBRAS.CL, inicio">
+    <a class="brand" href="{{ home }}" aria-label="SCHOBRAS.CL, inicio">
       <span class="brand__mark">{% inline_svg "img/isotipo.svg" %}</span>
       <span class="brand__word">{% brand_name %}</span>
     </a>
@@ -10,11 +10,11 @@
     </button>
     <nav aria-label="Principal" class="site-nav" id="menu-principal">
       <ul class="site-nav__list">
-        <li><a class="site-nav__link" href="{% url 'core:home' %}#nosotros">Nosotros</a></li>
-        <li><a class="site-nav__link" href="{% url 'core:home' %}#servicios">Servicios</a></li>
-        <li><a class="site-nav__link" href="{% url 'core:home' %}#proceso">Proceso</a></li>
+        <li><a class="site-nav__link" href="{{ home }}#nosotros">Nosotros</a></li>
+        <li><a class="site-nav__link" href="{{ home }}#servicios">Servicios</a></li>
+        <li><a class="site-nav__link" href="{{ home }}#proceso">Proceso</a></li>
         {% if has_projects %}<li><a class="site-nav__link" href="{% url 'projects:list' %}"{% if request.resolver_match.namespace == "projects" %} aria-current="page"{% endif %}>Proyectos</a></li>{% endif %}
-        {% if has_contact %}<li><a class="site-nav__link site-nav__link--cta" href="{% url 'core:home' %}#contacto">Contacto</a></li>{% endif %}
+        {% if has_contact %}<li><a class="site-nav__link site-nav__link--cta" href="{{ home }}#contacto">Contacto</a></li>{% endif %}
       </ul>
     </nav>
   </div>

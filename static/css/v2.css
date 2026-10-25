@@ -1,0 +1,345 @@
+/* ==========================================================================
+   SCHOBRAS.CL /v2/: "del plano a la obra" (docs/06-frontend/v2-direccion-artistica.md).
+   Se carga solo en /v2/, sobre site.css: mismos tokens, misma tipografía.
+   Un solo momento protagonista: en el Proceso, la elevación de la casa de la
+   portada se dibuja y se construye con el scroll. Todo lo demás, quieto.
+   ========================================================================== */
+
+/* ── Portada: el plano ─────────────────────────────────────────────────── */
+.v2-hero {
+  padding-block: clamp(2rem, 6vw, 4rem) clamp(3rem, 8vw, 6rem);
+}
+
+.v2-hero__grid {
+  display: grid;
+  grid-template-areas:
+    "where"
+    "title"
+    "plan"
+    "lead"
+    "actions";
+}
+
+.v2-hero__where {
+  grid-area: where;
+  max-width: 26rem;
+  font-size: var(--text-small);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.v2-hero__title {
+  grid-area: title;
+  max-width: 10em;
+  margin-top: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.v2-plan {
+  grid-area: plan;
+  width: min(100%, 34rem);
+  margin: clamp(2rem, 6vw, 3rem) 0 0;
+}
+
+.v2-hero__lead {
+  grid-area: lead;
+  margin-top: clamp(2rem, 5vw, 3rem);
+}
+
+.v2-hero__actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.v2-hero__actions .btn { flex: 1 1 auto; }
+
+@media (min-width: 48em) {
+  .v2-hero__actions .btn { flex: 0 0 auto; }
+}
+
+@media (min-width: 64em) {
+  .v2-hero__grid {
+    min-height: min(calc(100svh - var(--header-height) - clamp(2rem, 6vw, 4rem) - clamp(3rem, 8vw, 6rem)), 50rem);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+      "where   where   plan plan"
+      "title   title   plan plan"
+      "lead    lead    plan plan"
+      "actions actions plan plan";
+    column-gap: var(--space-6);
+  }
+
+  .v2-hero__title { align-self: end; }
+
+  .v2-plan {
+    align-self: center;
+    justify-self: end;
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* Dibujo del plano: muros macizos en antracita, cotas en bronce (línea, no texto
+   de cuerpo), ejes en cemento. */
+.v2-plan__svg,
+.v2-stage__svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.v2-plan__svg text,
+.v2-stage__svg text {
+  fill: var(--color-anthracite);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-anchor: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tamaños en unidades del dibujo: se leen como cotas a cualquier ancho. */
+.v2-plan__svg text { font-size: 20px; }
+.v2-stage__svg text { font-size: 24px; }
+
+/* Las líneas finas mantienen su grosor en pantalla; las que se "dibujan"
+   (pathLength + dasharray) escalan con el dibujo. */
+.v2-plan__svg path,
+.v2-plan__svg circle,
+.b-hatch,
+.b-ground__line,
+.b-line,
+.b-stake,
+.b-dash,
+.b-axes circle,
+.b-ghost path,
+.b-mullion { vector-effect: non-scaling-stroke; }
+
+.pl-axes path {
+  fill: none;
+  stroke: var(--color-cement);
+  stroke-width: 1;
+  stroke-dasharray: 10 6 2 6;
+}
+
+.pl-bubbles circle {
+  fill: var(--color-white);
+  stroke: var(--color-cement);
+  stroke-width: 1.5;
+}
+
+.pl-bubbles text { font-size: 18px; }
+
+.pl-dim path {
+  fill: none;
+  stroke: var(--color-bronze);
+  stroke-width: 1.5;
+}
+
+.pl-walls { fill: var(--color-anthracite); }
+.pl-cut { fill: var(--color-white); }
+
+.pl-openings path {
+  fill: none;
+  stroke: var(--color-anthracite);
+  stroke-width: 1.5;
+}
+
+.pl-openings .pl-swing {
+  stroke: var(--color-cement);
+  stroke-dasharray: 4 4;
+}
+
+/* ── Proceso: la obra se levanta ───────────────────────────────────────────
+   --p (0 → 1) es el avance por los 6 pasos; lo escribe static/js/v2.js. Sin JS
+   o con movimiento reducido queda en 1: el dibujo terminado. Cada --sN completa
+   su capa al 60 % del paso N, para que se lea mientras el paso está en pantalla. */
+.v2-build {
+  --p: 1;
+  --s1: clamp(0, var(--p) * 9.6, 1);
+  --s2: clamp(0, (var(--p) * 6 - 1) * 1.6, 1);
+  --s3: clamp(0, (var(--p) * 6 - 2) * 1.6, 1);
+  --s4: clamp(0, (var(--p) * 6 - 3) * 1.6, 1);
+  --s5: clamp(0, (var(--p) * 6 - 4) * 1.6, 1);
+  --s6: clamp(0, (var(--p) * 6 - 5) * 1.6, 1);
+  /* El paso 6 se reparte en la secuencia de una obra. */
+  --found: clamp(0, var(--s6) * 4, 1);
+  --rebar: clamp(0, (var(--s6) - 0.15) * 3, 1);
+  --walls: clamp(0, (var(--s6) - 0.4) * 2.5, 1);
+  --roof: clamp(0, (var(--s6) - 0.65) * 3.5, 1);
+  --glass: clamp(0, (var(--s6) - 0.85) * 6.6, 1);
+}
+
+.home-grid > .v2-build__layout {
+  grid-column: 1 / -1;
+  padding-left: 0;
+}
+
+.v2-build__layout { display: grid; }
+
+/* En el celular el dibujo queda fijo arriba y los pasos pasan por debajo. */
+.v2-stage {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: clamp(13rem, 40svh, 22rem);
+  padding-block: var(--space-2);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--line);
+}
+
+.v2-stage__svg { height: 100%; }
+
+.v2-steps { counter-reset: none; }
+
+.v2-step {
+  display: grid;
+  align-content: center;
+  gap: var(--space-2);
+  min-height: 55svh;
+  padding: var(--space-6) 0 var(--space-6) var(--space-3);
+  border-left: 3px solid transparent;
+}
+
+.v2-step + .v2-step { border-top: 1px solid var(--line); }
+
+.v2-step__number {
+  color: var(--color-anthracite);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.v2-step__title {
+  max-width: 22rem;
+  font-size: var(--text-h3);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.v2-step p { max-width: 30rem; }
+
+/* El paso en curso: el canto y el número pasan a bronce (número ≥ 24 px). */
+.v2-build.is-live .v2-step.is-active { border-left-color: var(--color-bronze); }
+.v2-build.is-live .v2-step.is-active .v2-step__number { color: var(--color-bronze); }
+
+@media (min-width: 64em) {
+  .v2-build__layout {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+
+  .v2-steps { grid-column: 1 / 3; grid-row: 1; }
+
+  .v2-stage {
+    grid-column: 3 / 5;
+    grid-row: 1;
+    top: calc(var(--header-height) + 8vh);
+    height: min(76vh, 42rem);
+    padding: 0;
+    background: none;
+    border: 0;
+  }
+
+  .v2-step { min-height: 72vh; }
+}
+
+/* Capas del dibujo */
+.b-hatch { stroke: var(--color-cement); stroke-width: 1; }
+.b-ground__line { stroke: var(--color-anthracite); stroke-width: 2; }
+
+.b-line,
+.b-stake {
+  fill: none;
+  stroke: var(--color-bronze);
+  stroke-width: 1.5;
+}
+
+.b-dash {
+  fill: none;
+  stroke: var(--color-cement);
+  stroke-width: 1;
+  stroke-dasharray: 10 6 2 6;
+}
+
+.b-axes circle {
+  fill: var(--color-white);
+  stroke: var(--color-cement);
+  stroke-width: 1.5;
+}
+
+.b-text--start { text-anchor: start; }
+
+/* Las líneas de proyecto se apagan cuando la obra está terminada. */
+.b-site { opacity: calc(var(--s1) * (1 - var(--glass) * 0.6)); }
+.b-axes { opacity: calc(var(--s2) * (1 - var(--glass) * 0.75)); }
+.b-docs { opacity: calc(var(--s5) * (1 - var(--glass) * 0.6)); }
+
+/* Ajustes: la alternativa aparece y se va dentro del paso 4. */
+.b-ghost {
+  fill: none;
+  stroke: var(--color-cement);
+  stroke-width: 2;
+  stroke-dasharray: 8 6;
+  opacity: calc(var(--s4) * (1 - var(--s4)) * 4);
+}
+
+.b-draft path {
+  fill: none;
+  stroke: var(--color-anthracite);
+  stroke-width: 4;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--s3));
+}
+
+/* Obra */
+.b-found,
+.b-walls {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.b-found {
+  fill: var(--color-bronze);
+  transform: scaleY(var(--found));
+}
+
+.b-rebar {
+  fill: none;
+  stroke: var(--color-bronze);
+  stroke-width: 8;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--rebar));
+}
+
+.b-walls {
+  fill: var(--color-anthracite);
+  transform: scaleY(var(--walls));
+}
+
+.b-glass {
+  fill: var(--color-white);
+  opacity: var(--glass);
+}
+
+.b-mullion {
+  fill: none;
+  stroke: var(--color-cement);
+  stroke-width: 1.5;
+}
+
+.b-roof {
+  fill: none;
+  stroke: var(--color-anthracite);
+  stroke-width: 18;
+  stroke-linecap: square;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--roof));
+}

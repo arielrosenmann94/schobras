@@ -7,6 +7,7 @@ from functools import lru_cache
 from django import template
 from django.contrib.staticfiles import finders
 from django.core.serializers.json import DjangoJSONEncoder
+from django.urls import reverse
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
@@ -22,6 +23,12 @@ def whatsapp_href(context, message=""):
     if site is None:
         return ""
     return whatsapp_url(site.whatsapp, message or site.whatsapp_message)
+
+
+@register.simple_tag(takes_context=True)
+def home_url(context):
+    """Inicio al que apunta el menú: /v2/ lo cambia por el suyo (nav_home) para no salir de la versión."""
+    return context.get("nav_home") or reverse("core:home")
 
 
 @register.simple_tag

@@ -16,6 +16,7 @@
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
   <script src="{% static 'js/site.js' %}" defer nonce="{{ csp_nonce }}"></script>
   {% block jsonld %}{% endblock %}
+  {% block extra_head %}{% endblock %}
 </head>
 {% capture as whatsapp_message %}{% block whatsapp_message %}{{ site.whatsapp_message }}{% endblock %}{% endcapture %}{% whatsapp_href whatsapp_message as wa_href %}
 <body{% if wa_href %} class="has-cta-tab"{% endif %}>

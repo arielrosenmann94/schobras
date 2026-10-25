@@ -10,6 +10,7 @@ sitemaps = {"static": StaticSitemap, "projects": ProjectSitemap}
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("v2/", views.home_v2, name="home_v2"),
     path("robots.txt", views.robots, name="robots"),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
 ]

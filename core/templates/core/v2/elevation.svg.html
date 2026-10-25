@@ -1,0 +1,74 @@
+<svg class="v2-stage__svg" viewBox="0 0 1200 720" focusable="false">
+  <!-- Elevación de la misma casa de la portada (60 px = 1 m; ejes A–G cada 2 m). Cada capa avanza con un paso del Proceso (static/css/v2.css). -->
+  <defs>
+    <pattern id="v2-terrain" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path class="b-hatch" d="M0 16 L16 0"/>
+    </pattern>
+  </defs>
+
+  <g class="b-ground">
+    <rect x="40" y="600" width="1120" height="26" fill="url(#v2-terrain)"/>
+    <path class="b-ground__line" d="M40 600 H1160"/>
+  </g>
+
+  <!-- 01 · Visita técnica: estacas y la medida del terreno -->
+  <g class="b-site">
+    <path class="b-stake" d="M240 566 V614 M960 566 V614 M240 566 h18 l-5 7 l5 7 h-18 M960 566 h18 l-5 7 l5 7 h-18"/>
+    <path class="b-line" d="M240 618 V694 M960 618 V694 M240 684 H960 M232 692 L248 676 M952 692 L968 676"/>
+    <text class="b-text" x="600" y="672">12,00</text>
+  </g>
+
+  <!-- 02 · Especialidades: ejes estructurales y niveles -->
+  <g class="b-axes">
+    <path class="b-dash" d="M240 194 V650 M360 194 V650 M480 194 V650 M600 194 V650 M720 194 V650 M840 194 V650 M960 194 V650"/>
+    <path class="b-dash" d="M150 444 H1060 M150 262 H1060"/>
+    <circle cx="240" cy="172" r="17"/><circle cx="360" cy="172" r="17"/><circle cx="480" cy="172" r="17"/><circle cx="600" cy="172" r="17"/><circle cx="720" cy="172" r="17"/><circle cx="840" cy="172" r="17"/><circle cx="960" cy="172" r="17"/>
+    <text class="b-text" x="240" y="178">A</text><text class="b-text" x="360" y="178">B</text><text class="b-text" x="480" y="178">C</text><text class="b-text" x="600" y="178">D</text><text class="b-text" x="720" y="178">E</text><text class="b-text" x="840" y="178">F</text><text class="b-text" x="960" y="178">G</text>
+    <text class="b-text b-text--start" x="1070" y="606">±0,00</text>
+    <text class="b-text b-text--start" x="1070" y="450">+2,60</text>
+    <text class="b-text b-text--start" x="1070" y="268">+5,60</text>
+  </g>
+
+  <!-- 04 · Ajustes: la alternativa que se conversó y se descartó -->
+  <g class="b-ghost">
+    <path d="M204 450 L600 330 L996 450"/>
+    <path d="M700 570 V490 H860 V570 Z"/>
+  </g>
+
+  <!-- 03 · Propuesta: el contorno de la casa -->
+  <g class="b-draft">
+    <path pathLength="1" d="M240 600 V444 H960 V600"/>
+    <path pathLength="1" d="M204 465 L600 262 L996 465"/>
+    <path pathLength="1" d="M300 570 V474 H480 V570 Z"/>
+    <path pathLength="1" d="M540 600 V480 H600 V600"/>
+    <path pathLength="1" d="M680 570 V474 H900 V570 Z"/>
+  </g>
+
+  <!-- 05 · Proyecto: cotas de altura y la fundación por debajo del suelo -->
+  <g class="b-docs">
+    <path class="b-line" d="M1030 600 V262 M1022 608 L1038 592 M1022 452 L1038 436 M1022 270 L1038 254 M970 600 H1040 M970 444 H1040"/>
+    <text class="b-text b-text--start" x="1044" y="528">2,60</text>
+    <text class="b-text b-text--start" x="1044" y="360">3,00</text>
+    <rect class="b-dash" x="228" y="600" width="744" height="34"/>
+  </g>
+
+  <!-- 06 · Obra: fundación, fierros, muros, techumbre y ventanas -->
+  <g class="b-build">
+    <rect class="b-found" x="228" y="600" width="744" height="34"/>
+    <path class="b-rebar" pathLength="1" d="M240 634 V444"/>
+    <path class="b-rebar" pathLength="1" d="M360 634 V444"/>
+    <path class="b-rebar" pathLength="1" d="M480 634 V444"/>
+    <path class="b-rebar" pathLength="1" d="M600 634 V444"/>
+    <path class="b-rebar" pathLength="1" d="M720 634 V444"/>
+    <path class="b-rebar" pathLength="1" d="M840 634 V444"/>
+    <path class="b-rebar" pathLength="1" d="M960 634 V444"/>
+    <rect class="b-walls" x="240" y="444" width="720" height="156"/>
+    <g class="b-glass">
+      <rect x="300" y="474" width="180" height="96"/>
+      <rect x="680" y="474" width="220" height="96"/>
+      <rect x="540" y="480" width="60" height="120"/>
+      <path class="b-mullion" d="M390 474 V570 M790 474 V570 M300 522 H480 M680 522 H900"/>
+    </g>
+    <path class="b-roof" pathLength="1" d="M204 465 L600 262 L996 465"/>
+  </g>
+</svg>

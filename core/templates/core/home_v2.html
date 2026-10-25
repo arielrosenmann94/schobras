@@ -1,0 +1,76 @@
+{% extends "core/home.html" %}
+{% load static %}
+{% comment %}
+  /v2/: dirección visual "del plano a la obra" (docs/06-frontend/v2-direccion-artistica.md).
+  Mismo contenido que el inicio (hereda core/home.html); cambian la portada y el Proceso.
+  Exploración: nunca se indexa.
+{% endcomment %}
+
+{% block extra_head %}
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="{% static 'css/v2.css' %}">
+  <script src="{% static 'js/v2.js' %}" defer nonce="{{ csp_nonce }}"></script>
+{% endblock %}
+
+{% block home_hero %}
+<section class="v2-hero" aria-labelledby="inicio-titulo">
+  <div class="container v2-hero__grid">
+    <p class="v2-hero__where">Arquitectura y construcción · Región Metropolitana · Valparaíso · O'Higgins</p>
+    <h1 class="display v2-hero__title" id="inicio-titulo">Diseñamos y construimos tu proyecto.</h1>
+    <figure class="v2-plan" aria-hidden="true">{% include "core/v2/plan.svg.html" %}</figure>
+    <p class="lead v2-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
+    {% if has_contact or has_projects %}
+    <div class="v2-hero__actions">
+      {% if has_contact %}<a class="btn btn--primary" href="#contacto">Conversemos tu proyecto</a>{% endif %}
+      {% if has_projects %}<a class="btn btn--ghost" href="{% url 'projects:list' %}">Ver proyectos</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block home_process %}
+<section class="section home-section v2-build" id="proceso" aria-labelledby="proceso-titulo" data-build>
+  <div class="container home-grid">
+    <div class="home-head">
+      <span class="section-index" aria-hidden="true">04</span>
+      <h2 class="heading" id="proceso-titulo">Proceso</h2>
+    </div>
+    <div class="v2-build__layout">
+      <div class="v2-stage" aria-hidden="true">{% include "core/v2/elevation.svg.html" %}</div>
+      <ol class="v2-steps" role="list" data-build-steps>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">01</span>
+          <h3 class="v2-step__title">Visita técnica y entrevista</h3>
+          <p>Conocemos tu terreno y conversamos contigo para entender tus requerimientos y necesidades.</p>
+        </li>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">02</span>
+          <h3 class="v2-step__title">Presupuesto de arquitectura y especialidades</h3>
+          <p>Te presentamos el presupuesto del proyecto de arquitectura y de las especialidades que correspondan (cálculo, agua, alcantarillado, electricidad).</p>
+        </li>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">03</span>
+          <h3 class="v2-step__title">Estudio y propuesta</h3>
+          <p>Si lo apruebas, estudiamos tu caso y te presentamos una propuesta.</p>
+        </li>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">04</span>
+          <h3 class="v2-step__title">Ajustes en conjunto</h3>
+          <p>Incorporamos tus correcciones y nuestras sugerencias hasta llegar a la versión final.</p>
+        </li>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">05</span>
+          <h3 class="v2-step__title">Proyecto y presupuesto de obra</h3>
+          <p>Te entregamos el proyecto de arquitectura junto con el presupuesto de construcción.</p>
+        </li>
+        <li class="v2-step v2-step--final">
+          <span class="v2-step__number" aria-hidden="true">06</span>
+          <h3 class="v2-step__title">Construcción con descuento del proyecto</h3>
+          <p>Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -20,6 +20,7 @@
   La portada no usa .reveal (estaría oculta hasta que cargue site.js): solo el isotipo se arma (.build).
 {% endcomment %}
 
+{% block home_hero %}
 <section class="home-hero" aria-labelledby="inicio-titulo">
   <div class="container home-hero__grid">
     <p class="label home-hero__eyebrow"><span><span>Arquitectura y construcción ·</span> <span>Región Metropolitana ·</span> <span>Valparaíso ·</span> <span>O'Higgins</span></span></p>
@@ -35,6 +36,7 @@
     {% endif %}
   </div>
 </section>
+{% endblock %}
 
 <section class="section home-section" id="nosotros" aria-labelledby="nosotros-titulo">
   <div class="container home-grid">
@@ -108,6 +110,7 @@
   </div>
 </section>
 
+{% block home_process %}
 <section class="section home-section" id="proceso" aria-labelledby="proceso-titulo">
   <div class="container home-grid">
     <div class="home-head">
@@ -148,6 +151,7 @@
     </ol>
   </div>
 </section>
+{% endblock %}
 
 {% if featured_projects %}
 <section class="section home-section" id="proyectos" aria-labelledby="proyectos-titulo">
