@@ -3,7 +3,7 @@
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-23
-Versión del documento: 1.3.0
+Versión del documento: 1.4.0
 Tipo de cambio más reciente: minor
 Notas del último cambio: tarea Documentación (#1057); el cronómetro lo pide la sesión que hace el trabajo; sesiones por rol, no por nombre
 Fuente de verdad: sí
@@ -39,7 +39,7 @@ Reglas del ciclo: la implementadora no hace push ni deploy en ningún momento; l
 El tiempo de trabajo en schobras se registra en el cronómetro de webar: proyecto **schobras › Web informativa**, en la tarea según el tipo de trabajo: **"Desarrollo"** (#1058: programar, corregir, QA de código), **"Documentación"** (#1057: docs, ADR, runbooks, CLAUDE.md, skills) o **"Deploy"** (#1129: preparar o hacer el despliegue, GitHub, Heroku, dominio, verificación en producción). **Siempre:**
 
 1. **Al empezar a trabajar, antes de la primera acción** (una tarea nueva, una entrega, una vuelta de QA o un deploy, también cuando la pide Ariel directamente): buscar con `ListAgents` una sesión de **webar** (el nombre cambia: webar-32, webar-93…) y pedirle **iniciar** el cronómetro **en la tarea que corresponde**. Si el trabajo cambia de tipo (p. ej. de Desarrollo a Deploy), se pide stop del tramo y uno nuevo en la otra tarea; nunca dos tramos abiertos. Si ya hay un tramo abierto de schobras, no se abre otro. La sesión de webar responde con el número de sesión del cronómetro y la hora.
-2. **Al terminar** (el "QA OK — listo para revisión humana", o cuando el trabajo queda terminado o en espera de Ariel): pedirle a la sesión de webar que lo **detenga** (stop). La pausa se usa solo si el trabajo sigue enseguida.
+2. **La revisión de Ariel también es trabajo y se cuenta** (regla de Ariel, 2026-10-25). Entregar algo para que él lo revise **no** detiene el cronómetro. Se pide **stop** solo cuando Ariel da por terminada la jornada o se va ("hasta acá", "me voy a acostar", "apaga los cronómetros"), o cuando nadie está trabajando: ninguna sesión con trabajo en curso y Ariel no está. La pausa se usa solo si el trabajo sigue enseguida.
 3. **Lo pide una sola sesión, para que no haya avisos dobles: la que hace el trabajo** (la que lo empieza, lo cambia de tipo o lo termina). En el mismo momento le avisa a la otra sesión de schobras «ya lo pedí yo», para que no lo repita. Quien no hizo el pedido no lo duplica.
 4. **Si no hay ninguna sesión de webar abierta**, se le avisa a Ariel en el mismo momento. No se deja el trabajo sin registrar en silencio.
 5. Ariel puede no estar en pantalla: el inicio y el stop se piden igual, sin esperarlo.

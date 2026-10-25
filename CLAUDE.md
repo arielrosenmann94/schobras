@@ -49,7 +49,7 @@ Siempre, **antes de la primera acción del trabajo** (antes de leer código o co
 | Documentar: docs/, ADR, runbooks, CLAUDE.md, skills de agentes | "Documentación" (#1057) |
 | Preparar o hacer el despliegue (Heroku, GitHub, dominio, verificación en producción) | "Deploy" (#1129) |
 
-Si el trabajo cambia de tipo a mitad de camino, pedir stop del tramo actual e inicio en la otra tarea (nunca dos tramos abiertos). Al terminar, pedirle **detenerlo** (stop; pausa solo si se sigue enseguida). Si no hay ninguna sesión de webar, avisar a Ariel. Quién lo pide y el detalle: @docs/09-qa-dod/qa-circular-v1.md §Cronómetro.
+Si el trabajo cambia de tipo a mitad de camino, pedir stop del tramo actual e inicio en la otra tarea (nunca dos tramos abiertos). La revisión de Ariel también se cuenta: entregarle algo para revisar **no** detiene el cronómetro. Pedir **stop** solo cuando Ariel termina la jornada o se va, o cuando nadie está trabajando (pausa solo si se sigue enseguida). Si no hay ninguna sesión de webar, avisar a Ariel. Quién lo pide y el detalle: @docs/09-qa-dod/qa-circular-v1.md §Cronómetro.
 
 ## Skills del proyecto (`.claude/skills/`)
 
