@@ -11,7 +11,7 @@
    de site.css. */
 import {
   BoxGeometry,
-  BufferGeometry,
+  CanvasTexture,
   Color,
   CylinderGeometry,
   DirectionalLight,
@@ -21,9 +21,6 @@ import {
   HemisphereLight,
   IcosahedronGeometry,
   InstancedMesh,
-  LineBasicMaterial,
-  LineDashedMaterial,
-  LineSegments,
   Mesh,
   MeshStandardMaterial,
   NeutralToneMapping,
@@ -32,10 +29,16 @@ import {
   PerspectiveCamera,
   PlaneGeometry,
   PMREMGenerator,
+  RepeatWrapping,
   Scene,
+  SRGBColorSpace,
+  Vector2,
   WebGLRenderer,
 } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
+import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 
 const BASE = 0.3;      // radier: la casa se apoya 30 cm sobre el terreno
 const T = 0.2;         // espesor de muros
@@ -44,6 +47,17 @@ const PRIVATE = { x0: 3, x1: 9, z0: -4, z1: 7, h: 2.7 };   // dormitorios (6 × 
 const POOL = { x0: -7, x1: 1, z0: 9, z1: 11.4 };
 const DECK = { x0: -8, x1: 3, z0: 3, z1: 7.5 };
 const POSTER_ASPECT = 0.8; // imagen fija de la portada: 4:5 (ancho:alto)
+
+/* Colores de la naturaleza: pasto, agua y follaje. Son la única excepción a los tokens
+   de marca, solo dentro de la escena (pedido de Claudia, 2026-10-25: "piscina con
+   colores típicos de piscina, al igual que los árboles"). La obra sigue en la paleta. */
+const NATURE = {
+  grass: "#7DA356",
+  water: "#2E9FD0",
+  waterLight: "#7FD3EE",
+  leaves: ["#4F7F38", "#5E9142", "#6FA24C", "#43702F", "#7DAF57"],
+  trunk: "#6A4B33",
+};
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const span = (t, a, b) => clamp01((t - a) / (b - a));
@@ -153,12 +167,73 @@ function glaze(glass, frames, glassMat, frameMat, opening) {
   }
 }
 
+/* Líneas del plano con grosor real en pantalla (las de WebGL son siempre de 1 px). */
 function lines(points, material) {
-  const geometry = new BufferGeometry();
-  geometry.setAttribute("position", new Float32BufferAttribute(points, 3));
-  const segments = new LineSegments(geometry, material);
+  const geometry = new LineSegmentsGeometry();
+  geometry.setPositions(points);
+  const segments = new LineSegments2(geometry, material);
   segments.computeLineDistances();
   return segments;
+}
+
+/* Textura de ruido suave (grava, pasto, tierra) dibujada en un canvas: sin archivos. */
+function noiseTexture(size, repeat, { base = 255, spread = 26, dots = 2600, radius = 1.6 } = {}) {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext("2d");
+  context.fillStyle = `rgb(${base},${base},${base})`;
+  context.fillRect(0, 0, size, size);
+  let seed = 7;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  for (let i = 0; i < dots; i += 1) {
+    const v = Math.round(base - spread * random());
+    context.fillStyle = `rgb(${v},${v},${v})`;
+    context.beginPath();
+    context.arc(random() * size, random() * size, radius * (0.4 + random()), 0, Math.PI * 2);
+    context.fill();
+  }
+  const texture = new CanvasTexture(canvas);
+  texture.wrapS = RepeatWrapping;
+  texture.wrapT = RepeatWrapping;
+  texture.repeat.set(repeat, repeat);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
+/* Agua de piscina: degradado turquesa con reflejos de luz ondulados. */
+function waterTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 160;
+  const context = canvas.getContext("2d");
+  const gradient = context.createLinearGradient(0, 0, 512, 160);
+  gradient.addColorStop(0, NATURE.waterLight);
+  gradient.addColorStop(0.55, NATURE.water);
+  gradient.addColorStop(1, NATURE.water);
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, 512, 160);
+  context.strokeStyle = "rgba(255, 255, 255, 0.28)";
+  context.lineWidth = 1.6;
+  for (let row = 0; row < 14; row += 1) {
+    context.beginPath();
+    for (let x = 0; x <= 512; x += 8) {
+      const y = 6 + row * 11.5 + Math.sin(x / 23 + row * 1.7) * 3 + Math.sin(x / 9 + row) * 1.2;
+      if (x === 0) context.moveTo(x, y);
+      else context.lineTo(x, y);
+    }
+    context.stroke();
+  }
+  // Borde de cerámica más claro, como el revestimiento de la piscina.
+  context.strokeStyle = "rgba(255, 255, 255, 0.55)";
+  context.lineWidth = 6;
+  context.strokeRect(3, 3, 506, 154);
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
 }
 
 function rectangle(x0, z0, x1, z1, y = 0.012) {
@@ -179,7 +254,11 @@ function slats(items, { axis, from, to, at, height, skip = [] }) {
 function buildHouse(colors) {
   const plaster = new MeshStandardMaterial({ color: colors.white, roughness: 0.92 });
   const concrete = new MeshStandardMaterial({ color: colors.cement, roughness: 0.95 });
-  const roofMat = new MeshStandardMaterial({ color: mix(colors.white, colors.cement, 0.14), roughness: 0.95 });
+  // Techo: membrana con grava en antracita (pedido de Claudia: "color en el techo").
+  const roofMat = new MeshStandardMaterial({
+    color: mix(colors.anthracite, colors.cement, 0.18), roughness: 0.95, map: noiseTexture(256, 6, { spread: 70, dots: 5000, radius: 1.3 }),
+  });
+  const roofEdge = new MeshStandardMaterial({ color: colors.white, roughness: 0.9 });
   const wood = new MeshStandardMaterial({ color: colors.white, roughness: 0.62 });
   const deckWood = new MeshStandardMaterial({ color: mix(colors.bronze, colors.white, 0.12), roughness: 0.7 });
   const frameMat = new MeshStandardMaterial({ color: colors.anthracite, roughness: 0.45, metalness: 0.4 });
@@ -191,12 +270,13 @@ function buildHouse(colors) {
     color: mix(colors.white, colors.cement, 0.25), roughness: 1,
     emissive: mix(colors.bronze, colors.white, 0.45), emissiveIntensity: 0,
   });
-  const water = new MeshStandardMaterial({ color: mix(colors.cement, colors.anthracite, 0.6), roughness: 0.03, metalness: 0.7 });
-  const canopy = new MeshStandardMaterial({ color: mix(colors.cement, colors.white, 0.5), roughness: 0.85, flatShading: true });
-  const trunkMat = new MeshStandardMaterial({ color: colors.anthracite, roughness: 0.8 });
-  const planMat = new LineBasicMaterial({ color: colors.anthracite, transparent: true });
-  const axisMat = new LineDashedMaterial({ color: colors.cement, dashSize: 0.5, gapSize: 0.35, transparent: true });
-  const dimMat = new LineBasicMaterial({ color: colors.bronze, transparent: true });
+  const water = new MeshStandardMaterial({ map: waterTexture(), roughness: 0.06, metalness: 0.05 });
+  const canopy = new MeshStandardMaterial({ color: colors.white, roughness: 0.9 });
+  const trunkMat = new MeshStandardMaterial({ color: new Color(NATURE.trunk), roughness: 0.85 });
+  const cushion = new MeshStandardMaterial({ color: colors.white, roughness: 0.8 });
+  const planMat = new LineMaterial({ color: colors.anthracite, linewidth: 2, transparent: true });
+  const axisMat = new LineMaterial({ color: colors.cement, linewidth: 1.3, dashed: true, dashSize: 0.5, gapSize: 0.35, transparent: true });
+  const dimMat = new LineMaterial({ color: colors.bronze, linewidth: 2, transparent: true });
   // Madera: cada listón con un tono apenas distinto, como tablas reales.
   const woodTone = (i) => mix(colors.bronze, i % 3 ? colors.anthracite : colors.white, ((i * 37) % 11) / 90);
 
@@ -273,8 +353,10 @@ function buildHouse(colors) {
     const z0 = v.z0 - 0.4;
     const z1 = v.z1 + front;
     const top = BASE + v.h + 0.3;
-    box(roof, roofMat, [x1 - x0, 0.26, z1 - z0], [(x0 + x1) / 2, top - 0.13, (z0 + z1) / 2]);
-    box(roof, frameMat, [x1 - x0 + 0.02, 0.05, z1 - z0 + 0.02], [(x0 + x1) / 2, top - 0.27, (z0 + z1) / 2]);
+    // Losa blanca con un antepecho delgado y la cubierta de grava antracita adentro.
+    box(roof, roofEdge, [x1 - x0, 0.3, z1 - z0], [(x0 + x1) / 2, top - 0.15, (z0 + z1) / 2]);
+    box(roof, roofMat, [x1 - x0 - 0.3, 0.04, z1 - z0 - 0.3], [(x0 + x1) / 2, top + 0.01, (z0 + z1) / 2], { shadow: false });
+    box(roof, frameMat, [x1 - x0 + 0.02, 0.04, z1 - z0 + 0.02], [(x0 + x1) / 2, top - 0.31, (z0 + z1) / 2]);
   }
 
   // ── Entrega: vidrios, madera, terraza, piscina, jardín y luces ──
@@ -317,30 +399,44 @@ function buildHouse(colors) {
   box(pool, plaster, [coping, 0.14, POOL.z1 - POOL.z0], [POOL.x0 - coping / 2, 0.07, (POOL.z0 + POOL.z1) / 2]);
   box(pool, plaster, [coping, 0.14, POOL.z1 - POOL.z0], [POOL.x1 + coping / 2, 0.07, (POOL.z0 + POOL.z1) / 2]);
   const waterMesh = box(pool, water, [POOL.x1 - POOL.x0, 0.08, POOL.z1 - POOL.z0], [(POOL.x0 + POOL.x1) / 2, 0.04, (POOL.z0 + POOL.z1) / 2], { shadow: false });
+  // Dos reposeras blancas en la terraza, mirando a la piscina.
+  for (const x of [-6.6, -5.2]) {
+    box(pool, cushion, [0.75, 0.32, 1.5], [x, BASE + 0.16, 6.55]);
+    const back = box(pool, cushion, [0.75, 0.6, 0.12], [x, BASE + 0.5, 5.85]);
+    back.rotation.x = -0.55;
+  }
   // Camino de piedras hasta la puerta.
   const stoneItems = [];
   for (let x = -14.2; x < -8.4; x += 1.05) stoneItems.push({ position: [x, 0.03, -1 + ((x * 7) % 2) * 0.08], size: [0.8, 0.06, 0.55] });
   for (let z = 7.9; z < 9; z += 0.95) stoneItems.push({ position: [-2.5, 0.03, z], size: [0.55, 0.06, 0.8] });
   const stones = new Sequence(new Group(), new BoxGeometry(1, 1, 1), concrete, stoneItems, { axis: "all" });
 
-  // Árboles y arbustos de maqueta: copas facetadas sobre troncos finos.
+  // Árboles: tronco café y una copa de tres masas de follaje en verdes distintos;
+  // arbustos bajos junto a la terraza y la casa.
   const treeSpots = [
     [-12, -6.5, 1.6], [-11.6, 8.6, 1.25], [12.8, -6.2, 1.8], [13.2, 9.8, 1.35],
     [6.4, 12.6, 1.05], [-0.8, -7.6, 1.15], [-13.4, 12.8, 0.95], [10.9, 2.8, 0.9],
   ];
   const trunkItems = treeSpots.map(([x, z, r]) => ({ position: [x, r * 0.7, z], size: [1, r * 1.4, 1] }));
-  const crownItems = treeSpots.map(([x, z, r]) => ({ position: [x, r * 1.4 + r * 0.75, z], size: [r, r * 1.05, r] }));
-  for (const [x, z] of [[-9.1, 4.2], [-9.2, 5.6], [-9.0, 7.0], [4.2, 8.2], [5.6, 8.3], [9.9, -2.6]]) {
-    crownItems.push({ position: [x, 0.42, z], size: [0.48, 0.42, 0.48] });
+  const crownItems = [];
+  treeSpots.forEach(([x, z, r], i) => {
+    const y = r * 1.4 + r * 0.7;
+    crownItems.push({ position: [x, y, z], size: [r, r * 0.95, r] });
+    crownItems.push({ position: [x + r * 0.45, y - r * 0.25, z + r * 0.2], size: [r * 0.7, r * 0.65, r * 0.7] });
+    crownItems.push({ position: [x - r * 0.35 * (i % 2 ? 1 : -1), y + r * 0.35, z - r * 0.3], size: [r * 0.62, r * 0.6, r * 0.62] });
+  });
+  for (const [x, z] of [[-9.1, 4.2], [-9.2, 5.6], [-9.0, 7.0], [4.2, 8.2], [5.6, 8.3], [9.9, -2.6], [9.9, -1.4], [-8.9, -3.2]]) {
+    crownItems.push({ position: [x, 0.42, z], size: [0.5, 0.42, 0.5] });
   }
+  const leafTone = (i) => new Color(NATURE.leaves[(i * 7) % NATURE.leaves.length]);
   const garden = new Group();
-  const trunks = new Sequence(garden, new CylinderGeometry(0.07, 0.1, 1, 6), trunkMat, trunkItems);
-  const crowns = new Sequence(garden, new IcosahedronGeometry(1, 1), canopy, crownItems, { axis: "all" });
+  const trunks = new Sequence(garden, new CylinderGeometry(0.07, 0.11, 1, 8), trunkMat, trunkItems);
+  const crowns = new Sequence(garden, new IcosahedronGeometry(1, 2), canopy, crownItems, { axis: "all", colors: leafTone });
 
   return {
     plan, footings, slab, structure, columns, beams, walls, doorLeaf, roof, glass, frames, interior,
     cladding, deck, deckBoards, pool, waterMesh, stones, garden, trunks, crowns,
-    glassMat, glowMat, planMat, axisMat, dimMat,
+    glassMat, glowMat, planMat, axisMat, dimMat, lineMats: [planMat, axisMat, dimMat],
   };
 }
 
@@ -378,7 +474,10 @@ export function start(hero) {
   pmrem.dispose();
 
   // Tablero de la maqueta.
-  const boardMat = new MeshStandardMaterial({ color: mix(colors.white, colors.cement, 0.3), roughness: 1 });
+  // Terreno: tierra clara mientras se construye; pasto en la entrega.
+  const terrain = mix(colors.white, colors.cement, 0.3);
+  const grass = new Color(NATURE.grass);
+  const boardMat = new MeshStandardMaterial({ color: terrain.clone(), roughness: 1, map: noiseTexture(256, 10, { spread: 34, dots: 7000, radius: 1.2 }) });
   const board = new Mesh(new BoxGeometry(32, 0.8, 27), [
     new MeshStandardMaterial({ color: colors.cement, roughness: 1 }),
     new MeshStandardMaterial({ color: colors.cement, roughness: 1 }),
@@ -411,7 +510,7 @@ export function start(hero) {
   Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 90 });
   sun.shadow.bias = -0.0005;
   sun.shadow.normalBias = 0.02;
-  sun.shadow.radius = 3;
+  sun.shadow.radius = 4;
   scene.add(sun);
 
   const camera = new PerspectiveCamera(30, 1, 1, 400);
@@ -424,6 +523,7 @@ export function start(hero) {
     const height = host.clientHeight;
     if (!width || !height) return;
     renderer.setSize(width, height, false);
+    house.lineMats.forEach((material) => material.resolution.copy(new Vector2(width, height)));
     camera.aspect = width / height;
     const tan = Math.tan((camera.fov * Math.PI) / 360);
     // Que entren la casa, la piscina y las cotas, también en pantallas angostas.
@@ -490,6 +590,7 @@ export function start(hero) {
     house.trunks.update(t, 0.86, 0.97, 0.05);
     house.crowns.update(t, 0.87, 0.99, 0.06);
     house.glowMat.emissiveIntensity = 1.4 * ease(span(t, 0.86, 0.97));
+    boardMat.color.copy(terrain).lerp(grass, ease(span(t, 0.84, 0.96)));
 
     const linesOut = 1 - span(t, 0.55, 0.85);
     house.plan.visible = linesOut > 0;

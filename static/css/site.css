@@ -149,7 +149,8 @@ a {
 /* ── Plano: el marco de dos líneas finas detrás del contenido ─────────────
    Solo los dos bordes, medio margen por fuera del contenido: nunca cruzan
    una letra. El cuerpo lleva el marco fijo; los "muros" (fondos sólidos) lo
-   tapan. .axes lo repite sobre un muro oscuro. */
+   tapan. .axes lo repite sobre un muro oscuro. En antracita: pedido de Claudia
+   (2026-10-25), antes cemento al 60 %. */
 body::before,
 .axes::before {
   content: "";
@@ -159,8 +160,7 @@ body::before,
   left: calc(max(var(--gutter), (100% - var(--max-width)) / 2 + var(--gutter)) - var(--gutter) / 2);
   z-index: -1;
   width: calc(min(100% - var(--gutter) - var(--gutter-end), var(--max-width) - 2 * var(--gutter)) + var(--gutter));
-  border-inline: 1px solid var(--axes-color, var(--line));
-  opacity: 0.6;
+  border-inline: 1px solid var(--axes-color, var(--color-anthracite));
   pointer-events: none;
 }
 
@@ -170,7 +170,7 @@ body::before,
   --axes-color: var(--line-on-dark);
 }
 
-.axes::before { position: absolute; opacity: 1; }
+.axes::before { position: absolute; }
 
 /* ── Utilidades de composición ──────────────────────────────────────────── */
 .container {

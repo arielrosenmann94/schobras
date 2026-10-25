@@ -173,6 +173,21 @@ class V2StaticTests(SimpleTestCase):
         self.assertIn(".site-header { --gutter-end: var(--gutter); }", css)
         self.assertRegex(css, r"@media \(max-width: 21em\) \{\s*html\.js \.menu-toggle__label \{")
 
+    def test_nature_colors_only_inside_the_3d_scene(self):
+        """Claudia (2026-10-25): piscina y árboles con sus colores típicos. Es la única excepción a la
+        paleta y vive solo en la escena 3D; el CSS sigue solo con tokens."""
+        source = (Path(settings.BASE_DIR) / "frontend" / "src" / "v2-hero3d.js").read_text()
+        self.assertIn("const NATURE = {", source)
+        for key in ("grass:", "water:", "leaves:", "trunk:"):
+            self.assertIn(key, source)
+        self.assertIn("LineMaterial", source)  # líneas del plano con grosor real
+        for name in ("css/site.css", "css/v2.css"):
+            self.assertNotIn("#2E9FD0", self.read(name))
+
+    def test_page_frame_lines_are_anthracite(self):
+        css = self.read("css/site.css")
+        self.assertIn("border-inline: 1px solid var(--axes-color, var(--color-anthracite));", css)
+
     def test_frontend_tools_are_pinned(self):
         pkg = json.loads((Path(settings.BASE_DIR) / "frontend" / "package.json").read_text())
         self.assertEqual(pkg["devDependencies"], {"esbuild": "0.28.2", "three": "0.186.1"})
