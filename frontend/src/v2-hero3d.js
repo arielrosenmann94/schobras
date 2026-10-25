@@ -443,9 +443,9 @@ export function start(hero) {
   };
 
   const draw = (t, look) => {
-    const turn = ease(span(t, 0.06, 0.72));
+    const turn = ease(span(t, 0.03, 0.72));
     const phi = lerp(0.04, 1.02, turn) + look.y * 0.05 * turn;
-    const theta = lerp(0, -0.62, ease(span(t, 0.06, 0.96))) + look.x * 0.08;
+    const theta = lerp(0, -0.62, ease(span(t, 0.03, 0.96))) + look.x * 0.08;
     const r = lerp(opening, distance * 1.1, turn);
     const targetY = lerp(0, 1.4, turn);
     camera.position.set(
@@ -455,9 +455,10 @@ export function start(hero) {
     );
     camera.lookAt(center.x, targetY, center.z);
 
-    // Fundaciones: cimientos corridos y después el radier.
-    house.footings.update(t, 0.08, 0.18, 0.04);
-    const slabIn = ease(span(t, 0.15, 0.24));
+    // Fundaciones: cimientos corridos y después el radier. Ya se ven al 5 % (Ariel,
+    // 2026-10-25: en el celular la obra tardaba en empezar).
+    house.footings.update(t, 0.035, 0.16, 0.04);
+    const slabIn = ease(span(t, 0.13, 0.23));
     house.slab.visible = slabIn > 0;
     house.slab.scale.y = Math.max(0.01, slabIn);
     // Estructura: pilares uno por uno y las cadenas que los amarran.
@@ -503,10 +504,12 @@ export function start(hero) {
   const counter = hero.querySelector("[data-progress]");
   const stages = Array.prototype.slice.call(hero.querySelectorAll("[data-stages] > li"));
   const caption = (t) => {
-    if (counter) counter.textContent = String(Math.round(t * 100));
+    // La etapa cambia con el mismo número redondeado que se muestra: al "5 %" ya dice Fundaciones.
+    const percent = Math.round(t * 100);
+    if (counter) counter.textContent = String(percent);
     let active = 0;
     stages.forEach((stage, i) => {
-      if (t >= parseFloat(stage.getAttribute("data-at"))) active = i;
+      if (percent >= Math.round(parseFloat(stage.getAttribute("data-at")) * 100)) active = i;
     });
     stages.forEach((stage, i) => stage.classList.toggle("is-active", i === active));
   };

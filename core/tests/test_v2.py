@@ -75,7 +75,7 @@ class HomeDesignTests(TestCase):
         self.assertIn('class="v2-plan', hero)
         self.assertIn('<p class="v2-hero__progress">Avance de obra <span data-progress>0</span> %</p>', hero)
         stages = re.search(r"<ol[^>]*data-stages[^>]*>(.*?)</ol>", hero, re.S).group(1)
-        self.assertEqual(re.findall(r'data-at="([0-9.]+)"', stages), ["0", "0.08", "0.22", "0.5", "0.78"])
+        self.assertEqual(re.findall(r'data-at="([0-9.]+)"', stages), ["0", "0.05", "0.22", "0.5", "0.78"])
         # Los servicios son textos existentes de textos-v1.md (Servicios), no inventados.
         for text in ("Proyecto de arquitectura a la medida.", "Llave en mano o con el nivel de terminaciones que necesites."):
             self.assertIn(text, stages)

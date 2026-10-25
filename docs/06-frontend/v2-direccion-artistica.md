@@ -70,7 +70,7 @@ Ariel pidió un efecto "wow" sobre el pliegue, que fuera algo **distinto de la c
 | Avance | Etapa | Qué se arma | Servicio |
 |---|---|---|---|
 | 0 % | Proyecto | El plano | Proyecto de arquitectura a la medida. |
-| 8 % | Fundaciones | Cimientos corridos y radier | Especialidades: cálculo estructural, agua potable y alcantarillado urbano y rural, electricidad bifásica y trifásica, y climatización. |
+| 5 % | Fundaciones | Cimientos corridos (visibles desde el 5 %, pedido de Ariel) y radier | Especialidades: cálculo estructural, agua potable y alcantarillado urbano y rural, electricidad bifásica y trifásica, y climatización. |
 | 22 % | Estructura | Pilares uno por uno y las cadenas que los amarran | Todos los sistemas constructivos: … estructuras metálicas. |
 | 50 % | Cerramientos | Muros con sus vanos y losas de techo que bajan | Cumplimiento normativo en sismorresistencia, resistencia al fuego y acondicionamiento térmico. |
 | 78 % | Entrega | Vidrios y marcos, listones de madera, terraza, piscina, jardín y luces cálidas en el interior | Llave en mano o con el nivel de terminaciones que necesites. |
