@@ -65,7 +65,7 @@
       {% elif tel %}
       <a class="btn btn--primary" href="tel:{{ tel }}">Llámanos al {{ site.phone }}</a>
       {% elif site.email %}
-      <a class="btn btn--primary" href="mailto:{{ site.email }}">Escríbenos a {{ site.email }}</a>
+      <a class="btn btn--primary" href="mailto:{{ site.email }}">Escríbenos a {{ site.email|email_brand }}</a>
       {% endif %}
       {% endwith %}
     </div>

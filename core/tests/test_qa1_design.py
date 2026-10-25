@@ -40,7 +40,7 @@ class FooterContactTests(TestCase):
         configure(email="contacto@schobras.cl")
         html = self.client.get("/base/").content.decode()
         footer = html[html.index("<footer"):]
-        self.assertIn("contacto@<wbr>schobras.cl</a>", footer)
+        self.assertIn('contacto@<wbr><span class="email-sch">sch</span>obras.cl</span></a>', footer)
         self.assertIn('href="mailto:contacto@schobras.cl"', footer)
 
 

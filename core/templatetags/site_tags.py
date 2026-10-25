@@ -67,6 +67,20 @@ def email_wbr(email, autoescape=True):
     return mark_safe(f"{escape(local)}{at}<wbr>{escape(domain)}" if at else escape(local))
 
 
+@register.filter(needs_autoescape=True)
+def email_brand(email, autoescape=True):
+    """Como email_wbr, pero en un dominio "schobras" envuelve el "sch" en .email-sch para darle
+    otro color que a "obras", como en la marca. Cualquier otro correo queda igual que email_wbr."""
+    escape = conditional_escape if autoescape else str
+    local, at, domain = str(email or "").partition("@")
+    start = domain.lower().find("schobras")
+    if not at or start < 0:
+        return email_wbr(email, autoescape)
+    sch = f'<span class="email-sch">{escape(domain[start:start + 3])}</span>'
+    branded = f"{escape(domain[:start])}{sch}{escape(domain[start + 3:])}"
+    return mark_safe(f'<span class="email-brand">{escape(local)}@<wbr>{branded}</span>')
+
+
 class CaptureNode(template.Node):
     # child_nodelists permite que {% block %} dentro de la captura siga siendo
     # sobrescribible por las plantillas hijas.

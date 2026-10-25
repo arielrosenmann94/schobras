@@ -29,6 +29,9 @@
   --color-bronze: #B57949;
   --color-cement: #A9ABB6;
   --color-white: #FFFFFF;
+  /* Bronce profundo (bronce 40 % + antracita = #63503f): el único tono de la marca
+     que contrasta sobre cemento (3,34:1, solo texto grande o en negrita ≥ 18,66 px). */
+  --color-bronze-deep: color-mix(in srgb, var(--color-bronze) 40%, var(--color-anthracite));
 
   /* Líneas de plano: derivadas del cemento, nunca colores nuevos. */
   --line: color-mix(in srgb, var(--color-cement) 55%, transparent);
@@ -630,6 +633,19 @@ body::before,
 }
 
 .site-footer__list a:hover { text-decoration-thickness: 2px; }
+
+/* Correo de la marca: "sch" y "obras" en colores distintos, siempre con
+   contraste AA porque es texto. Sobre antracita (pie y botón principal):
+   sch en blanco (12,5:1), el resto en cemento (5,48:1). */
+.email-sch { font-weight: 700; }
+.site-footer__list .email-brand,
+.btn--primary .email-brand { color: var(--color-cement); }
+.site-footer__list .email-sch,
+.btn--primary .email-sch { color: var(--color-white); }
+/* Sobre un muro el botón principal es blanco: sch en bronce profundo (7,6:1) y
+   el resto en el antracita del botón (12,5:1). */
+.wall .btn--primary .email-brand { color: inherit; }
+.wall .btn--primary .email-sch { color: var(--color-bronze-deep); }
 
 .site-footer__channel {
   display: inline-block;
@@ -1461,6 +1477,11 @@ body::before,
   background: var(--color-anthracite);
   color: var(--color-white);
 }
+
+/* Correo sobre cemento: sch en bronce profundo y negrita (texto grande, ≥ 20 px:
+   3,34:1); al pasar el mouse el fondo es antracita y sch pasa a blanco. */
+.home-channel .email-sch { color: var(--color-bronze-deep); }
+.home-channel:hover .email-sch { color: var(--color-white); }
 
 @media (min-width: 48em) {
   .home-channel {
