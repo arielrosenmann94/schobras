@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load static image_tags site_tags %}
 {% block extra_head %}
+  <link rel="preload" as="image" type="image/webp" imagesrcset="{% static 'img/portada-plano-400.webp' %} 1x, {% static 'img/portada-plano-800.webp' %} 2x" media="(scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em) and (max-width: 63.99em)">
+  <link rel="preload" as="image" type="image/webp" imagesrcset="{% static 'img/portada-plano-720.webp' %} 1x, {% static 'img/portada-plano-1440.webp' %} 2x" media="(scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em) and (min-width: 64em)">
   <link rel="stylesheet" href="{% static 'css/v2.css' %}">
   <script src="{% static 'js/v2.js' %}" defer nonce="{{ csp_nonce }}"></script>
 {% endblock %}

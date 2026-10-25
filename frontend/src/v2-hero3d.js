@@ -43,6 +43,7 @@ const SOCIAL = { x0: -8, x1: 3, z0: -4, z1: 3, h: 3.1 };   // estar, comedor y c
 const PRIVATE = { x0: 3, x1: 9, z0: -4, z1: 7, h: 2.7 };   // dormitorios (6 × 11 m)
 const POOL = { x0: -7, x1: 1, z0: 9, z1: 11.4 };
 const DECK = { x0: -8, x1: 3, z0: 3, z1: 7.5 };
+const POSTER_ASPECT = 0.8; // imagen fija de la portada: 4:5 (ancho:alto)
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const span = (t, a, b) => clamp01((t - a) / (b - a));
@@ -415,6 +416,7 @@ export function start(hero) {
 
   const camera = new PerspectiveCamera(30, 1, 1, 400);
   let distance = 60;
+  let opening = 60;
   const center = { x: 1.2, z: 3.4 };
 
   const fit = () => {
@@ -426,6 +428,10 @@ export function start(hero) {
     const tan = Math.tan((camera.fov * Math.PI) / 360);
     // Que entren la casa, la piscina y las cotas, también en pantallas angostas.
     distance = Math.max(10 / tan, 12 / (tan * camera.aspect));
+    // Primer cuadro (el plano visto desde arriba): mismo encuadre que la imagen fija de
+    // la portada (static/img/portada-plano.webp, 4:5, con object-fit: cover), para que el
+    // cambio de la imagen a la escena no se note. Ancho visible fijo de 24 m (12 por lado).
+    opening = (camera.aspect >= POSTER_ASPECT ? 12 / camera.aspect : 12 / POSTER_ASPECT) / tan;
     camera.updateProjectionMatrix();
   };
 
@@ -440,7 +446,7 @@ export function start(hero) {
     const turn = ease(span(t, 0.06, 0.72));
     const phi = lerp(0.04, 1.02, turn) + look.y * 0.05 * turn;
     const theta = lerp(0, -0.62, ease(span(t, 0.06, 0.96))) + look.x * 0.08;
-    const r = lerp(distance * 0.92, distance * 1.1, turn);
+    const r = lerp(opening, distance * 1.1, turn);
     const targetY = lerp(0, 1.4, turn);
     camera.position.set(
       center.x + r * Math.sin(phi) * Math.sin(theta),

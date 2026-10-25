@@ -89,6 +89,13 @@ class HomeDesignTests(TestCase):
         self.assertIn(">11,00</text>", hero)
         self.assertNotIn(">24,00</text>", hero)
 
+    def test_poster_is_preloaded_only_when_3d_applies(self):
+        _, html = self.get()
+        preloads = re.findall(r'<link rel="preload" as="image"[^>]*>', html)
+        self.assertEqual(len(preloads), 2)
+        for link in preloads:
+            self.assertIn("(scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em)", link)
+
     def test_drawings_are_decorative(self):
         _, html = self.get()
         for svg_class in ("v2-plan", "v2-stage"):
@@ -136,6 +143,18 @@ class V2StaticTests(SimpleTestCase):
         js = self.read("js/v2.js")
         self.assertIn("import(", js)
         self.assertIn("webgl", js.lower())
+
+    def test_poster_shows_the_first_frame_while_3d_loads(self):
+        """Ariel (2026-10-25): al entrar no debe verse otro plano que después cambia; se ve una
+        imagen fija del primer cuadro de la escena, con el mismo encuadre (4:5, cover)."""
+        css = self.read("css/v2.css")
+        for width in (400, 800, 720, 1440):
+            self.assertIn(f'url("../img/portada-plano-{width}.webp")', css)
+            self.assertTrue((Path(settings.BASE_DIR) / "static" / "img" / f"portada-plano-{width}.webp").exists())
+        self.assertIn("50% 50% / cover no-repeat", css)
+        self.assertRegex(css, r"\.v2-hero:not\(\.no-3d\) \.v2-plan__svg \{[^}]*visibility: hidden;")
+        source = (Path(settings.BASE_DIR) / "frontend" / "src" / "v2-hero3d.js").read_text()
+        self.assertIn("const POSTER_ASPECT = 0.8;", source)
 
     def test_frontend_tools_are_pinned(self):
         pkg = json.loads((Path(settings.BASE_DIR) / "frontend" / "package.json").read_text())
