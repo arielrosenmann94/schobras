@@ -1,12 +1,12 @@
-# /v2 — Dirección artística "del plano a la obra"
+# Dirección artística "del plano a la obra" (ex /v2, hoy el inicio)
 
-Estado: draft (exploración; no reemplaza el inicio)
+Estado: active (aprobada por Claudia el 2026-10-25; es el inicio en /)
 Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-25
-Versión del documento: 1.1.0
+Versión del documento: 2.0.0
 Tipo de cambio más reciente: major
-Notas del último cambio: primera exploración, a partir de la visión de experiencia web que trajo Ariel
-Fuente de verdad: sí, para /v2
+Notas del último cambio: Claudia aprobó el diseño; pasa a ser el inicio (/v2/ redirige a /), la portada 3D es una casa en maqueta y se agrega /sch para elegir cómo se escribe la marca
+Fuente de verdad: sí, para la portada 3D, el Proceso animado y /sch
 Documentos relacionados: guia-visual.md, ../02-producto/textos-v1.md, ../2026-10-22-web-v1-diseno.md §4
 Objetivo: registrar qué se tomó de la visión de experiencia web, qué no, qué se construyó en /v2 y cómo seguir por etapas
 Audiencia: desarrollo | diseño | agentes
@@ -48,39 +48,58 @@ Todo lo demás (Nosotros, Por qué SCH OBRAS, Servicios, Proyectos, Zona y Conta
 
 **Tokens:** los de guia-visual.md, sin colores nuevos. El bronce es línea (cotas, fierros, fundación) y número de paso activo de 40 px o más. Open Sans, sin fuentes nuevas.
 
-## 3 bis. Portada 3D (revisión de Ariel, 2026-10-25)
+## 3 ter. Aprobación de Claudia e inicio (2026-10-25)
+
+Claudia aprobó el diseño ("las animaciones me parecen súper") y Ariel lo puso como **web principal**:
+
+- `/` usa la portada 3D y el Proceso animado. `/v2/` redirige con 301 a `/`. El inicio anterior (portada con el isotipo armándose y Proceso en planilla) y su CSS se borraron.
+- Los archivos y clases conservan el prefijo `v2` (`v2.css`, `v2.js`, `v2-hero3d.min.js`, `.v2-hero`, `.v2-build`): es el nombre del diseño, no de una ruta.
+- **Portada:** Claudia pidió "mayor terminación, aunque fuera una casa muy básica, que sea linda". Ariel eligió una **casa 3D bien terminada** en lugar de la nave industrial (ver la tabla de abajo, actualizada).
+- **Textos:** sus correcciones están en `../02-producto/textos-v1.md` v1.2.0 (Nosotros, Especialidades, Soluciones industriales, Estudio y propuesta).
+
+## 3 bis. Portada 3D (revisión de Ariel, 2026-10-25; obra cambiada por Claudia el mismo día)
+
+> La primera versión fue una nave industrial de 24,00 × 16,00 m (commit 9b8cce5). Claudia pidió más terminación y se cambió por la casa de abajo; las etapas y los textos no cambiaron.
 
 Ariel pidió un efecto "wow" sobre el pliegue, que fuera algo **distinto de la casa del Proceso** (el Proceso queda tal cual: "está perfecto") y **más industrial**, y que el scroll **cambie la información**, no solo la imagen.
 
-- **Obra:** nave industrial de 24,00 × 16,00 m con marcos de acero (ejes A–G cada 4 m), correas, cerramientos antracita, cubierta clara, portón y ventana corrida, más un bloque de oficinas de dos pisos al frente, con fachada vidriada.
+- **Obra:** casa de un piso en L de 17,00 × 11,00 m, presentada como una **maqueta de arquitectura** sobre un tablero: volumen social blanco (11 × 7 m) con fachada vidriada y marcos antracita, ala de dormitorios (6 × 11 m) revestida en listones de madera (bronce), losas de techo con canto antracita, terraza de madera, piscina, camino de piedras y árboles de maqueta. Es distinta de la casa del Proceso (dos pisos, 12,00 m, en elevación).
 - **Recorrido:** la sección mide 2,2–2,6 pantallas y la portada queda fija. La cámara parte cenital, viendo el plano (el mismo de `core/v2/plan.svg.html`, que es el respaldo sin 3D), y baja a una vista en 3/4.
 - **Etapas y servicio que muestra cada una** (textos existentes de Servicios; los nombres de las etapas quedan ⚠️):
 
 | Avance | Etapa | Qué se arma | Servicio |
 |---|---|---|---|
 | 0 % | Proyecto | El plano | Proyecto de arquitectura a la medida. |
-| 8 % | Fundaciones | Zapatas y radier | Especialidades: cálculo estructural, agua potable y alcantarillado, electricidad. |
-| 22 % | Estructura | Marcos de acero uno por uno, correas y la estructura de las oficinas | Todos los sistemas constructivos: … estructuras metálicas. |
-| 50 % | Cerramientos | Muros y cubierta | Cumplimiento normativo en sismorresistencia, resistencia al fuego y acondicionamiento térmico. |
-| 78 % | Entrega | Fachada vidriada, portón y luces encendidas (bronce) | Llave en mano o con el nivel de terminaciones que necesites. |
+| 8 % | Fundaciones | Cimientos corridos y radier | Especialidades: cálculo estructural, agua potable y alcantarillado urbano y rural, electricidad bifásica y trifásica, y climatización. |
+| 22 % | Estructura | Pilares uno por uno y las cadenas que los amarran | Todos los sistemas constructivos: … estructuras metálicas. |
+| 50 % | Cerramientos | Muros con sus vanos y losas de techo que bajan | Cumplimiento normativo en sismorresistencia, resistencia al fuego y acondicionamiento térmico. |
+| 78 % | Entrega | Vidrios y marcos, listones de madera, terraza, piscina, jardín y luces cálidas en el interior | Llave en mano o con el nivel de terminaciones que necesites. |
 
-- **Técnica:** three.js 0.186.1 compilado con esbuild en un solo archivo propio (`static/js/v2-hero3d.min.js`, unos 145 KB comprimido). Se carga con `import()` solo si hay WebGL, movimiento permitido y pantalla de 34em de alto o más. La cámara tiene inercia y, en computador, una órbita sutil con el mouse.
+- **Técnica:** three.js 0.186.1 compilado con esbuild en un solo archivo propio (`static/js/v2-hero3d.min.js`, unos 143 KB comprimido). Reflejos de estudio con `RoomEnvironment` (incluido en three), mapeo de tonos neutro (respeta los colores de marca) y sombras suaves. Las piezas repetidas (listones, pilares, árboles) son mallas instanciadas que aparecen una tras otra. Se carga con `import()` solo si hay WebGL, movimiento permitido y pantalla de 34em de alto o más. La cámara tiene inercia y, en computador, una órbita sutil con el mouse.
 - Del prompt de referencia de Ariel (Three.js + GSAP, tema oscuro, GLB con Draco, pantalla de carga) se tomaron las etapas, la cámara dolly, el remate con luces y el indicador de avance. No se tomaron GSAP, el tema oscuro, el GLB ni la pantalla de carga (el plano SVG se ve al instante), ni las barras de scroll ocultas.
 - Para recompilar: `cd frontend && npm ci && npm run build`.
 
 ## 4. Cómo está hecho
 
-- Ruta `/v2/` (`core.views.home_v2`). La plantilla `core/home_v2.html` **hereda** de `core/home.html` y solo reemplaza los bloques `home_hero` y `home_process`. Así los textos no se duplican: los de las demás secciones salen del mismo archivo.
-- `<meta name="robots" content="noindex, nofollow">`, fuera del sitemap. El menú lleva a `/v2/#…` y no saca al visitante de la versión.
-- Dibujos: `core/templates/core/v2/plan.svg.html` y `elevation.svg.html`, con `aria-hidden`. El contenido accesible es la lista `<ol>` de pasos.
+- Ruta `/` (`core.views.home`, plantilla `core/home.html`). Hasta el 2026-10-25 vivía en `/v2/` con su propia plantilla y `noindex`; hoy `/v2/` redirige a `/`.
+- Dibujos: `core/templates/core/v2/plan.svg.html` (planta de la casa de la portada, respaldo sin 3D) y `elevation.svg.html` (casa del Proceso), con `aria-hidden`. El contenido accesible es la lista `<ol>` de pasos.
 - `static/js/v2.js` (1,5 KB) escribe `--p` (de 0 a 1) según el avance por la lista. `static/css/v2.css` reparte `--p` en `--s1…--s6` y en las fases de la obra (`--found`, `--rebar`, `--walls`, `--roof`, `--glass`).
 - **Sin JS o con `prefers-reduced-motion`:** `--p: 1`, la obra terminada, sin animación.
 - Celular: el dibujo queda fijo arriba (sticky) y los pasos pasan por debajo. Desde 1024 px: los pasos a la izquierda y el dibujo fijo a la derecha.
 - Verificado en Chrome: no hay desborde de 360 a 1440, la pestaña no tapa texto y no hay capas fuera de orden (core/tests/test_v2.py).
 
+## 4 bis. Cómo se escribe la marca: /sch (2026-10-25)
+
+"SCHOBRAS" escrito junto puede leerse "sobras". Ariel pidió una página para elegir cómo distinguir SCH de obras:
+
+- `/sch/` (`core.views.brand_options`, plantilla `core/sch.html`): 12 opciones numeradas, cada una grande, al tamaño del encabezado y sobre antracita como en el pie. "Probar en el encabezado" (`static/js/sch.js`) la pone en la marca del encabezado de esa misma página, sin cambiar nada en la web.
+- La opción 1 es la actual. La opción 2 es la propuesta de Claudia: **SCH** en mayúsculas y **obras** en minúsculas, en el bronce del logo.
+- Sin indexar, fuera del menú y del sitemap. Las variantes están en `core.views.BRAND_OPTIONS` y `static/css/sch.css` (`.wm--N`).
+- **Cuando se elija:** se cambia `brand_name` en `core/templatetags/site_tags.py` y el estilo de `.brand__word` / `.site-footer__word`. El correo (`email_brand`) y el título "Por qué SCH OBRAS" se ajustan a la misma regla. Después, `/sch/` se puede borrar.
+
 ## 5. Cómo seguir por etapas (propuesta, Ariel decide)
 
-1. **Revisar /v2 en pantalla** y decidir si el Proceso nuevo reemplaza al del inicio. Es un cambio de un bloque.
+1. ~~Revisar /v2 en pantalla y decidir si reemplaza al inicio.~~ Hecho el 2026-10-25.
 2. **Cuando estén las fotos (S3):** transición del dibujo a la foto real en el detalle de cada proyecto (la línea del plano se "rellena" con la foto). Solo con obras autorizadas.
 3. **Portada viva:** la planta se dibuja una sola vez al cargar (los muros "se cortan" como en CAD), sin repetir el efecto en otras secciones.
 4. **Las tres escalas:** un trazo por categoría (casa en parcela, local comercial, nave industrial con estructura metálica) en la misma línea de suelo, para Servicios o Proyectos.
@@ -88,4 +107,4 @@ Ariel pidió un efecto "wow" sobre el pliegue, que fuera algo **distinto de la c
 
 ## 6. Cuándo debe actualizarse
 
-Cuando Ariel decida qué pasa de /v2 al inicio, o cuando se agregue una etapa de §5.
+Cuando cambie la portada 3D o el Proceso, cuando se elija la forma de escribir la marca (§4 bis) o cuando se agregue una etapa de §5.

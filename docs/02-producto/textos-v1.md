@@ -172,6 +172,9 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 | Dónde | Texto |
 |---|---|
 | Inicio, portada 3D: indicador de avance mientras se arma la casa | `Avance de obra {0–100} %` |
+| /sch (página interna, sin indexar): título | `Cómo escribimos SCHOBRAS` |
+| /sch: botón de cada opción | `Probar en el encabezado` |
+| /sch: nombres y descripciones de las 12 opciones | en `core.views.BRAND_OPTIONS` (página de trabajo; no es texto público) |
 
 ### Nuevos en la revisión de Ariel (ronda 1)
 
