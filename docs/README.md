@@ -24,6 +24,7 @@ Audiencia: desarrollo | agentes | arquitectura
 | Arquitectura | [04-arquitectura/arquitectura.md](04-arquitectura/arquitectura.md) | active |
 | Decisiones (ADR) | [04-arquitectura/adr/](04-arquitectura/adr/) | active |
 | Guía visual y accesibilidad | [06-frontend/guia-visual.md](06-frontend/guia-visual.md) | active |
+| Dirección artística /v2 ("del plano a la obra") | [06-frontend/v2-direccion-artistica.md](06-frontend/v2-direccion-artistica.md) | draft |
 | Seguridad y secretos | [07-appsec/seguridad.md](07-appsec/seguridad.md) | active |
 | Definition of Done | [09-qa-dod/definition-of-done.md](09-qa-dod/definition-of-done.md) | active |
 | Despliegue en Heroku | [12-runbooks/deploy-heroku.md](12-runbooks/deploy-heroku.md) | active |
