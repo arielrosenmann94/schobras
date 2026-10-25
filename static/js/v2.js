@@ -1,5 +1,6 @@
 /* SCHOBRAS.CL /v2/ (sin librerías propias; three.js solo bajo demanda).
-   1. Portada 3D: carga v2-hero3d.min.js si hay WebGL, movimiento permitido y alto suficiente.
+   1. Portada 3D: carga v2-hero3d.min.js si hay WebGL, movimiento permitido, alto suficiente
+      y espacio real para la obra junto a los textos.
    2. Proceso: escribe --p (0 → 1, avance por los 6 pasos) y marca el paso en curso.
    Sin JS o con movimiento reducido: el plano SVG en la portada y la obra terminada (--p: 1). */
 (function () {
@@ -11,10 +12,22 @@
   var hero = document.querySelector("[data-hero3d-module]");
   if (hero) {
     var tall = window.matchMedia("(min-height: 34em)").matches;
+    /* Con la letra ya cargada, la obra necesita espacio de verdad: si los textos la
+       dejan en una franja (pantalla baja o letra muy grande), queda el plano fijo. */
+    var roomy = function () {
+      var plan = hero.querySelector(".v2-plan");
+      var height = plan ? plan.getBoundingClientRect().height : 0;
+      return height >= Math.max(140, window.innerHeight * 0.22);
+    };
+    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     if (reduce || !tall || !window.WebGLRenderingContext) {
       hero.classList.add("no-3d");
     } else {
-      import(hero.getAttribute("data-hero3d-module"))
+      fonts
+        .then(function () {
+          if (!roomy()) throw new Error("sin espacio");
+          return import(hero.getAttribute("data-hero3d-module"));
+        })
         .then(function (module) {
           if (!module.start(hero)) hero.classList.add("no-3d");
         })

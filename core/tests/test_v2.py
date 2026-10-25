@@ -156,6 +156,23 @@ class V2StaticTests(SimpleTestCase):
         source = (Path(settings.BASE_DIR) / "frontend" / "src" / "v2-hero3d.js").read_text()
         self.assertIn("const POSTER_ASPECT = 0.8;", source)
 
+    def test_small_phones_with_large_text_keep_room_for_the_3d(self):
+        """Samsung de Claudia (2026-10-25): con la letra del teléfono agrandada, los textos dejaban la
+        obra en una franja bajo el título. Modo compacto (en em, sigue la letra) y, si aun así no cabe,
+        el plano fijo."""
+        css = self.read("css/v2.css")
+        self.assertIn("and (max-height: 46em) and (max-width: 63.99em) {", css)
+        self.assertIn(".v2-hero:not(.no-3d) .v2-hero__where { display: none; }", css)
+        js = self.read("js/v2.js")
+        self.assertIn("document.fonts.ready", js)
+        self.assertIn("Math.max(140, window.innerHeight * 0.22)", js)
+
+    def test_header_does_not_reserve_the_tab_lane(self):
+        """La pestaña de WhatsApp va a media altura: el encabezado usa todo el ancho y no se parte en dos."""
+        css = self.read("css/site.css")
+        self.assertIn(".site-header { --gutter-end: var(--gutter); }", css)
+        self.assertRegex(css, r"@media \(max-width: 21em\) \{\s*html\.js \.menu-toggle__label \{")
+
     def test_frontend_tools_are_pinned(self):
         pkg = json.loads((Path(settings.BASE_DIR) / "frontend" / "package.json").read_text())
         self.assertEqual(pkg["devDependencies"], {"esbuild": "0.28.2", "three": "0.186.1"})

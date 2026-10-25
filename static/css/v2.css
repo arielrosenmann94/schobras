@@ -184,6 +184,16 @@
   .v2-hero.is-3d .v2-hero__scene { opacity: 1; }
 }
 
+/* Celular bajo o con letra grande (las medidas en em siguen el tamaño de letra del
+   teléfono): sin antetítulo (las regiones están en Zona de trabajo) y con título y
+   bajada más chicos, para que la obra tenga espacio. Si aun así no cabe, v2.js deja
+   el plano fijo (.no-3d). Caso real: Samsung de Claudia, 2026-10-25. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em) and (max-height: 46em) and (max-width: 63.99em) {
+  .v2-hero:not(.no-3d) .v2-hero__where { display: none; }
+  .v2-hero:not(.no-3d) .v2-hero__title { margin-top: 0; font-size: clamp(2rem, 9vw, 2.75rem); }
+  .v2-hero:not(.no-3d) .v2-hero__lead { margin-top: var(--space-2); font-size: var(--text-body); line-height: 1.5; }
+}
+
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em) and (min-width: 64em) {
   .v2-hero:not(.no-3d) { height: 260svh; }
 
