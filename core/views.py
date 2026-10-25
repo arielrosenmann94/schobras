@@ -50,6 +50,41 @@ def home(request):
     return render(request, "core/home.html", context)
 
 
+# Formas de escribir la marca para que no se lea "sobras" (página /sch/, para decidir).
+# sch, sep y obras se escriben tal cual se ven; cl es el dominio. La 2 es la propuesta de Claudia.
+BRAND_OPTIONS = [
+    {"name": "La actual", "text": "SCH en bronce y OBRAS en antracita, todo en mayúsculas y espaciado.",
+     "sch": "SCH", "sep": "", "obras": "OBRAS", "cl": ".CL"},
+    {"name": "La propuesta de Claudia", "text": "SCH en mayúsculas y obras en minúsculas, en el bronce del logo. Se distinguen sin separarse.",
+     "sch": "SCH", "sep": "", "obras": "obras", "cl": ".cl"},
+    {"name": "Mayúsculas y minúsculas", "text": "Un solo color: la diferencia la hace el tamaño de las letras.",
+     "sch": "SCH", "sep": "", "obras": "obras", "cl": ".cl"},
+    {"name": "SCH en bronce, obras en minúsculas", "text": "Como la de Claudia, con los colores al revés.",
+     "sch": "SCH", "sep": "", "obras": "obras", "cl": ".cl"},
+    {"name": "Contraste de peso", "text": "SCH en negrita y obras en trazo fino, del mismo color.",
+     "sch": "SCH", "sep": "", "obras": "obras", "cl": ".cl"},
+    {"name": "Punto medio", "text": "Un punto en bronce entre SCH y OBRAS.",
+     "sch": "SCH", "sep": "·", "obras": "OBRAS", "cl": ".CL"},
+    {"name": "Línea de eje", "text": "Una línea fina en bronce, como un eje del plano.",
+     "sch": "SCH", "sep": "", "obras": "OBRAS", "cl": ".CL"},
+    {"name": "Dos palabras", "text": "SCH OBRAS con un espacio, como en el título «Por qué SCH OBRAS».",
+     "sch": "SCH", "sep": " ", "obras": "OBRAS", "cl": ".CL"},
+    {"name": "SCH en bloque", "text": "SCH sobre un bloque antracita, como un muro.",
+     "sch": "SCH", "sep": "", "obras": "OBRAS", "cl": ".CL"},
+    {"name": "SCH con cota", "text": "Una línea en bronce bajo SCH, como una cota del plano.",
+     "sch": "SCH", "sep": "", "obras": "OBRAS", "cl": ".CL"},
+    {"name": "Apilada", "text": "SCH sobre OBRAS, para espacios cuadrados como un sello o una foto de perfil.",
+     "sch": "SCH", "sep": "", "obras": "OBRAS", "cl": ".CL"},
+    {"name": "Todo en minúsculas", "text": "sch en negrita y bronce, obras en trazo fino.",
+     "sch": "sch", "sep": "", "obras": "obras", "cl": ".cl"},
+]
+
+
+def brand_options(request):
+    """/sch/: las formas de escribir SCHOBRAS una al lado de la otra, para elegir (sin indexar)."""
+    return render(request, "core/sch.html", {"options": BRAND_OPTIONS})
+
+
 @require_GET
 def robots(request):
     if not settings.SEARCH_INDEXING:

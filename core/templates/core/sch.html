@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static site_tags %}
+{% comment %}
+  /sch/: página de trabajo para elegir cómo se escribe la marca (que no se lea "sobras").
+  No se indexa, no está en el menú ni en el sitemap. Las variantes salen de core.views.BRAND_OPTIONS;
+  sch.js permite probar cada una en el encabezado de esta misma página.
+{% endcomment %}
+{% block title %}Cómo escribimos SCHOBRAS | SCHOBRAS.CL{% endblock %}
+{% block extra_head %}
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="{% static 'css/sch.css' %}">
+  <script src="{% static 'js/sch.js' %}" defer nonce="{{ csp_nonce }}"></script>
+{% endblock %}
+
+{% block content %}
+<section class="section sch-page">
+  <div class="container">
+    <header class="sch-intro">
+      <h1 class="heading">Cómo escribimos SCHOBRAS</h1>
+      <p class="lead">Escrito todo junto, el nombre puede leerse «sobras». Estas son formas de distinguir SCH de obras sin cortar la marca. Elige una por su número y la aplicamos en toda la web: encabezado, pie, panel y títulos.</p>
+      <p class="sch-intro__note">Cada opción se ve en tres tamaños: grande, como en el encabezado y sobre antracita, como en el pie. Con «Probar en el encabezado» la ves arriba, en esta misma página.</p>
+    </header>
+
+    <ol class="sch-options" role="list">
+      {% for option in options %}
+      <li class="sch-option" id="opcion-{{ forloop.counter }}">
+        <div class="sch-option__head">
+          <span class="sch-option__number" aria-hidden="true">{{ forloop.counter }}</span>
+          <div>
+            <h2 class="subheading">Opción {{ forloop.counter }}: {{ option.name }}</h2>
+            <p class="sch-option__text">{{ option.text }}</p>
+          </div>
+        </div>
+        <p class="sch-sample sch-sample--large">{% include "core/includes/wordmark.html" with n=forloop.counter %}</p>
+        <div class="sch-sample sch-sample--header" aria-hidden="true">
+          <span class="sch-sample__mark">{% inline_svg "img/isotipo.svg" %}</span>
+          {% include "core/includes/wordmark.html" with n=forloop.counter %}
+        </div>
+        <div class="sch-sample sch-sample--dark wall" aria-hidden="true">{% include "core/includes/wordmark.html" with n=forloop.counter %}</div>
+        <button class="btn sch-option__try" type="button" aria-pressed="false" data-sch-try="{{ forloop.counter }}">Probar en el encabezado</button>
+      </li>
+      {% endfor %}
+    </ol>
+
+    <p class="sch-footnote">Los logotipos no tienen que cumplir el contraste mínimo de lectura, por eso el bronce puede ir en la marca a cualquier tamaño. En el texto de la web sigue usándose solo en títulos grandes y líneas.</p>
+  </div>
+</section>
+{% endblock %}

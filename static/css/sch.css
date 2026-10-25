@@ -1,0 +1,196 @@
+/* ==========================================================================
+   SCHOBRAS.CL /sch/: formas de escribir la marca, para elegir una
+   (core/templates/core/sch.html). Mismos tokens y tipografía que site.css.
+   .wm es el logotipo de texto; .wm--N, cada variante (core.views.BRAND_OPTIONS).
+   ========================================================================== */
+
+.sch-intro {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 44rem;
+}
+
+.sch-intro__note,
+.sch-footnote {
+  max-width: 40rem;
+  font-size: var(--text-small);
+  line-height: 1.6;
+}
+
+.sch-options {
+  display: grid;
+  gap: var(--space-6) var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.sch-option {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-anthracite);
+}
+
+.sch-option__head {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+/* Número grande en bronce (≥ 24 px: contraste permitido). */
+.sch-option__number {
+  color: var(--color-bronze);
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sch-option__text {
+  margin-top: var(--space-1);
+  font-size: var(--text-small);
+  line-height: 1.5;
+}
+
+.sch-sample {
+  display: flex;
+  align-items: center;
+  min-height: 4.5rem;
+  padding: var(--space-3);
+  overflow: hidden;
+}
+
+/* El tamaño sigue al ancho de la muestra (no de la pantalla): la marca más ancha,
+   SCHOBRAS.CL con espaciado, entra en una columna angosta sin cortarse. */
+.sch-sample--large,
+.sch-sample--dark { container-type: inline-size; }
+
+.sch-sample--large {
+  min-height: 8rem;
+  border: 1px solid var(--line);
+}
+
+.sch-sample--large .wm { font-size: clamp(1.125rem, 7cqi, 3rem); }
+
+/* Igual que .brand en el encabezado: isotipo de 2rem y texto de 0.9375rem. */
+.sch-sample--header {
+  gap: 0.75rem;
+  border: 1px solid var(--line);
+  font-size: 0.9375rem;
+}
+
+.sch-sample__mark { width: 2rem; flex: none; }
+
+/* Como el pie: trazo fino y grande sobre antracita. */
+.sch-sample--dark .wm { font-size: clamp(1.125rem, 6cqi, 2.5rem); }
+
+.sch-option__try { justify-self: start; }
+.sch-option__try[aria-pressed="true"] {
+  background: var(--color-anthracite);
+  color: var(--color-white);
+}
+
+/* Sin JS el botón no haría nada: no se muestra. */
+html:not(.js) .sch-option__try { display: none; }
+
+.sch-footnote {
+  margin-top: var(--space-6);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 64em) {
+  .sch-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ── Logotipo de texto y sus variantes ─────────────────────────────────── */
+.wm {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.wm__sep:empty { display: none; }
+.wm__tail { display: inline-flex; align-items: baseline; }
+
+/* En el pie (antracita) el texto va en blanco; el bronce se mantiene. */
+.wall .wm { font-weight: 300; }
+
+/* 1. La actual: SCH en bronce, todo en mayúsculas y espaciado. */
+.wm--1 { letter-spacing: 0.32em; }
+.wm--1 .wm__sch { color: var(--color-bronze); }
+
+/* 2. Propuesta de Claudia: obras en minúsculas y en bronce. */
+.wm--2 .wm__obras,
+.wm--2 .wm__cl { color: var(--color-bronze); }
+
+/* 3. Solo la caja de las letras. (Sin reglas extra: un solo color.) */
+
+/* 4. SCH en bronce, obras en minúsculas. */
+.wm--4 .wm__sch { color: var(--color-bronze); }
+
+/* 5. Contraste de peso. */
+.wm--5 { letter-spacing: 0.02em; }
+.wm--5 .wm__sch { font-weight: 800; }
+.wm--5 .wm__tail { font-weight: 300; }
+.wall .wm--5 .wm__sch { font-weight: 700; }
+
+/* 6. Punto medio en bronce. */
+.wm--6 { letter-spacing: 0.2em; }
+.wm--6 .wm__sep { color: var(--color-bronze); }
+
+/* 7. Línea de eje entre las dos palabras. */
+.wm--7 { letter-spacing: 0.2em; }
+.wm--7 .wm__sep:empty {
+  display: inline-block;
+  align-self: center;
+  width: 1px;
+  height: 1.1em;
+  margin-inline: 0.1em 0.3em;
+  background: var(--color-bronze);
+}
+
+/* 8. Dos palabras. */
+.wm--8 { letter-spacing: 0.2em; }
+.wm--8 .wm__sep { white-space: pre; }
+
+/* 9. SCH sobre un bloque, como un muro. */
+.wm--9 { align-items: center; letter-spacing: 0.2em; }
+.wm--9 .wm__sch {
+  margin-right: 0.3em;
+  padding: 0.2em 0.1em 0.2em 0.3em;
+  background: var(--color-anthracite);
+  color: var(--color-white);
+}
+.wall .wm--9 .wm__sch {
+  background: var(--color-white);
+  color: var(--color-anthracite);
+}
+
+/* 10. Cota bajo SCH. */
+.wm--10 { letter-spacing: 0.2em; }
+.wm--10 .wm__sch {
+  padding-bottom: 0.12em;
+  border-bottom: max(1px, 0.08em) solid var(--color-bronze);
+}
+
+/* 11. Apilada. */
+.wm--11 {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.08em;
+  letter-spacing: 0.2em;
+}
+.wm--11 .wm__sch { color: var(--color-bronze); }
+
+/* 12. Todo en minúsculas. */
+.wm--12 { letter-spacing: 0.01em; }
+.wm--12 .wm__sch { color: var(--color-bronze); font-weight: 800; }
+.wm--12 .wm__tail { font-weight: 300; }
+
+/* Variante probada en el encabezado (sch.js): el espaciado lo pone cada variante. */
+.brand__word.is-trying { margin-right: 0; letter-spacing: normal; }
