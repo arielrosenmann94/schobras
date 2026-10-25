@@ -2,10 +2,10 @@
 
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
-Última revisión: 2026-10-22
-Versión del documento: 1.0.0
+Última revisión: 2026-10-25
+Versión del documento: 1.1.0
 Tipo de cambio más reciente: major
-Notas del último cambio: guía inicial de la v1.0
+Notas del último cambio: token --color-bronze-deep y correo de la marca en dos colores
 Fuente de verdad: sí
 Documentos relacionados: ../2026-10-22-web-v1-diseno.md §4, ../cliente/caracteristicas-pag-web.md, ../../../iterap/docs/06-frontend/FRONTEND_GUIDELINES.md
 Objetivo: reglas visuales, de rendimiento y de accesibilidad de la web pública y del panel
@@ -21,6 +21,7 @@ Audiencia: desarrollo | agentes
 | `--color-bronze` | `#B57949` | Acento: líneas, números de sección grandes, íconos, isotipo |
 | `--color-cement` | `#A9ABB6` | Fondos de tarjeta, separadores, bloques secundarios |
 | `--color-white` | `#FFFFFF` | Fondo |
+| `--color-bronze-deep` | `color-mix(in srgb, var(--color-bronze) 40%, var(--color-anthracite))` = `#63503f` | El bronce que contrasta como **texto**: sobre cemento solo grande o negrita ≥ 18,66 px (3,34:1); sobre blanco, cualquier tamaño (7,6:1) |
 | `--color-danger` | `#8A1F1F` | Solo panel (`static/css/panel.css`): errores y botón de borrar |
 | `--font-sans` | `"Open Sans", system-ui, sans-serif` | Todo el texto (variable woff2 autoalojada) |
 
@@ -30,6 +31,15 @@ Escala tipográfica con contraste fuerte: display muy grande (`clamp(2.75rem, 8v
 
 `SCH` en bronce y `OBRAS.CL` (o ` OBRAS`, separado, cuando no es el dominio) en el color del texto, con el mismo peso: el corte de color evita que se lea "sobras". Siempre con `{% brand_name %}` (`core/templatetags/site_tags.py`). El bronce en el wordmark es **logotipo**, exento del criterio 1.4.3 de contraste; fuera de la marca rige la tabla de abajo. Sobre antracita (pie) se usa igual. El wordmark del encabezado tiene que caber en una sola fila con el botón "Menú" desde 360 px.
 
+**Correo de la marca** (`oficina@schobras.cl`): también separa `sch` de `obras`, pero es **texto**, no logotipo, así que cumple AA. Siempre con el filtro `|email_brand` (envuelve `sch` en `.email-sch`, en negrita; otros correos quedan como `|email_wbr`). Colores por fondo:
+
+| Fondo | `sch` (700) | resto del correo |
+|---|---|---|
+| Antracita (pie) | blanco, 12,5:1 | cemento, 5,48:1 |
+| Cemento (bloque Contacto, ≥ 20 px) | `--color-bronze-deep`, 3,34:1 (texto grande) | antracita, 5,48:1 |
+| Contacto con `:hover` (antracita) | blanco, 12,5:1 | blanco suave, 10,3:1 |
+| Botón principal blanco sobre un muro (cierre del detalle) | `--color-bronze-deep`, 7,6:1 | antracita, 12,5:1 |
+
 ## Contraste (WCAG 2.2 AA)
 
 | Combinación | Ratio aprox. | Permitido para |
@@ -37,6 +47,8 @@ Escala tipográfica con contraste fuerte: display muy grande (`clamp(2.75rem, 8v
 | Antracita sobre blanco | ~13:1 | Todo |
 | Blanco sobre antracita | ~13:1 | Todo (botón principal) |
 | Antracita sobre cemento | ~5,5:1 | Texto normal |
+| Bronce profundo sobre cemento | ~3,3:1 | Solo texto ≥ 24 px (o ≥ 18,66 px negrita) |
+| Bronce profundo sobre blanco | ~7,6:1 | Todo |
 | **Bronce sobre blanco** | **~3,6:1** | **Solo** texto ≥ 24 px (o ≥ 18,66 px negrita), líneas, íconos. **Nunca** texto de cuerpo ni texto blanco sobre bronce |
 
 Verificar el contraste también en `:hover` y `:focus-visible`.
