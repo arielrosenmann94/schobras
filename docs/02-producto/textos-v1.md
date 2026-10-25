@@ -1,11 +1,11 @@
-# Textos públicos v1.0 — SCHOBRAS.CL
+# Textos públicos v1.0 — SCHobras.cl
 
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-25
-Versión del documento: 1.2.0
+Versión del documento: 1.3.0
 Tipo de cambio más reciente: minor
-Notas del último cambio: correcciones de Claudia al aprobar el diseño "del plano a la obra" (Nosotros, Especialidades, soluciones industriales, Estudio y propuesta)
+Notas del último cambio: la marca se escribe SCHobras.cl (opción 4 de /sch, elegida por Claudia); antes, correcciones de Claudia al aprobar el diseño "del plano a la obra"
 Fuente de verdad: sí (texto exacto que va en la web)
 Documentos relacionados: ../cliente/caracteristicas-pag-web.md, ../../respuestas-cliente-2026-10-22.md, ../2026-10-22-web-v1-diseno.md §5–6
 Objetivo: fijar palabra por palabra los textos de la web para que el código no los invente
@@ -17,16 +17,17 @@ Audiencia: desarrollo | agentes
 
 ## Metadatos
 
-- Título inicio: `SCHOBRAS.CL | Arquitectura y construcción en RM, Valparaíso y O'Higgins`
+- Título inicio: `SCHobras.cl | Arquitectura y construcción en RM, Valparaíso y O'Higgins`
 - Descripción inicio: `Diseñamos y construimos proyectos residenciales, comerciales e industriales. Si construyes con nosotros, el proyecto de arquitectura se descuenta del presupuesto de obra.` ⚠️ (reescrita el 2026-10-23: la arquitectura se paga al inicio y se descuenta)
-- Título detalle: `{título} en {comuna} | SCHOBRAS.CL`
-- Título lista: `Proyectos | SCHOBRAS.CL`
+- Título detalle: `{título} en {comuna} | SCHobras.cl`
+- Título lista: `Proyectos | SCHobras.cl`
 
 ## Marca (regla de Ariel, 2026-10-23)
 
-- **Junto solo como dominio:** `SCHOBRAS.CL`. El nombre suelto se escribe **separado**: `SCH OBRAS` (así no se lee "sobras").
-- **En texto visible**, `SCH` va en bronce (clase `.brand__sch`) y `OBRAS` / `OBRAS.CL` en el color del texto, con el mismo peso. En plantillas se escribe con la etiqueta `{% brand_name %}` (dominio) o `{% brand_name domain=False %}` (nombre suelto), nunca a mano.
-- En texto plano (title, metas, JSON-LD, aria-label, alt) va sin estilo: `SCHOBRAS.CL`.
+- **Forma elegida por Claudia el 2026-10-25 (opción 4 de /sch):** `SCHobras.cl`. SCH en mayúsculas y obras en minúsculas, así no se lee "sobras". Sin el dominio: `SCHobras` (p. ej. «Por qué SCHobras»).
+- **En texto visible**, `SCH` va además en bronce (clase `.brand__sch`) y `obras.cl` en el color del texto, con el mismo peso. En plantillas se escribe con la etiqueta `{% brand_name %}` (con dominio) o `{% brand_name domain=False %}` (sin dominio), nunca a mano. La clase `.brand-name` impide que un contexto en mayúsculas (`.label`) cambie la caja.
+- En texto plano (title, metas, JSON-LD, aria-label, alt) va sin estilo, pero con la misma caja: `SCHobras.cl`.
+- *Antes del 2026-10-25:* `SCHOBRAS.CL` y `SCH OBRAS`.
 
 ## Menú
 
@@ -104,7 +105,7 @@ Región Metropolitana · Región de Valparaíso · Región de O'Higgins
 
 ## Pie
 
-`SCHOBRAS.CL` · `Constructora Schonffeldt SpA` · `RUT 77.897.204-2` · `Región Metropolitana · Valparaíso · O'Higgins` · canales configurados · `© {año}`
+`SCHobras.cl` · `Constructora Schonffeldt SpA` · `RUT 77.897.204-2` · `Región Metropolitana · Valparaíso · O'Higgins` · canales configurados · `© {año}`
 
 ## 404
 
@@ -134,7 +135,7 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 
 | Dónde | Texto |
 |---|---|
-| Proyectos (lista): meta descripción | `Obras de arquitectura y construcción de SCHOBRAS.CL en la Región Metropolitana, Valparaíso y O'Higgins.` |
+| Proyectos (lista): meta descripción | `Obras de arquitectura y construcción de SCHobras.cl en la Región Metropolitana, Valparaíso y O'Higgins.` |
 | Proyecto (detalle): botón de cierre con WhatsApp | `Escríbenos por WhatsApp` |
 | Proyecto (detalle): botón de cierre sin WhatsApp, con teléfono | `Llámanos al {teléfono}` |
 | Proyecto (detalle): botón de cierre solo con correo | `Escríbenos a {correo}` |
@@ -148,7 +149,7 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 
 | Dónde | Texto |
 |---|---|
-| 400 (solicitud rechazada, p. ej. Host inválido o más de 100 fotos de una vez): título de la pestaña | `Algo salió mal \| SCHOBRAS.CL` |
+| 400 (solicitud rechazada, p. ej. Host inválido o más de 100 fotos de una vez): título de la pestaña | `Algo salió mal \| SCHobras.cl` |
 | 400: título (genérico desde la QA vuelta 2; antes `Algo salió mal con el envío`) | `No pudimos procesar esta solicitud` |
 | 400: texto (genérico desde la QA vuelta 2; antes `Si subías fotos, sube de a menos.`) | `Vuelve atrás e inténtalo de nuevo.` |
 | 400: botón | `Volver al inicio` |
@@ -160,12 +161,12 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 
 | Dónde | Texto |
 |---|---|
-| Página caducada (fallo de CSRF en el panel): título de la pestaña | `La página caducó \| SCHOBRAS.CL` |
+| Página caducada (fallo de CSRF en el panel): título de la pestaña | `La página caducó \| SCHobras.cl` |
 | Página caducada: título | `La página caducó` |
 | Página caducada: texto | `Por seguridad, el formulario venció. Vuelve al panel e inténtalo de nuevo.` |
 | Página caducada: botón | `Volver al panel` |
 | Proyecto (detalle): nombre accesible de cada miniatura (lector de pantalla) | `Ver foto {n} de {total}` |
-| 403 (web y panel): título de la pestaña | `No tienes acceso \| SCHOBRAS.CL` |
+| 403 (web y panel): título de la pestaña | `No tienes acceso \| SCHobras.cl` |
 
 ### Nuevos con el diseño "del plano a la obra" (ex /v2, inicio desde el 2026-10-25)
 

@@ -370,6 +370,24 @@ body::before,
   min-height: var(--header-height);
 }
 
+/* La pestaña de WhatsApp va a media altura: el encabezado no necesita dejarle su
+   carril. Con ese espacio, marca y «Menú» caben en una fila también con la letra
+   agrandada del teléfono (Samsung de Claudia, 2026-10-25). */
+.site-header { --gutter-end: var(--gutter); }
+
+/* Pantallas muy angostas para su tamaño de letra (en em, sigue la letra del
+   teléfono): queda solo el ícono; «Menú» se sigue leyendo en voz alta. */
+@media (max-width: 21em) {
+  html.js .menu-toggle__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
 /* Marca y botón quedan sobre el menú abierto. */
 .brand,
 .menu-toggle {
@@ -388,23 +406,20 @@ body::before,
 
 .brand__mark { width: 2rem; flex: none; }
 
-/* SCH (Schonffeldt) en bronce y OBRAS.CL en el color del texto, para que la
-   marca se lea "SCH · OBRAS" y no "sobras". Mismo peso: solo cambia el color. */
+/* SCH (Schonffeldt) en mayúsculas y en bronce, obras.cl en minúsculas y en el color
+   del texto: la marca se lee "SCH obras" y no "sobras" (opción 4 de /sch/, elegida
+   por Claudia el 2026-10-25). Mismo peso: cambian la caja y el color. */
 .brand__sch { color: var(--color-bronze); }
 
-.brand__word {
-  /* Compensa el espaciado final para que el bloque quede alineado al eje. */
-  margin-right: -0.32em;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: 0.32em;
-  line-height: 1;
-}
+/* La caja es parte de la marca: ni .label ni otro contexto la pasa a mayúsculas. */
+.brand-name { text-transform: none; }
 
-/* Bajo 384 px, SCHOBRAS.CL (11 letras) y «Menú» no caben en una fila con el
-   espaciado completo: se aprieta solo el espaciado del logotipo (D10-1). */
-@media (max-width: 23.99em) {
-  .brand__word { letter-spacing: 0.2em; margin-right: -0.2em; }
+.brand__word {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 /* Isotipo: volúmenes en el color del texto; fierros y amarras en bronce. */

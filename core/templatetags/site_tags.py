@@ -27,13 +27,12 @@ def whatsapp_href(context, message=""):
 
 @register.simple_tag
 def brand_name(domain=True):
-    """Marca con SCH en bronce (.brand__sch) para que no se lea "sobras".
-
-    Junto solo como dominio (SCHOBRAS.CL); el nombre suelto va separado: SCH OBRAS.
+    """Marca para que no se lea "sobras": SCH en mayúsculas y en bronce (.brand__sch), obras en
+    minúsculas. Es la opción 4 de /sch/, elegida por Claudia el 2026-10-25: SCHobras.cl, o SCHobras
+    sin el dominio. .brand-name anula las mayúsculas de contextos como .label.
     """
-    if domain:
-        return mark_safe('<span class="brand__sch">SCH</span>OBRAS.CL')
-    return mark_safe('<span class="brand__sch">SCH</span> OBRAS')
+    tail = "obras.cl" if domain else "obras"
+    return mark_safe(f'<span class="brand-name"><span class="brand__sch">SCH</span>{tail}</span>')
 
 
 @register.filter

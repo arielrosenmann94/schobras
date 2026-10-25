@@ -22,7 +22,7 @@ def _organization_jsonld(request, site):
     data = {
         "@context": "https://schema.org",
         "@type": "GeneralContractor",
-        "name": "SCHOBRAS.CL",
+        "name": "SCHobras.cl",
         "legalName": "Constructora Schonffeldt SpA",
         "taxID": "77.897.204-2",
         "url": request.build_absolute_uri(reverse("core:home")),

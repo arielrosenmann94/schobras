@@ -94,7 +94,7 @@ class PanelProjectTests(TestCase):
         response = self.client.get(reverse("panel:categories"))
         self.assertRegex(
             response.content.decode(),
-            r'<a[^>]*href="%s"[^>]*><span class="brand__sch">SCH</span>OBRAS\.CL <span class="panel-brand__sub">Panel</span></a>' % reverse("panel:home"),
+            r'<a[^>]*href="%s"[^>]*><span class="brand-name"><span class="brand__sch">SCH</span>obras\.cl</span> <span class="panel-brand__sub">Panel</span></a>' % reverse("panel:home"),
         )
         self.assertContains(response, '<link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">')
 

@@ -47,7 +47,7 @@ class ProjectListTests(TestCase):
     def test_list_title(self):
         publish()
         response = self.client.get(reverse("projects:list"))
-        self.assertContains(response, "<title>Proyectos | SCHOBRAS.CL</title>", html=True)
+        self.assertContains(response, "<title>Proyectos | SCHobras.cl</title>", html=True)
 
     def test_first_card_image_is_lcp_priority(self):
         for title in ("Casa Uno", "Casa Dos", "Casa Tres"):
@@ -145,7 +145,7 @@ class ProjectDetailTests(TestCase):
         configure_whatsapp()
         project = publish()
         response = self.client.get(project.get_absolute_url())
-        self.assertContains(response, "Casa Chicureo en Colina | SCHOBRAS.CL")
+        self.assertContains(response, "Casa Chicureo en Colina | SCHobras.cl")
         self.assertContains(response, "¿Tienes un proyecto parecido? Conversemos.")
 
     def test_detail_cover_high_priority_and_gallery_link(self):

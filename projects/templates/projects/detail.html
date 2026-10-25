@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load image_tags site_tags %}
-{% block title %}{{ project.title }} en {{ project.commune }} | SCHOBRAS.CL{% endblock %}
+{% block title %}{{ project.title }} en {{ project.commune }} | SCHobras.cl{% endblock %}
 {% block meta_description %}{{ meta_description }}{% endblock %}
 {% block og %}
-  <meta property="og:site_name" content="SCHOBRAS.CL">
+  <meta property="og:site_name" content="SCHobras.cl">
   <meta property="og:locale" content="es_CL">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="{{ project.title }} en {{ project.commune }} | SCHOBRAS.CL">
+  <meta property="og:title" content="{{ project.title }} en {{ project.commune }} | SCHobras.cl">
   <meta property="og:description" content="{{ meta_description }}">
   {% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
 {% endblock %}

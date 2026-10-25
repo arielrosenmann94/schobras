@@ -49,7 +49,7 @@ class PanelAccessTests(QuietAxesMixin, TestCase):
         response = self.client.get(reverse("panel:home"))
         self.assertContains(
             response,
-            '<span class="brand__sch">SCH</span>OBRAS.CL <span class="panel-brand__sub">Panel</span>',
+            '<span class="brand-name"><span class="brand__sch">SCH</span>obras.cl</span> <span class="panel-brand__sub">Panel</span>',
             html=False,
         )
 
@@ -135,7 +135,7 @@ class PanelAccessTests(QuietAxesMixin, TestCase):
         ]
         for variant in variants:
             self.client.post(url, {"username": variant, "password": "mala"})
-        for variant in ["CLAUDIA@SCHOBRAS.CL", "claudia", "cLaUdIa@schobras.cl"]:
+        for variant in ["CLAUDIA@SCHobras.cl", "claudia", "cLaUdIa@schobras.cl"]:
             with self.subTest(variant=variant):
                 response = self.client.post(url, {"username": variant, "password": PASSWORD})
                 self.assertEqual(response.status_code, 429)

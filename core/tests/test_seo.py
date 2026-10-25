@@ -9,7 +9,7 @@ from core.models import SiteSettings
 from projects.models import Project, ProjectPhoto
 from projects.tests.test_models import make_image, make_project
 
-HOME_TITLE = "SCHOBRAS.CL | Arquitectura y construcción en RM, Valparaíso y O'Higgins"
+HOME_TITLE = "SCHobras.cl | Arquitectura y construcción en RM, Valparaíso y O'Higgins"
 HOME_DESCRIPTION = (
     "Diseñamos y construimos proyectos residenciales, comerciales e industriales. "
     "Si construyes con nosotros, el proyecto de arquitectura se descuenta del presupuesto de obra."
@@ -108,7 +108,7 @@ class SeoTests(TestCase):
         self.assertIn(f'<meta property="og:description" content="{HOME_DESCRIPTION}">', home)
         project = publish("Casa Chicureo")
         detail = self.client.get(project.get_absolute_url()).content.decode()
-        self.assertIn("<title>Casa Chicureo en Colina | SCHOBRAS.CL</title>", detail)
+        self.assertIn("<title>Casa Chicureo en Colina | SCHobras.cl</title>", detail)
 
     def test_header_current_uses_resolved_url(self):
         project = publish("Casa Actual")
@@ -127,6 +127,6 @@ class NotFoundTests(TestCase):
         self.assertIn("Esta página no existe", html)
         self.assertIn("Puede que el enlace esté mal escrito o que el proyecto ya no esté publicado.", html)
         self.assertIn("Volver al inicio", html)
-        self.assertIn("SCHOBRAS", html)
+        self.assertIn("SCHobras", html)
         self.assertIn(f'href="{reverse("core:home")}"', html)
         self.assertEqual(SiteSettings.objects.count(), 0)
