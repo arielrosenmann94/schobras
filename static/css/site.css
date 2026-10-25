@@ -730,8 +730,6 @@ body::before,
 
 /* ── Movimiento (solo si el usuario no pidió reducirlo) ──────────────────
    .reveal solo se oculta con JS activo: sin JS todo queda visible. */
-@keyframes draw { to { stroke-dashoffset: 0; } }
-@keyframes rise { from { transform: scaleY(0); } to { transform: none; } }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Transiciones de interfaz: también quedan fuera con movimiento reducido. */
@@ -792,41 +790,6 @@ body::before,
   html.js .reveal.visible .cota::after,
   html.js .reveal.visible .rule { transform: none; }
 
-  /* Isotipo armándose en 600 ms en total (retardo + duración de cada pieza):
-     suelo, fierros que suben, volúmenes que se levantan y amarras al final. */
-  html.js .build .ground {
-    stroke-dasharray: 180;
-    stroke-dashoffset: 180;
-    animation: draw 250ms var(--ease) forwards;
-  }
-
-  html.js .build .rebar {
-    stroke-dasharray: 200;
-    stroke-dashoffset: 200;
-    animation: draw 360ms var(--ease) forwards;
-  }
-
-  html.js .build .rebar:nth-child(2) { animation-delay: 40ms; }
-  html.js .build .rebar:nth-child(3) { animation-delay: 80ms; }
-  html.js .build .rebar:nth-child(4) { animation-delay: 120ms; }
-  html.js .build .rebar:nth-child(5) { animation-delay: 160ms; }
-
-  html.js .build .tie {
-    stroke-dasharray: 40;
-    stroke-dashoffset: 40;
-    animation: draw 200ms var(--ease) 400ms forwards;
-  }
-
-  html.js .build .volume {
-    transform: scaleY(0);
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: rise 420ms var(--ease) 120ms forwards;
-  }
-
-  html.js .build .volume + .volume { animation-delay: 180ms; }
-
-  html.js .reveal:not(.visible) .build * { animation-play-state: paused; }
 }
 
 /* ==========================================================================
@@ -866,7 +829,6 @@ body::before,
   .home-grid > .home-head,
   .home-grid > .home-pillars,
   .home-grid > .home-service,
-  .home-grid > .home-steps,
   .home-grid > .home-cards,
   .home-grid > .home-channels,
   .home-grid > .home-contact__title {
@@ -887,159 +849,6 @@ body::before,
     grid-column: 2 / -1;
     margin-top: 0;
     padding-left: var(--space-3);
-  }
-}
-
-/* ── Portada ───────────────────────────────────────────────────────────── */
-.home-hero {
-  padding-block: clamp(2.5rem, 7vw, 5rem) clamp(3.5rem, 9vw, 7rem);
-}
-
-.home-hero__grid {
-  /* Ancho del isotipo; el resto de sus medidas se derivan del viewBox (180 × 200). */
-  --mark: clamp(4.5rem, 18vw, 8rem);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "eyebrow eyebrow"
-    "title   title"
-    "level   mark"
-    "lead    lead"
-    "actions actions";
-}
-
-.home-hero__eyebrow {
-  grid-area: eyebrow;
-  max-width: 24rem;
-}
-
-/* Corta entre tramos, nunca dejando un "·" al inicio de línea. */
-.home-hero__eyebrow > span > span { white-space: nowrap; }
-
-.home-hero__title {
-  grid-area: title;
-  max-width: 11em;
-  margin-top: clamp(1.5rem, 4vw, 3rem);
-}
-
-/* Isotipo sobre la línea de nivel: su suelo (y = 195, trazo 3) cae justo sobre ella. */
-.home-hero__mark {
-  grid-area: mark;
-  align-self: end;
-  width: var(--mark);
-  margin-top: clamp(2rem, 6vw, 3.5rem);
-  margin-bottom: calc(var(--mark) * -3.5 / 180);
-}
-
-/* Línea de nivel (suelo) con su marca triangular en bronce, como en un corte. */
-.home-hero__level {
-  grid-area: level;
-  align-self: end;
-  position: relative;
-  height: max(1px, calc(var(--mark) * 3 / 180));
-  margin-right: calc(var(--mark) * -4 / 180);
-  background: var(--color-anthracite);
-}
-
-.home-hero__level::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: calc(100% + 0.25rem);
-  width: 0.875rem;
-  height: 0.75rem;
-  background: var(--color-bronze);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-}
-
-.home-hero__lead {
-  grid-area: lead;
-  margin-top: clamp(2rem, 5vw, 3rem);
-}
-
-.home-hero__actions {
-  grid-area: actions;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-}
-
-.home-hero__actions .btn { flex: 1 1 auto; }
-
-@media (min-width: 48em) {
-  .home-hero__grid { --mark: clamp(7rem, 15vw, 13rem); }
-
-  /* Sin la cota, el antetítulo usa todo el ancho y no se parte en tres líneas. */
-  .home-hero__eyebrow { max-width: none; }
-
-  .home-hero__actions .btn { flex: 0 0 auto; }
-}
-
-@media (min-width: 64em) {
-  /* Antetítulo acotado: una línea de dimensión lo lleva hasta el borde. */
-  .home-hero__eyebrow {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    max-width: none;
-  }
-
-  .home-hero__eyebrow::after {
-    content: "";
-    flex: 1 1 2rem;
-    height: 0.6875rem;
-    border-right: 1px solid var(--color-bronze);
-    background: linear-gradient(var(--color-bronze), var(--color-bronze)) 0 50% / 100% 1px no-repeat;
-  }
-
-  .home-hero__grid {
-    /* Llena la primera pantalla, con tope para monitores muy altos. */
-    min-height: min(calc(100svh - var(--header-height) - clamp(2.5rem, 7vw, 5rem) - clamp(3.5rem, 9vw, 7rem)), 48rem);
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-template-rows: auto 1fr auto auto;
-    grid-template-areas:
-      "eyebrow eyebrow eyebrow eyebrow"
-      "title   title   title   mark"
-      "level   level   level   mark"
-      "lead    lead    actions actions";
-  }
-
-  .home-hero__title {
-    align-self: end;
-    margin-bottom: var(--space-6);
-  }
-
-  /* El edificio arranca en el eje del 75 %; el suelo le llega desde la izquierda. */
-  .home-hero__mark {
-    justify-self: start;
-    margin-top: 0;
-  }
-
-  .home-hero__lead,
-  .home-hero__actions { margin-top: var(--space-6); }
-
-  .home-hero__actions {
-    align-self: end;
-    padding-left: var(--space-3);
-  }
-}
-
-/* 64–75em: la mitad de la rejilla no alcanza para dos botones; van bajo el texto. */
-@media (min-width: 64em) and (max-width: 74.99em) {
-  .home-hero__grid {
-    grid-template-rows: auto 1fr auto auto auto;
-    grid-template-areas:
-      "eyebrow eyebrow eyebrow eyebrow"
-      "title   title   title   mark"
-      "level   level   level   mark"
-      "lead    lead    lead    lead"
-      "actions actions actions actions";
-  }
-
-  .home-hero__actions {
-    margin-top: var(--space-4);
-    padding-left: 0;
   }
 }
 
@@ -1212,83 +1021,6 @@ body::before,
     display: block;
     width: 1.5rem;
     margin: 0.75rem 0 var(--space-2);
-  }
-}
-
-/* ── 04 · Proceso: una planilla de obra, fila por paso ─────────────────── */
-.home-step {
-  padding-block: var(--space-3) var(--space-4);
-  border-top: 1px solid var(--color-anthracite);
-}
-
-.home-step__number {
-  display: block;
-  color: var(--color-bronze);
-  font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);
-  font-weight: 300;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-}
-
-.home-step__title {
-  margin-top: var(--space-2);
-  font-size: var(--text-h3);
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.home-step p {
-  max-width: 34rem;
-  margin-top: var(--space-1);
-}
-
-/* Paso 6: la obra se levanta. Bronce sobre antracita solo en el número grande. */
-.home-step--final {
-  margin-inline: calc(var(--gutter) * -1) calc(var(--gutter-end) * -1);
-  padding: var(--space-4) var(--gutter-end) var(--space-6) var(--gutter);
-  border-top: 0;
-}
-
-@media (min-width: 48em) {
-  .home-step {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    align-items: baseline;
-  }
-
-  .home-step > * {
-    grid-column: 2 / -1;
-    padding-left: var(--space-3);
-  }
-
-  .home-step > .home-step__number {
-    grid-column: 1;
-    grid-row: 1;
-    padding-left: 0;
-  }
-
-  .home-step__title { margin-top: 0; }
-
-  .home-step--final {
-    margin-inline: 0;
-    padding: var(--space-4) 0 var(--space-6);
-  }
-
-  .home-step--final > .home-step__number { padding-left: var(--space-3); }
-  .home-step--final > p { padding-right: var(--space-3); }
-}
-
-@media (min-width: 64em) {
-  .home-step__title {
-    grid-column: 2;
-    padding-right: var(--space-3);
-  }
-
-  .home-step > p {
-    grid-column: 3 / -1;
-    grid-row: 1;
-    margin-top: 0;
   }
 }
 

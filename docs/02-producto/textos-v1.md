@@ -2,10 +2,10 @@
 
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
-Última revisión: 2026-10-23
-Versión del documento: 1.1.0
+Última revisión: 2026-10-25
+Versión del documento: 1.2.0
 Tipo de cambio más reciente: minor
-Notas del último cambio: oferta de arquitectura (se paga y se descuenta) y RUT en el pie, según respuestas-cliente-2026-10-23.md
+Notas del último cambio: correcciones de Claudia al aprobar el diseño "del plano a la obra" (Nosotros, Especialidades, soluciones industriales, Estudio y propuesta)
 Fuente de verdad: sí (texto exacto que va en la web)
 Documentos relacionados: ../cliente/caracteristicas-pag-web.md, ../../respuestas-cliente-2026-10-22.md, ../2026-10-22-web-v1-diseno.md §5–6
 Objetivo: fijar palabra por palabra los textos de la web para que el código no los invente
@@ -42,7 +42,7 @@ Nosotros · Servicios · Proceso · Proyectos (solo si hay proyectos publicados)
 
 ## 01 · Nosotros
 
-Somos un grupo de profesionales apasionados por la excelencia, con más de 25 años de experiencia en el desarrollo y ejecución de proyectos residenciales, obras civiles y espacios comerciales.
+Somos un grupo de profesionales apasionados por la excelencia, con más de 25 años de experiencia en el desarrollo y ejecución de proyectos residenciales, industriales y comerciales.
 
 Trabajamos con seriedad y rigor en cada etapa, con un trato cercano, transparente y personalizado. Combinamos la precisión técnica de la construcción con la funcionalidad y el diseño de la arquitectura, para entregar soluciones duraderas que agregan valor a nuestros clientes y su entorno.
 
@@ -59,12 +59,13 @@ Ser una constructora de referencia por la excelencia técnica de nuestras obras,
 
 **Diseño y especialidades**
 - Proyecto de arquitectura a la medida.
-- Especialidades: cálculo estructural, agua potable y alcantarillado, electricidad.
+- Especialidades: cálculo estructural, agua potable y alcantarillado urbano y rural, electricidad bifásica y trifásica, y climatización.
 - Gestión de permisos y trámites municipales.
 
 **Construcción**
 - Obra nueva desde cero, ampliaciones y remodelaciones.
 - Edificación residencial, comercial e industrial.
+- Soluciones industriales: tratamiento de aguas, alcantarillado, electricidad y climatización para cada obra.
 - Llave en mano o con el nivel de terminaciones que necesites.
 
 **Cómo construimos**
@@ -75,8 +76,8 @@ Ser una constructora de referencia por la excelencia técnica de nuestras obras,
 ## 04 · Proceso
 
 1. **Visita técnica y entrevista** — Conocemos tu terreno y conversamos contigo para entender tus requerimientos y necesidades.
-2. **Presupuesto de arquitectura y especialidades** — Te presentamos el presupuesto del proyecto de arquitectura y de las especialidades que correspondan (cálculo, agua, alcantarillado, electricidad).
-3. **Estudio y propuesta** — Si lo apruebas, estudiamos tu caso y te presentamos una propuesta.
+2. **Presupuesto de arquitectura y especialidades** — Te presentamos el presupuesto del proyecto de arquitectura y de las especialidades que correspondan (cálculo, agua, alcantarillado, electricidad y climatización).
+3. **Estudio y propuesta** — Si lo apruebas, estudiamos tu caso en relación con la normativa vigente y tus necesidades, y te presentamos una propuesta.
 4. **Ajustes en conjunto** — Incorporamos tus correcciones y nuestras sugerencias hasta llegar a la versión final.
 5. **Proyecto y presupuesto de obra** — Te entregamos el proyecto de arquitectura junto con el presupuesto de construcción.
 6. **Construcción con descuento del proyecto** — Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.
@@ -166,11 +167,11 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 | Proyecto (detalle): nombre accesible de cada miniatura (lector de pantalla) | `Ver foto {n} de {total}` |
 | 403 (web y panel): título de la pestaña | `No tienes acceso \| SCHOBRAS.CL` |
 
-### Nuevos en /v2 (exploración de diseño, 2026-10-25)
+### Nuevos con el diseño "del plano a la obra" (ex /v2, inicio desde el 2026-10-25)
 
 | Dónde | Texto |
 |---|---|
-| /v2, portada 3D: indicador de avance mientras se arma la casa | `Avance de obra {0–100} %` |
+| Inicio, portada 3D: indicador de avance mientras se arma la casa | `Avance de obra {0–100} %` |
 
 ### Nuevos en la revisión de Ariel (ronda 1)
 

@@ -1,4 +1,4 @@
-{% load site_tags %}{% home_url as home %}<header class="site-header">
+{% load site_tags %}{% url 'core:home' as home %}<header class="site-header">
   <div class="site-header__bar container">
     <a class="brand" href="{{ home }}" aria-label="SCHOBRAS.CL, inicio">
       <span class="brand__mark">{% inline_svg "img/isotipo.svg" %}</span>

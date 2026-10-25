@@ -35,29 +35,19 @@ def _organization_jsonld(request, site):
     return data
 
 
-def _home_context(request):
+def home(request):
+    """Inicio: una página larga con anclas y hasta 6 proyectos destacados."""
     featured = (
         Project.objects.published()
         .filter(is_featured=True)
         .select_related("category")
         .prefetch_related("photos")[:FEATURED_LIMIT]
     )
-    return {
+    context = {
         "featured_projects": featured,
         "jsonld": _organization_jsonld(request, SiteSettings.current()),
     }
-
-
-def home(request):
-    """Inicio: una página larga con anclas y hasta 6 proyectos destacados."""
-    return render(request, "core/home.html", _home_context(request))
-
-
-def home_v2(request):
-    """Versión de diseño "del plano a la obra" (/v2/): mismo contenido que el inicio, sin indexar."""
-    context = _home_context(request)
-    context["nav_home"] = reverse("core:home_v2")
-    return render(request, "core/home_v2.html", context)
+    return render(request, "core/home.html", context)
 
 
 @require_GET

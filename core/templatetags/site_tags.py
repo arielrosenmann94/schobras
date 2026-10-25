@@ -25,12 +25,6 @@ def whatsapp_href(context, message=""):
     return whatsapp_url(site.whatsapp, message or site.whatsapp_message)
 
 
-@register.simple_tag(takes_context=True)
-def home_url(context):
-    """Inicio al que apunta el menú: /v2/ lo cambia por el suyo (nav_home) para no salir de la versión."""
-    return context.get("nav_home") or reverse("core:home")
-
-
 @register.simple_tag
 def brand_name(domain=True):
     """Marca con SCH en bronce (.brand__sch) para que no se lea "sobras".

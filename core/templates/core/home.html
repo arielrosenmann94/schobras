@@ -1,5 +1,9 @@
 {% extends "base.html" %}
-{% load image_tags site_tags %}
+{% load static image_tags site_tags %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/v2.css' %}">
+  <script src="{% static 'js/v2.js' %}" defer nonce="{{ csp_nonce }}"></script>
+{% endblock %}
 {% block og %}
   <meta property="og:site_name" content="SCHOBRAS.CL">
   <meta property="og:locale" content="es_CL">
@@ -17,26 +21,43 @@
 {% comment %}
   Inicio: una página larga con anclas (nosotros, servicios, proceso, proyectos, contacto).
   Textos exactos de docs/02-producto/textos-v1.md. Rejilla de 4 columnas alineada a los ejes del plano.
-  La portada no usa .reveal (estaría oculta hasta que cargue site.js): solo el isotipo se arma (.build).
+  Dirección visual "del plano a la obra" (docs/06-frontend/v2-direccion-artistica.md): la portada 3D y el
+  Proceso se mueven con el scroll (v2.css, v2.js); todo lo demás, quieto.
 {% endcomment %}
 
-{% block home_hero %}
-<section class="home-hero" aria-labelledby="inicio-titulo">
-  <div class="container home-hero__grid">
-    <p class="label home-hero__eyebrow"><span><span>Arquitectura y construcción ·</span> <span>Región Metropolitana ·</span> <span>Valparaíso ·</span> <span>O'Higgins</span></span></p>
-    <h1 class="display home-hero__title" id="inicio-titulo">Diseñamos y construimos tu proyecto.</h1>
-    <div class="home-hero__mark build" aria-hidden="true">{% inline_svg "img/isotipo.svg" %}</div>
-    <div class="home-hero__level" aria-hidden="true"></div>
-    <p class="lead home-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
-    {% if has_contact or has_projects %}
-    <div class="home-hero__actions">
-      {% if has_contact %}<a class="btn btn--primary" href="#contacto">Conversemos tu proyecto</a>{% endif %}
-      {% if has_projects %}<a class="btn btn--ghost" href="{% url 'projects:list' %}">Ver proyectos</a>{% endif %}
+{% comment %}
+  Portada 3D: una casa de un piso en maqueta, distinta de la casa del Proceso. v2.js carga
+  v2-hero3d.min.js (three.js) solo con WebGL, movimiento permitido y pantalla con alto suficiente.
+  Mientras carga, o si no se puede, queda su plano SVG en el mismo lugar. Cada etapa muestra un servicio.
+{% endcomment %}
+<section class="v2-hero" aria-labelledby="inicio-titulo" data-hero3d-module="{% static 'js/v2-hero3d.min.js' %}">
+  <div class="v2-hero__pin">
+    <div class="container v2-hero__grid">
+      <p class="v2-hero__where">Arquitectura y construcción · Región Metropolitana · Valparaíso · O'Higgins</p>
+      <h1 class="display v2-hero__title" id="inicio-titulo">Diseñamos y construimos tu proyecto.</h1>
+      <figure class="v2-plan" aria-hidden="true">{% include "core/v2/plan.svg.html" %}</figure>
+      <div class="v2-hero__scene" aria-hidden="true" data-scene>
+        <div class="v2-hero__caption">
+          <p class="v2-hero__progress">Avance de obra <span data-progress>0</span> %</p>
+          <ol class="v2-hero__stages" role="list" data-stages>
+            <li data-at="0"><strong>Proyecto</strong> <span>Proyecto de arquitectura a la medida.</span></li>
+            <li data-at="0.08"><strong>Fundaciones</strong> <span>Especialidades: cálculo estructural, agua potable y alcantarillado urbano y rural, electricidad bifásica y trifásica, y climatización.</span></li>
+            <li data-at="0.22"><strong>Estructura</strong> <span>Todos los sistemas constructivos: albañilería, hormigón armado, madera, volcometal, paneles SIP y estructuras metálicas.</span></li>
+            <li data-at="0.5"><strong>Cerramientos</strong> <span>Cumplimiento normativo en sismorresistencia, resistencia al fuego y acondicionamiento térmico.</span></li>
+            <li data-at="0.78"><strong>Entrega</strong> <span>Llave en mano o con el nivel de terminaciones que necesites.</span></li>
+          </ol>
+        </div>
+      </div>
+      <p class="lead v2-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
+      {% if has_contact or has_projects %}
+      <div class="v2-hero__actions">
+        {% if has_contact %}<a class="btn btn--primary" href="#contacto">Conversemos tu proyecto</a>{% endif %}
+        {% if has_projects %}<a class="btn btn--ghost" href="{% url 'projects:list' %}">Ver proyectos</a>{% endif %}
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
   </div>
 </section>
-{% endblock %}
 
 <section class="section home-section" id="nosotros" aria-labelledby="nosotros-titulo">
   <div class="container home-grid">
@@ -44,7 +65,7 @@
       <span class="section-index" aria-hidden="true">01</span>
       <h2 class="heading" id="nosotros-titulo">Nosotros</h2>
     </div>
-    <p class="home-statement reveal">Somos un grupo de profesionales apasionados por la excelencia, con más de 25 años de experiencia en el desarrollo y ejecución de proyectos residenciales, obras civiles y espacios comerciales.</p>
+    <p class="home-statement reveal">Somos un grupo de profesionales apasionados por la excelencia, con más de 25 años de experiencia en el desarrollo y ejecución de proyectos residenciales, industriales y comerciales.</p>
     <p class="home-about reveal">Trabajamos con seriedad y rigor en cada etapa, con un trato cercano, transparente y personalizado. Combinamos la precisión técnica de la construcción con la funcionalidad y el diseño de la arquitectura, para entregar soluciones duraderas que agregan valor a nuestros clientes y su entorno.</p>
     <div class="home-vision wall--cement reveal reveal--wall">
       <h3 class="label">Visión</h3>
@@ -87,7 +108,7 @@
       <h3 class="subheading">Diseño y especialidades</h3>
       <ul class="home-service__list" role="list">
         <li>Proyecto de arquitectura a la medida.</li>
-        <li>Especialidades: cálculo estructural, agua potable y alcantarillado, electricidad.</li>
+        <li>Especialidades: cálculo estructural, agua potable y alcantarillado urbano y rural, electricidad bifásica y trifásica, y climatización.</li>
         <li>Gestión de permisos y trámites municipales.</li>
       </ul>
     </div>
@@ -96,6 +117,7 @@
       <ul class="home-service__list" role="list">
         <li>Obra nueva desde cero, ampliaciones y remodelaciones.</li>
         <li>Edificación residencial, comercial e industrial.</li>
+        <li>Soluciones industriales: tratamiento de aguas, alcantarillado, electricidad y climatización para cada obra.</li>
         <li>Llave en mano o con el nivel de terminaciones que necesites.</li>
       </ul>
     </div>
@@ -110,48 +132,49 @@
   </div>
 </section>
 
-{% block home_process %}
-<section class="section home-section" id="proceso" aria-labelledby="proceso-titulo">
+<section class="section home-section v2-build" id="proceso" aria-labelledby="proceso-titulo" data-build>
   <div class="container home-grid">
     <div class="home-head">
       <span class="section-index" aria-hidden="true">04</span>
       <h2 class="heading" id="proceso-titulo">Proceso</h2>
     </div>
-    <ol class="home-steps" role="list">
-      <li class="home-step reveal">
-        <span class="home-step__number" aria-hidden="true">01</span>
-        <h3 class="home-step__title">Visita técnica y entrevista</h3>
-        <p>Conocemos tu terreno y conversamos contigo para entender tus requerimientos y necesidades.</p>
-      </li>
-      <li class="home-step reveal">
-        <span class="home-step__number" aria-hidden="true">02</span>
-        <h3 class="home-step__title">Presupuesto de arquitectura y especialidades</h3>
-        <p>Te presentamos el presupuesto del proyecto de arquitectura y de las especialidades que correspondan (cálculo, agua, alcantarillado, electricidad).</p>
-      </li>
-      <li class="home-step reveal">
-        <span class="home-step__number" aria-hidden="true">03</span>
-        <h3 class="home-step__title">Estudio y propuesta</h3>
-        <p>Si lo apruebas, estudiamos tu caso y te presentamos una propuesta.</p>
-      </li>
-      <li class="home-step reveal">
-        <span class="home-step__number" aria-hidden="true">04</span>
-        <h3 class="home-step__title">Ajustes en conjunto</h3>
-        <p>Incorporamos tus correcciones y nuestras sugerencias hasta llegar a la versión final.</p>
-      </li>
-      <li class="home-step reveal">
-        <span class="home-step__number" aria-hidden="true">05</span>
-        <h3 class="home-step__title">Proyecto y presupuesto de obra</h3>
-        <p>Te entregamos el proyecto de arquitectura junto con el presupuesto de construcción.</p>
-      </li>
-      <li class="home-step home-step--final wall reveal reveal--wall">
-        <span class="home-step__number" aria-hidden="true">06</span>
-        <h3 class="home-step__title">Construcción con descuento del proyecto</h3>
-        <p>Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
-      </li>
-    </ol>
+    <div class="v2-build__layout">
+      <div class="v2-stage" aria-hidden="true">{% include "core/v2/elevation.svg.html" %}</div>
+      <ol class="v2-steps" role="list" data-build-steps>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">01</span>
+          <h3 class="v2-step__title">Visita técnica y entrevista</h3>
+          <p>Conocemos tu terreno y conversamos contigo para entender tus requerimientos y necesidades.</p>
+        </li>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">02</span>
+          <h3 class="v2-step__title">Presupuesto de arquitectura y especialidades</h3>
+          <p>Te presentamos el presupuesto del proyecto de arquitectura y de las especialidades que correspondan (cálculo, agua, alcantarillado, electricidad y climatización).</p>
+        </li>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">03</span>
+          <h3 class="v2-step__title">Estudio y propuesta</h3>
+          <p>Si lo apruebas, estudiamos tu caso en relación con la normativa vigente y tus necesidades, y te presentamos una propuesta.</p>
+        </li>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">04</span>
+          <h3 class="v2-step__title">Ajustes en conjunto</h3>
+          <p>Incorporamos tus correcciones y nuestras sugerencias hasta llegar a la versión final.</p>
+        </li>
+        <li class="v2-step">
+          <span class="v2-step__number" aria-hidden="true">05</span>
+          <h3 class="v2-step__title">Proyecto y presupuesto de obra</h3>
+          <p>Te entregamos el proyecto de arquitectura junto con el presupuesto de construcción.</p>
+        </li>
+        <li class="v2-step v2-step--final">
+          <span class="v2-step__number" aria-hidden="true">06</span>
+          <h3 class="v2-step__title">Construcción con descuento del proyecto</h3>
+          <p>Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
+        </li>
+      </ol>
+    </div>
   </div>
 </section>
-{% endblock %}
 
 {% if featured_projects %}
 <section class="section home-section" id="proyectos" aria-labelledby="proyectos-titulo">

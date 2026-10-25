@@ -1,4 +1,4 @@
-"""Versión de diseño /v2/ ("del plano a la obra"): mismo contenido, otra dirección visual, sin indexar."""
+"""Dirección visual "del plano a la obra" (nació en /v2/; desde el 2026-10-25 es el inicio)."""
 import json
 import re
 from pathlib import Path
@@ -18,27 +18,35 @@ STEP_TITLES = [
 ]
 
 
-class HomeV2Tests(TestCase):
-    def get(self, path="/v2/"):
+class HomeDesignTests(TestCase):
+    """La dirección "del plano a la obra" (ex /v2/) es el inicio desde el 2026-10-25 (aprobada por Claudia)."""
+
+    def get(self, path="/"):
         response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
         return response, response.content.decode()
 
-    def test_v2_renders_with_its_template(self):
+    def test_home_renders_the_design(self):
         response, _ = self.get()
-        self.assertTemplateUsed(response, "core/home_v2.html")
+        self.assertTemplateUsed(response, "core/home.html")
+        self.assertTemplateNotUsed(response, "core/home_v2.html")
 
-    def test_v2_is_never_indexed(self):
+    def test_home_is_indexable(self):
         _, html = self.get()
-        self.assertIn('<meta name="robots" content="noindex, nofollow">', html)
+        self.assertNotIn('name="robots"', html)
 
-    def test_v2_assets_are_local_and_script_has_nonce(self):
+    def test_old_v2_url_redirects_to_home(self):
+        response = self.client.get("/v2/")
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response["Location"], "/")
+
+    def test_assets_are_local_and_script_has_nonce(self):
         _, html = self.get()
         self.assertRegex(html, r'<link rel="stylesheet" href="/static/css/v2\.css">')
         self.assertRegex(html, r'<script src="/static/js/v2\.js" defer nonce="[^"]+"></script>')
 
-    def test_v2_keeps_the_same_texts(self):
-        """Nuestra información manda: el contenido es el de textos-v1.md, igual que en /."""
+    def test_keeps_the_texts(self):
+        """Nuestra información manda: el contenido es el de textos-v1.md."""
         _, html = self.get()
         self.assertRegex(html, r"<h1[^>]*>\s*Diseñamos y construimos tu proyecto.\s*</h1>")
         self.assertIn(
@@ -78,26 +86,18 @@ class HomeV2Tests(TestCase):
         for svg_class in ("v2-plan", "v2-stage"):
             self.assertRegex(html, rf'<(?:figure|div) class="{svg_class}[^"]*" aria-hidden="true">')
 
-    def test_nav_stays_on_v2(self):
+    def test_nav_points_to_home(self):
         _, html = self.get()
-        self.assertIn('href="/v2/#nosotros"', html)
-        self.assertNotIn('href="/#nosotros"', html)
+        self.assertIn('href="/#nosotros"', html)
+        self.assertNotIn("/v2/", html)
 
     def test_cta_tab_still_deferred(self):
         configure(whatsapp="912345678")
         _, html = self.get()
         self.assertIn("cta-tab--deferred", html)
 
-    def test_home_v1_untouched(self):
-        _, html = self.get("/")
-        self.assertNotIn("v2.css", html)
-        self.assertNotIn("v2.js", html)
-        self.assertNotIn('name="robots"', html)
-        self.assertIn('href="/#nosotros"', html)
-
-    def test_v2_not_in_sitemap(self):
-        xml = self.client.get("/sitemap.xml").content.decode()
-        self.assertNotIn("/v2/", xml)
+    def test_old_v2_template_is_gone(self):
+        self.assertFalse((Path(settings.BASE_DIR) / "core" / "templates" / "core" / "home_v2.html").exists())
 
 
 class V2StaticTests(SimpleTestCase):

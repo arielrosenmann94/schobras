@@ -96,7 +96,7 @@ class CtaTabStyleTests(SimpleTestCase):
         self.assertIn("env(safe-area-inset-right, 0px)", lane)
         container = rule(self.css, ".container")
         self.assertIn("var(--gutter-end)", container)
-        for wall in (".home-grid > .home-vision", ".home-pillar--main", ".home-step--final"):
+        for wall in (".home-grid > .home-vision", ".home-pillar--main"):
             self.assertIn("calc(var(--gutter-end) * -1)", rule(self.css, wall), wall)
 
 

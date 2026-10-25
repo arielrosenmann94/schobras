@@ -56,14 +56,13 @@ class HomeTests(TestCase):
 
     def test_home_texts_from_textos_v1(self):
         html = self.get()
-        eyebrow = re.search(r'<p class="label home-hero__eyebrow">(.*?)</p>', html, re.S).group(1)
-        self.assertEqual(
-            re.sub(r"<[^>]+>", "", eyebrow),
-            "Arquitectura y construcción · Región Metropolitana · Valparaíso · O'Higgins",
+        self.assertIn(
+            '<p class="v2-hero__where">Arquitectura y construcción · Región Metropolitana · Valparaíso · O\'Higgins</p>',
+            html,
         )
         self.assertRegex(html, r"<h1[^>]*>\s*Diseñamos y construimos tu proyecto.\s*</h1>")
         self.assertIn(
-            '<p class="lead home-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura'
+            '<p class="lead v2-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura'
             " se descuenta del presupuesto de la obra.</p>",
             html,
         )
@@ -85,6 +84,27 @@ class HomeTests(TestCase):
         ):
             self.assertIn(text, html)
 
+    def test_claudia_corrections_2026_10_25(self):
+        """Correcciones de Claudia al aprobar el diseño (2026-10-25)."""
+        html = self.get()
+        self.assertIn("proyectos residenciales, industriales y comerciales.", html)
+        self.assertNotIn("obras civiles y espacios comerciales", html)
+        self.assertIn(
+            "<li>Especialidades: cálculo estructural, agua potable y alcantarillado urbano y rural,"
+            " electricidad bifásica y trifásica, y climatización.</li>",
+            html,
+        )
+        self.assertIn(
+            "<li>Soluciones industriales: tratamiento de aguas, alcantarillado, electricidad y climatización"
+            " para cada obra.</li>",
+            html,
+        )
+        self.assertIn(
+            "Si lo apruebas, estudiamos tu caso en relación con la normativa vigente y tus necesidades,"
+            " y te presentamos una propuesta.",
+            html,
+        )
+
     def test_architecture_offer_not_free(self):
         # La clienta confirmó el 2026-10-23: la arquitectura se paga y se descuenta; no es gratis.
         html = self.get().lower()
@@ -96,7 +116,7 @@ class HomeTests(TestCase):
         html = self.get()
         self.assertRegex(html, r'<a class="cta-tab cta-tab--deferred" href="https://wa\.me/56912345678')
         # El disparador existe: la cabecera de la primera sección, debajo de la portada.
-        self.assertLess(html.index('class="home-hero"'), html.index('class="home-head"'))
+        self.assertLess(html.index('class="v2-hero"'), html.index('class="home-head"'))
 
     def test_cta_tab_not_deferred_outside_home(self):
         configure(whatsapp="912345678")
@@ -127,9 +147,8 @@ class HomeTests(TestCase):
     def test_no_inline_styles_and_hero_without_reveal(self):
         html = self.get()
         self.assertNotRegex(html, r"\sstyle\s*=")
-        hero = re.search(r'<section class="home-hero".*?</section>', html, re.S).group(0)
+        hero = re.search(r'<section class="v2-hero".*?</section>', html, re.S).group(0)
         self.assertNotIn("reveal", hero)
-        self.assertIn('class="rebar"', hero)
 
     def test_featured_hidden_without_projects(self):
         html = self.get()
