@@ -3,7 +3,7 @@
 Estado: draft (exploración; no reemplaza el inicio)
 Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-25
-Versión del documento: 1.0.0
+Versión del documento: 1.1.0
 Tipo de cambio más reciente: major
 Notas del último cambio: primera exploración, a partir de la visión de experiencia web que trajo Ariel
 Fuente de verdad: sí, para /v2
@@ -47,6 +47,26 @@ Ariel trajo un texto de visión ("SCH Construcciones — Visión de experiencia 
 Todo lo demás (Nosotros, Por qué SCH OBRAS, Servicios, Proyectos, Zona y Contacto) queda **igual que en el inicio**: la audacia se gasta en un solo lugar.
 
 **Tokens:** los de guia-visual.md, sin colores nuevos. El bronce es línea (cotas, fierros, fundación) y número de paso activo de 40 px o más. Open Sans, sin fuentes nuevas.
+
+## 3 bis. Portada 3D (revisión de Ariel, 2026-10-25)
+
+Ariel pidió un efecto "wow" sobre el pliegue, que fuera algo **distinto de la casa del Proceso** (el Proceso queda tal cual: "está perfecto") y **más industrial**, y que el scroll **cambie la información**, no solo la imagen.
+
+- **Obra:** nave industrial de 24,00 × 16,00 m con marcos de acero (ejes A–G cada 4 m), correas, cerramientos antracita, cubierta clara, portón y ventana corrida, más un bloque de oficinas de dos pisos al frente, con fachada vidriada.
+- **Recorrido:** la sección mide 2,2–2,6 pantallas y la portada queda fija. La cámara parte cenital, viendo el plano (el mismo de `core/v2/plan.svg.html`, que es el respaldo sin 3D), y baja a una vista en 3/4.
+- **Etapas y servicio que muestra cada una** (textos existentes de Servicios; los nombres de las etapas quedan ⚠️):
+
+| Avance | Etapa | Qué se arma | Servicio |
+|---|---|---|---|
+| 0 % | Proyecto | El plano | Proyecto de arquitectura a la medida. |
+| 8 % | Fundaciones | Zapatas y radier | Especialidades: cálculo estructural, agua potable y alcantarillado, electricidad. |
+| 22 % | Estructura | Marcos de acero uno por uno, correas y la estructura de las oficinas | Todos los sistemas constructivos: … estructuras metálicas. |
+| 50 % | Cerramientos | Muros y cubierta | Cumplimiento normativo en sismorresistencia, resistencia al fuego y acondicionamiento térmico. |
+| 78 % | Entrega | Fachada vidriada, portón y luces encendidas (bronce) | Llave en mano o con el nivel de terminaciones que necesites. |
+
+- **Técnica:** three.js 0.186.1 compilado con esbuild en un solo archivo propio (`static/js/v2-hero3d.min.js`, unos 145 KB comprimido). Se carga con `import()` solo si hay WebGL, movimiento permitido y pantalla de 34em de alto o más. La cámara tiene inercia y, en computador, una órbita sutil con el mouse.
+- Del prompt de referencia de Ariel (Three.js + GSAP, tema oscuro, GLB con Draco, pantalla de carga) se tomaron las etapas, la cámara dolly, el remate con luces y el indicador de avance. No se tomaron GSAP, el tema oscuro, el GLB ni la pantalla de carga (el plano SVG se ve al instante), ni las barras de scroll ocultas.
+- Para recompilar: `cd frontend && npm ci && npm run build`.
 
 ## 4. Cómo está hecho
 

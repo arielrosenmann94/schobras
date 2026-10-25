@@ -143,16 +143,29 @@
     transition: opacity 600ms var(--ease);
   }
 
-  /* Avance de obra: invita a seguir bajando; se lee sobre el blanco de la escena. */
-  .v2-hero__progress {
+  /* Avance de obra y etapa en curso con su servicio: la información cambia con el
+     scroll. En el celular solo el avance y la etapa, para no tapar la obra. */
+  .v2-hero__caption {
     position: absolute;
     left: 0;
     bottom: 0;
     z-index: 1;
+    max-width: 24rem;
+    padding: var(--space-1) var(--space-2) 0 0;
+    background: var(--color-white);
     font-size: var(--text-small);
+    line-height: 1.45;
+  }
+
+  .v2-hero__progress {
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
+
+  .v2-hero__stages li { display: none; }
+  .v2-hero__stages li.is-active { display: block; }
+  .v2-hero__stages strong { font-weight: 600; color: var(--color-bronze); }
+  .v2-hero__stages span { display: none; }
 
   .v2-hero__scene canvas {
     position: absolute;
@@ -168,6 +181,9 @@
 
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em) and (min-width: 64em) {
   .v2-hero:not(.no-3d) { height: 260svh; }
+
+  .v2-hero__stages strong { display: block; margin-top: var(--space-1); font-size: 1.5rem; font-weight: 300; line-height: 1.2; }
+  .v2-hero__stages span { display: block; }
 
   .v2-hero:not(.no-3d) .v2-hero__grid { grid-template-rows: auto 1fr auto auto; }
 
