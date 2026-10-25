@@ -13,18 +13,25 @@
 {% endblock %}
 
 {% block home_hero %}
-<section class="v2-hero" aria-labelledby="inicio-titulo">
-  <div class="container v2-hero__grid">
-    <p class="v2-hero__where">Arquitectura y construcción · Región Metropolitana · Valparaíso · O'Higgins</p>
-    <h1 class="display v2-hero__title" id="inicio-titulo">Diseñamos y construimos tu proyecto.</h1>
-    <figure class="v2-plan" aria-hidden="true">{% include "core/v2/plan.svg.html" %}</figure>
-    <p class="lead v2-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
-    {% if has_contact or has_projects %}
-    <div class="v2-hero__actions">
-      {% if has_contact %}<a class="btn btn--primary" href="#contacto">Conversemos tu proyecto</a>{% endif %}
-      {% if has_projects %}<a class="btn btn--ghost" href="{% url 'projects:list' %}">Ver proyectos</a>{% endif %}
+{% comment %}
+  Portada 3D: v2.js carga v2-hero3d.min.js (three.js) solo con WebGL, movimiento permitido y pantalla
+  con alto suficiente. Mientras carga, o si no se puede, queda el plano SVG en el mismo lugar.
+{% endcomment %}
+<section class="v2-hero" aria-labelledby="inicio-titulo" data-hero3d-module="{% static 'js/v2-hero3d.min.js' %}">
+  <div class="v2-hero__pin">
+    <div class="container v2-hero__grid">
+      <p class="v2-hero__where">Arquitectura y construcción · Región Metropolitana · Valparaíso · O'Higgins</p>
+      <h1 class="display v2-hero__title" id="inicio-titulo">Diseñamos y construimos tu proyecto.</h1>
+      <figure class="v2-plan" aria-hidden="true">{% include "core/v2/plan.svg.html" %}</figure>
+      <div class="v2-hero__scene" aria-hidden="true" data-scene><p class="v2-hero__progress">Avance de obra <span data-progress>0</span> %</p></div>
+      <p class="lead v2-hero__lead">Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
+      {% if has_contact or has_projects %}
+      <div class="v2-hero__actions">
+        {% if has_contact %}<a class="btn btn--primary" href="#contacto">Conversemos tu proyecto</a>{% endif %}
+        {% if has_projects %}<a class="btn btn--ghost" href="{% url 'projects:list' %}">Ver proyectos</a>{% endif %}
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
   </div>
 </section>
 {% endblock %}

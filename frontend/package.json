@@ -1,0 +1,12 @@
+{
+  "name": "schobras-frontend",
+  "private": true,
+  "description": "Compilación de la escena 3D de /v2 (three.js) a static/js/v2-hero3d.min.js. No se usa en Heroku: el archivo compilado se commitea.",
+  "scripts": {
+    "build": "esbuild src/v2-hero3d.js --bundle --minify --format=esm --target=es2020 --legal-comments=eof \"--banner:js=/*! three.js 0.186.1 | MIT License | Copyright (c) 2010-2026 three.js authors | github.com/mrdoob/three.js */\" --outfile=../static/js/v2-hero3d.min.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.186.1"
+  }
+}

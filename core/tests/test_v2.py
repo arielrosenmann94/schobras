@@ -1,4 +1,5 @@
 """Versión de diseño /v2/ ("del plano a la obra"): mismo contenido, otra dirección visual, sin indexar."""
+import json
 import re
 from pathlib import Path
 
@@ -57,6 +58,16 @@ class HomeV2Tests(TestCase):
         steps = re.search(r"<ol[^>]*data-build-steps[^>]*>(.*?)</ol>", section, re.S).group(1)
         self.assertEqual(steps.count("<li"), 6)
 
+    def test_hero_3d_is_progressive(self):
+        """La portada 3D carga three.js solo bajo demanda; el plano SVG queda de respaldo."""
+        _, html = self.get()
+        hero = re.search(r'<section class="v2-hero"[^>]*>.*?</section>', html, re.S).group(0)
+        self.assertRegex(hero, r'data-hero3d-module="/static/js/v2-hero3d\.min\.js"')
+        self.assertRegex(hero, r'<div class="v2-hero__scene" aria-hidden="true" data-scene>')
+        self.assertIn('class="v2-plan', hero)
+        self.assertIn('<p class="v2-hero__progress">Avance de obra <span data-progress>0</span> %</p>', hero)
+        self.assertNotIn("v2-hero3d.min.js\"></script>", html)
+
     def test_drawings_are_decorative(self):
         _, html = self.get()
         for svg_class in ("v2-plan", "v2-stage"):
@@ -90,6 +101,32 @@ class V2StaticTests(SimpleTestCase):
 
     def test_v2_js_under_budget(self):
         self.assertLess(len(self.read("js/v2.js").encode()), 20 * 1024)
+
+    def test_mobile_stage_is_at_most_a_sixth_of_the_screen(self):
+        css = self.read("css/v2.css")
+        rule = re.search(r"\n\.v2-stage \{([^}]*)\}", css).group(1)
+        self.assertIn("height: calc(100svh / 6);", rule)
+
+    def test_build_starts_when_the_drawing_is_fully_in_view(self):
+        """El avance arranca cuando el dibujo ya quedó fijo y completo, no cuando la lista asoma."""
+        js = self.read("js/v2.js")
+        self.assertIn("stage.offsetHeight", js)
+        self.assertIn("getComputedStyle(stage).top", js)
+
+    def test_hero3d_bundle_is_local_and_licensed(self):
+        bundle = self.read("js/v2-hero3d.min.js")
+        self.assertIn("three.js authors", bundle)
+        self.assertNotIn("http://", bundle.replace("http://www.w3.org", ""))
+        self.assertLess(len(bundle.encode()), 700 * 1024)
+
+    def test_hero3d_loads_only_when_motion_and_webgl_are_available(self):
+        js = self.read("js/v2.js")
+        self.assertIn("import(", js)
+        self.assertIn("webgl", js.lower())
+
+    def test_frontend_tools_are_pinned(self):
+        pkg = json.loads((Path(settings.BASE_DIR) / "frontend" / "package.json").read_text())
+        self.assertEqual(pkg["devDependencies"], {"esbuild": "0.28.2", "three": "0.186.1"})
 
     def test_v2_js_respects_reduced_motion(self):
         self.assertIn("prefers-reduced-motion: reduce", self.read("js/v2.js"))

@@ -55,6 +55,9 @@
 
 .v2-hero__actions .btn { flex: 1 1 auto; }
 
+/* La escena 3D solo existe cuando v2.js la arma (ver más abajo). */
+.v2-hero__scene { display: none; }
+
 @media (min-width: 48em) {
   .v2-hero__actions .btn { flex: 0 0 auto; }
 }
@@ -80,6 +83,96 @@
     width: 100%;
     margin: 0;
   }
+}
+
+/* ── Portada 3D ───────────────────────────────────────────────────────────
+   Solo con JS, movimiento permitido y pantalla de alto suficiente (v2.js usa las
+   mismas condiciones y, si three.js no carga, pone .no-3d). El diseño fijo se
+   aplica desde el primer pintado: el plano SVG ocupa el mismo lugar que tendrá la
+   escena, así el cambio a 3D no mueve nada. La sección es más alta que la
+   pantalla: ese recorrido es el que arma la casa mientras la portada queda fija. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em) {
+  .v2-hero:not(.no-3d) {
+    height: 220svh;
+    padding: 0;
+  }
+
+  .v2-hero:not(.no-3d) .v2-hero__pin {
+    position: sticky;
+    top: var(--header-height);
+    display: flex;
+    height: calc(100svh - var(--header-height));
+  }
+
+  .v2-hero:not(.no-3d) .v2-hero__grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    padding-block: clamp(1.25rem, 4svh, 3rem) clamp(1.25rem, 4svh, 2.5rem);
+  }
+
+  .v2-hero:not(.no-3d) .v2-hero__title { margin-top: clamp(0.75rem, 2.5svh, 2.5rem); }
+  .v2-hero:not(.no-3d) .v2-hero__lead { margin-top: var(--space-3); }
+
+  .v2-hero:not(.no-3d) .v2-plan,
+  .v2-hero:not(.no-3d) .v2-hero__scene {
+    grid-area: plan;
+    align-self: stretch;
+    justify-self: stretch;
+    width: 100%;
+    min-height: 0;
+    margin: var(--space-3) 0 0;
+  }
+
+  .v2-hero:not(.no-3d) .v2-plan {
+    display: flex;
+    justify-content: center;
+    transition: opacity 400ms var(--ease);
+  }
+
+  .v2-hero:not(.no-3d) .v2-plan__svg {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+  }
+
+  .v2-hero:not(.no-3d) .v2-hero__scene {
+    display: block;
+    position: relative;
+    opacity: 0;
+    transition: opacity 600ms var(--ease);
+  }
+
+  /* Avance de obra: invita a seguir bajando; se lee sobre el blanco de la escena. */
+  .v2-hero__progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
+    font-size: var(--text-small);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .v2-hero__scene canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .v2-hero.is-3d .v2-plan { opacity: 0; }
+  .v2-hero.is-3d .v2-hero__scene { opacity: 1; }
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em) and (min-width: 64em) {
+  .v2-hero:not(.no-3d) { height: 260svh; }
+
+  .v2-hero:not(.no-3d) .v2-hero__grid { grid-template-rows: auto 1fr auto auto; }
+
+  .v2-hero:not(.no-3d) .v2-plan,
+  .v2-hero:not(.no-3d) .v2-hero__scene { margin: 0; }
 }
 
 /* Dibujo del plano: muros macizos en antracita, cotas en bronce (línea, no texto
@@ -186,8 +279,9 @@
   z-index: 1;
   display: flex;
   align-items: center;
-  height: clamp(13rem, 40svh, 22rem);
-  padding-block: var(--space-2);
+  /* Ariel: en el celular el dibujo ocupa a lo más 1/6 de la pantalla. */
+  height: calc(100svh / 6);
+  padding-block: var(--space-1);
   background: var(--color-white);
   border-bottom: 1px solid var(--line);
 }
@@ -200,7 +294,7 @@
   display: grid;
   align-content: center;
   gap: var(--space-2);
-  min-height: 55svh;
+  min-height: 45svh;
   padding: var(--space-6) 0 var(--space-6) var(--space-3);
   border-left: 3px solid transparent;
 }

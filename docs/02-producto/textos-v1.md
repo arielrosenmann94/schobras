@@ -166,6 +166,12 @@ Textos que ya están en el sitio o en el panel y no estaban en este documento (Q
 | Proyecto (detalle): nombre accesible de cada miniatura (lector de pantalla) | `Ver foto {n} de {total}` |
 | 403 (web y panel): título de la pestaña | `No tienes acceso \| SCHOBRAS.CL` |
 
+### Nuevos en /v2 (exploración de diseño, 2026-10-25)
+
+| Dónde | Texto |
+|---|---|
+| /v2, portada 3D: indicador de avance mientras se arma la casa | `Avance de obra {0–100} %` |
+
 ### Nuevos en la revisión de Ariel (ronda 1)
 
 | Dónde | Texto |

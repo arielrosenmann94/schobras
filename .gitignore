@@ -38,3 +38,6 @@ graphify-out/cache/
 
 # graphify generated caches
 graphify-out/.graphify_*
+
+# Herramientas de compilación del frontend (frontend/)
+node_modules/
