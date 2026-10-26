@@ -228,6 +228,14 @@ class V2StaticTests(SimpleTestCase):
         self.assertIn("border: 4px solid var(--color-white);", block)
         self.assertIn("border-top: 0;", block)
 
+    def test_wide_screens_let_the_3d_scene_cover_the_side(self):
+        """Ariel (2026-10-25): en pantallas más anchas que la página, la escena 3D no se corta en el
+        borde de la hoja: pasa sobre la franja antracita. El celular no cambia (solo > 90rem)."""
+        css = self.read("css/v2.css")
+        block = re.search(r"@media \(scripting: enabled\) and \(prefers-reduced-motion: no-preference\) and \(min-height: 34em\) and \(min-width: 90\.0625em\) \{(.*?)\n\}", css, re.S).group(1)
+        self.assertIn("width: calc(100% + (100vw - var(--max-width)) / 4);", block)
+        self.assertIn("overflow-x: clip;", self.read("css/site.css"))
+
     def test_frontend_tools_are_pinned(self):
         pkg = json.loads((Path(settings.BASE_DIR) / "frontend" / "package.json").read_text())
         self.assertEqual(pkg["devDependencies"], {"esbuild": "0.28.2", "three": "0.186.1"})

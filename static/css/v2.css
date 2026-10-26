@@ -243,6 +243,18 @@
   }
 }
 
+/* Pantalla más ancha que la página: la obra no se corta en el borde de la hoja, pasa
+   sobre la mitad de la franja antracita (Ariel, 2026-10-25; hasta el borde de la
+   pantalla quedaba gigante en monitores muy anchos). La imagen
+   fija y la escena crecen igual, así el cambio a 3D sigue sin notarse; el desborde por
+   la barra de desplazamiento lo recorta site.css (html, overflow-x: clip). */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em) and (min-width: 90.0625em) {
+  .v2-hero:not(.no-3d) .v2-plan,
+  .v2-hero:not(.no-3d) .v2-hero__scene {
+    width: calc(100% + (100vw - var(--max-width)) / 4);
+  }
+}
+
 /* Dibujo del plano: muros macizos en antracita, cotas en bronce (línea, no texto
    de cuerpo), ejes en cemento. */
 .v2-plan__svg,
