@@ -5,12 +5,12 @@ from projects.models import Project
 
 
 class StaticSitemap(Sitemap):
-    """Inicio y lista de proyectos."""
+    """Inicio, lista de proyectos y política de privacidad."""
 
     changefreq = "monthly"
 
     def items(self):
-        return ["core:home", "projects:list"]
+        return ["core:home", "projects:list", "core:privacy"]
 
     def location(self, item):
         return reverse(item)

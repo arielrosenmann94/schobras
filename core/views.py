@@ -85,6 +85,11 @@ def brand_options(request):
     return render(request, "core/sch.html", {"options": BRAND_OPTIONS})
 
 
+def privacy(request):
+    """/privacidad/: para qué se usan los datos de quien escribe (no hay formularios ni analítica)."""
+    return render(request, "core/privacy.html")
+
+
 @require_GET
 def robots(request):
     if not settings.SEARCH_INDEXING:

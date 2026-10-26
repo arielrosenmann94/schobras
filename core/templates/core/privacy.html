@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load site_tags %}
+{% comment %}
+  /privacidad/: texto exacto en docs/02-producto/textos-v1.md §Política de privacidad.
+  La web no tiene formularios ni analítica: solo se reciben los datos de quien escribe.
+{% endcomment %}
+{% block title %}Política de privacidad | SCHobras.cl{% endblock %}
+{% block meta_description %}Cómo usa Constructora Schonffeldt SpA los datos de quienes nos contactan por WhatsApp, teléfono o correo.{% endblock %}
+{% block og %}
+  <meta property="og:site_name" content="SCHobras.cl">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Política de privacidad | SCHobras.cl">
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container privacy">
+    <header class="privacy__intro">
+      <h1 class="heading">Política de privacidad</h1>
+      <p class="lead">Cómo usamos los datos que nos entregas cuando nos contactas.</p>
+    </header>
+
+    <div class="prose privacy__body">
+      <h2 class="subheading">Quién es responsable</h2>
+      <p>Constructora Schonffeldt SpA, RUT 77.897.204-2, dueña de {% brand_name %}.</p>
+
+      <h2 class="subheading">Qué datos recibimos</h2>
+      <p>Esta web no tiene formularios ni registra a quienes la visitan: no usamos cookies de seguimiento ni herramientas de analítica. Solo recibimos los datos que tú nos envías al escribirnos o llamarnos: tu nombre, tu número o correo y lo que nos cuentes de tu proyecto.</p>
+
+      <h2 class="subheading">Para qué los usamos</h2>
+      <p>El contacto por WhatsApp es exclusivo para cotizar y consultar por proyectos de arquitectura y construcción. Los usamos solo para la comunicación comercial sobre el proyecto que consultaste.</p>
+
+      <h2 class="subheading">Con quién los compartimos</h2>
+      <p>No compartimos tus datos con nadie. Los mensajes pasan por el servicio que elijas para escribirnos (WhatsApp, teléfono o correo), que tiene su propia política de privacidad.</p>
+
+      <h2 class="subheading">Tus derechos</h2>
+      <p>Puedes pedirnos en cualquier momento saber qué datos tuyos tenemos, corregirlos o borrarlos{% if site.email %}, escribiendo a <a href="mailto:{{ site.email }}">{{ site.email }}</a>{% elif whatsapp_href %}, escribiéndonos por <a href="{{ whatsapp_href }}" target="_blank" rel="noopener">WhatsApp</a>{% endif %}.</p>
+
+      <p class="privacy__updated">Última actualización: 25 de octubre de 2026.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

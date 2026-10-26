@@ -3,9 +3,9 @@
 Estado: active
 Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-25
-Versión del documento: 1.3.0
+Versión del documento: 1.4.0
 Tipo de cambio más reciente: minor
-Notas del último cambio: la marca se escribe SCHobras.cl (opción 4 de /sch, elegida por Claudia); antes, correcciones de Claudia al aprobar el diseño "del plano a la obra"
+Notas del último cambio: pie con derechos reservados, política de privacidad y crédito de desarrollo; página /privacidad/
 Fuente de verdad: sí (texto exacto que va en la web)
 Documentos relacionados: ../cliente/caracteristicas-pag-web.md, ../../respuestas-cliente-2026-10-22.md, ../2026-10-22-web-v1-diseno.md §5–6
 Objetivo: fijar palabra por palabra los textos de la web para que el código no los invente
@@ -105,7 +105,24 @@ Región Metropolitana · Región de Valparaíso · Región de O'Higgins
 
 ## Pie
 
-`SCHobras.cl` · `Constructora Schonffeldt SpA` · `RUT 77.897.204-2` · `Región Metropolitana · Valparaíso · O'Higgins` · canales configurados · `© {año}`
+`SCHobras.cl` · `Constructora Schonffeldt SpA` · `RUT 77.897.204-2` · `Región Metropolitana · Valparaíso · O'Higgins` · canales configurados
+
+Última línea (pedido de Ariel, 2026-10-25):
+- `© {año} Constructora Schonffeldt SpA. Todos los derechos reservados.` + enlace `Política de privacidad` (→ /privacidad/)
+- `Desarrollado por arielrosenmann.com` (enlace a https://arielrosenmann.com/, pestaña nueva)
+
+## Política de privacidad (/privacidad/)
+
+Pedido de Ariel (2026-10-25): el WhatsApp es solo para cotizar y consultar por proyectos; los datos no se comparten y se usan solo para la comunicación comercial del proyecto consultado. ⚠️ Texto base: revisarlo antes de que la web tenga formularios o analítica (v1.1+), que obligan a ampliarlo (CODING_AGENT_RULES §8).
+
+- Título: `Política de privacidad`
+- Bajada: `Cómo usamos los datos que nos entregas cuando nos contactas.`
+- **Quién es responsable:** `Constructora Schonffeldt SpA, RUT 77.897.204-2, dueña de SCHobras.cl.`
+- **Qué datos recibimos:** `Esta web no tiene formularios ni registra a quienes la visitan: no usamos cookies de seguimiento ni herramientas de analítica. Solo recibimos los datos que tú nos envías al escribirnos o llamarnos: tu nombre, tu número o correo y lo que nos cuentes de tu proyecto.`
+- **Para qué los usamos:** `El contacto por WhatsApp es exclusivo para cotizar y consultar por proyectos de arquitectura y construcción. Los usamos solo para la comunicación comercial sobre el proyecto que consultaste.`
+- **Con quién los compartimos:** `No compartimos tus datos con nadie. Los mensajes pasan por el servicio que elijas para escribirnos (WhatsApp, teléfono o correo), que tiene su propia política de privacidad.`
+- **Tus derechos:** `Puedes pedirnos en cualquier momento saber qué datos tuyos tenemos, corregirlos o borrarlos, escribiendo a {correo}.` (sin correo configurado: `escribiéndonos por WhatsApp`)
+- `Última actualización: 25 de octubre de 2026.`
 
 ## 404
 

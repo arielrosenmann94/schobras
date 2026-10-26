@@ -17,6 +17,9 @@
       </ul>
       {% endif %}
     </div>
-    <p class="site-footer__legal">© {% now "Y" %}</p>
+    <div class="site-footer__legal">
+      <p>© {% now "Y" %} Constructora Schonffeldt SpA. Todos los derechos reservados. <a href="{% url 'core:privacy' %}">Política de privacidad</a></p>
+      <p>Desarrollado por <a href="https://arielrosenmann.com/" target="_blank" rel="noopener">arielrosenmann.com</a></p>
+    </div>
   </div>
 </footer>

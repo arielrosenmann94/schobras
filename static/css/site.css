@@ -284,6 +284,22 @@ body::before,
 .cota--start::after { grid-column: 2; }
 
 /* Páginas de error: título y texto en un bloque con aire entre ellos. */
+/* Política de privacidad (/privacidad/). */
+.privacy__intro {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.privacy__body h2 { margin-top: var(--space-4); }
+.privacy__body h2:first-child { margin-top: 0; }
+
+.privacy__updated {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+  font-size: var(--text-small);
+}
+
 .error-page {
   display: grid;
   gap: var(--space-3);
@@ -677,10 +693,18 @@ body::before,
 }
 
 .site-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
   margin-top: clamp(3rem, 8vw, 6rem);
   color: var(--color-cement);
   font-size: var(--text-label);
   letter-spacing: 0.06em;
+}
+
+.site-footer__legal a {
+  text-decoration-color: var(--color-bronze);
 }
 
 @media (min-width: 48em) {
