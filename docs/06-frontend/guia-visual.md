@@ -55,7 +55,7 @@ Verificar el contraste también en `:hover` y `:focus-visible`.
 
 ## Dirección visual
 
-- **Lenguaje de plano:** líneas finas tipo cota/grilla, mucho blanco. El fondo lleva solo el marco de dos líneas, medio margen por fuera del contenido: ninguna línea de fondo cruza texto (revisión de Ariel, ronda 1). Las dos líneas del marco van en **antracita** (pedido de Claudia, 2026-10-25; antes cemento al 60 %).
+- **Lenguaje de plano:** líneas finas tipo cota/grilla, mucho blanco. El fondo lleva solo el marco de dos líneas, medio margen por fuera del contenido: ninguna línea de fondo cruza texto (revisión de Ariel, ronda 1). Las dos líneas del marco van en **antracita** (pedido de Claudia, 2026-10-25; antes cemento al 60 %). En pantallas más anchas que la página (90rem), la página es una hoja blanca centrada y los costados van en **cemento** (Claudia: "la página está muy blanca").
 - **Única excepción a la paleta:** dentro de la escena 3D de la portada, el pasto, el agua de la piscina y el follaje usan colores de naturaleza (`NATURE` en `frontend/src/v2-hero3d.js`), pedido de Claudia (2026-10-25). Nunca en CSS ni en la interfaz; la obra misma (muros, techo, madera, marcos) sigue en los tokens.
 - **Pestaña lateral «Cotiza tu proyecto»:** fija al borde derecho, centrada en el alto, texto vertical de abajo hacia arriba; antracita con texto blanco y el canto interior en bronce (solo línea). 44 px de ancho; con ella, el contenido deja libre su carril (`--gutter-end`), así nunca tapa texto. Queda bajo el encabezado y el menú móvil, y bajo el visor de fotos.
 - **Muros:** bloques sólidos de antracita/cemento que estructuran la página.

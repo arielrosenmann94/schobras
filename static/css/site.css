@@ -79,13 +79,21 @@
 *::before,
 *::after { box-sizing: border-box; }
 
+/* Pantallas más anchas que la página (90rem): la página es una hoja blanca centrada
+   y los costados van en cemento, no en blanco (pedido de Claudia, 2026-10-25: "la
+   página está muy blanca"). */
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  background: var(--color-cement);
 }
 
 body {
-  margin: 0;
+  /* Capa propia: el marco de líneas (z-index: -1) queda sobre el blanco de la hoja. */
+  isolation: isolate;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
