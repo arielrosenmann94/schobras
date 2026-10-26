@@ -5,7 +5,7 @@ Owner: Ariel Rosenmann / desarrollador
 Última revisión: 2026-10-25
 Versión del documento: 1.2.1
 Tipo de cambio más reciente: patch
-Notas del último cambio: costados de pantallas anchas en antracita (antes cemento)
+Notas del último cambio: costados de pantallas anchas en antracita (antes cemento) y pie con borde blanco
 Fuente de verdad: sí
 Documentos relacionados: ../2026-10-22-web-v1-diseno.md §4, ../cliente/caracteristicas-pag-web.md, ../../../iterap/docs/06-frontend/FRONTEND_GUIDELINES.md
 Objetivo: reglas visuales, de rendimiento y de accesibilidad de la web pública y del panel
@@ -55,7 +55,7 @@ Verificar el contraste también en `:hover` y `:focus-visible`.
 
 ## Dirección visual
 
-- **Lenguaje de plano:** líneas finas tipo cota/grilla, mucho blanco. El fondo lleva solo el marco de dos líneas, medio margen por fuera del contenido: ninguna línea de fondo cruza texto (revisión de Ariel, ronda 1). Las dos líneas del marco van en **antracita** (pedido de Claudia, 2026-10-25; antes cemento al 60 %). En pantallas más anchas que la página (90rem), la página es una hoja blanca centrada y los costados van en **antracita**, el color del pie (Claudia: "la página está muy blanca"; primero se probó cemento y a Ariel no le gustó).
+- **Lenguaje de plano:** líneas finas tipo cota/grilla, mucho blanco. El fondo lleva solo el marco de dos líneas, medio margen por fuera del contenido: ninguna línea de fondo cruza texto (revisión de Ariel, ronda 1). Las dos líneas del marco van en **antracita** (pedido de Claudia, 2026-10-25; antes cemento al 60 %). En pantallas más anchas que la página (90rem), la página es una hoja blanca centrada y los costados van en **antracita**, el color del pie (Claudia: "la página está muy blanca"; primero se probó cemento y a Ariel no le gustó). Ahí el pie lleva un borde blanco de 4 px a los lados y abajo, para no confundirse con los costados.
 - **Única excepción a la paleta:** dentro de la escena 3D de la portada, el pasto, el agua de la piscina y el follaje usan colores de naturaleza (`NATURE` en `frontend/src/v2-hero3d.js`), pedido de Claudia (2026-10-25). Nunca en CSS ni en la interfaz; la obra misma (muros, techo, madera, marcos) sigue en los tokens.
 - **Pestaña lateral «Cotiza tu proyecto»:** fija al borde derecho, centrada en el alto, texto vertical de abajo hacia arriba; antracita con texto blanco y el canto interior en bronce (solo línea). 44 px de ancho; con ella, el contenido deja libre su carril (`--gutter-end`), así nunca tapa texto. Queda bajo el encabezado y el menú móvil, y bajo el visor de fotos.
 - **Muros:** bloques sólidos de antracita/cemento que estructuran la página.

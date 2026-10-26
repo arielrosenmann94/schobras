@@ -221,6 +221,13 @@ class V2StaticTests(SimpleTestCase):
         for declaration in ("isolation: isolate;", "max-width: var(--max-width);", "margin: 0 auto;", "background: var(--color-white);"):
             self.assertIn(declaration, body_rule)
 
+    def test_wide_screens_frame_the_footer_in_white(self):
+        """Ariel (2026-10-25): con los costados en antracita, el pie lleva un borde blanco a los lados y abajo."""
+        css = self.read("css/site.css")
+        block = re.search(r"@media \(min-width: 90\.0625em\) \{(.*?)\n\}", css, re.S).group(1)
+        self.assertIn("border: 4px solid var(--color-white);", block)
+        self.assertIn("border-top: 0;", block)
+
     def test_frontend_tools_are_pinned(self):
         pkg = json.loads((Path(settings.BASE_DIR) / "frontend" / "package.json").read_text())
         self.assertEqual(pkg["devDependencies"], {"esbuild": "0.28.2", "three": "0.186.1"})
