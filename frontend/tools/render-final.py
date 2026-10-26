@@ -110,8 +110,8 @@ def gravel():
     noise = nodes.new("ShaderNodeTexNoise")
     noise.inputs["Scale"].default_value = 260
     noise.inputs["Detail"].default_value = 4
-    # Membrana gris medio, como en la foto de referencia (antes gravilla casi negra).
-    color_ramp(nodes, links, noise.outputs["Fac"], (0.075, 0.08, 0.085), (0.16, 0.165, 0.17), bsdf.inputs["Base Color"])
+    # Mismo color que el techo de la escena web: antracita con 18 % de cemento (#42474F).
+    color_ramp(nodes, links, noise.outputs["Fac"], (0.045, 0.052, 0.062), (0.075, 0.085, 0.1), bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.9
     add_bump(nodes, links, bsdf, 300, 0.6, kind="voronoi")
     return mat
@@ -127,10 +127,16 @@ def concrete():
     return mat
 
 
-def wood(name, darken=1.0):
-    """Madera con veta: bandas onduladas sobre el tono de cada tabla (color del objeto)."""
+def wood(name, darken=1.0, base=None):
+    """Madera con veta: bandas onduladas sobre el tono de cada tabla (color del objeto, o
+    `base` fijo para las piezas sin tono propio: puerta y piso), sin cambiarle el color."""
     mat, nodes, links, bsdf = principled(name)
-    info = nodes.new("ShaderNodeObjectInfo")
+    if base:
+        tone = nodes.new("ShaderNodeRGB")
+        tone.outputs[0].default_value = (*base, 1)
+        tone_out = tone.outputs[0]
+    else:
+        tone_out = nodes.new("ShaderNodeObjectInfo").outputs["Color"]
     wave = nodes.new("ShaderNodeTexWave")
     wave.wave_type = "BANDS"
     wave.bands_direction = "Z"
@@ -140,12 +146,12 @@ def wood(name, darken=1.0):
     mixer = nodes.new("ShaderNodeMix")
     mixer.data_type = "RGBA"
     mixer.blend_type = "MULTIPLY"
-    mixer.inputs["Factor"].default_value = 0.35
-    links.new(info.outputs["Color"], mixer.inputs["A"])
+    mixer.inputs["Factor"].default_value = 0.18
+    links.new(tone_out, mixer.inputs["A"])
     links.new(wave.outputs["Color"], mixer.inputs["B"])
     hsv = nodes.new("ShaderNodeHueSaturation")
-    hsv.inputs["Value"].default_value = 0.78 * darken
-    hsv.inputs["Saturation"].default_value = 0.85
+    hsv.inputs["Value"].default_value = 1.0 * darken
+    hsv.inputs["Saturation"].default_value = 1.0
     links.new(mixer.outputs["Result"], hsv.inputs["Color"])
     links.new(hsv.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.6
@@ -184,7 +190,7 @@ def water():
     sep = nodes.new("ShaderNodeSeparateXYZ")
     links.new(coords.outputs["Generated"], sep.inputs["Vector"])
     # Turquesa de piscina al sol: fondo celeste claro y ondas finas (foto de referencia).
-    color_ramp(nodes, links, sep.outputs["X"], (0.04, 0.46, 0.62), (0.14, 0.68, 0.8), bsdf.inputs["Base Color"])
+    color_ramp(nodes, links, sep.outputs["X"], hex_rgb("#2E9FD0"), hex_rgb("#7FD3EE"), bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.02
     bsdf.inputs["Coat Weight"].default_value = 1.0
     wave = add_bump(nodes, links, bsdf, 22, 0.18)
@@ -292,14 +298,14 @@ MATERIALS = {
     "roof": gravel(),
     "concrete": concrete(),
     "wood": wood("wood"),
-    "door-wood": wood("door-wood", 0.8),
-    "floor": wood("floor", 1.1),
-    "frame": solid("frame", (0.02, 0.022, 0.025), 0.35, 1.0),
+    "door-wood": wood("door-wood", base=hex_rgb("#BE8960")),  # bronce + 12 % blanco (escena web)
+    "floor": wood("floor", base=hex_rgb("#CBA17F")),         # bronce + 30 % blanco (escena web)
+    "frame": solid("frame", hex_rgb("#2C3539"), 0.45, 0.4),  # antracita, como los marcos del 3D
     "glass": glass(),
     "glow": glow(),
     "water": water(),
     "leaves": leaves(),
-    "trunk": solid("trunk", (0.09, 0.055, 0.03), 0.9),
+    "trunk": solid("trunk", hex_rgb("#6A4B33"), 0.9),
     "cushion": solid("cushion", (0.85, 0.84, 0.8), 0.8),
     "fabric": solid("fabric", (0.62, 0.58, 0.5), 0.95),
     "linen": solid("linen", (0.9, 0.88, 0.84), 0.9),
@@ -579,7 +585,7 @@ bpy.ops.mesh.primitive_plane_add(size=260, location=(1, -6, 0.002))
 turf = bpy.context.active_object
 turf.name = "cesped"
 # Verde propio: la textura del suelo, leída por coordenadas de objeto, tiñe mal las hebras.
-turf.data.materials.append(solid("hebras", (0.04, 0.115, 0.028), 0.8))
+turf.data.materials.append(solid("hebras", tuple(c * 0.55 for c in hex_rgb("#7DA356")), 0.8))
 blades = turf.modifiers.new("hebras", "PARTICLE_SYSTEM").particle_system
 blades_settings = blades.settings
 blades_settings.type = "HAIR"
@@ -630,9 +636,9 @@ if ASSETS:
     # Sol cálido extra en el mismo rumbo que el del cielo: luz dorada de la referencia sin
     # mover las sombras (el render se funde con la escena 3D).
     gold_data = bpy.data.lights.new("sol-dorado", "SUN")
-    gold_data.energy = 3.6
+    gold_data.energy = 2.8
     gold_data.angle = math.radians(1.5)
-    gold_data.color = (1.0, 0.88, 0.72)
+    gold_data.color = (1.0, 0.95, 0.88)
     gold = bpy.data.objects.new("sol-dorado", gold_data)
     scene.collection.objects.link(gold)
     gold.rotation_euler = (-sun_dir).to_track_quat("-Z", "Y").to_euler()
@@ -682,7 +688,7 @@ scene.view_settings.view_transform = "AgX"
 scene.view_settings.look = "AgX - Medium High Contrast"
 scene.view_settings.exposure = -0.1
 # Balance de blancos corrido al frío: la imagen queda cálida, como al atardecer.
-scene.view_settings.use_white_balance = True
+scene.view_settings.use_white_balance = False  # los colores deben ser los de la escena 3D
 scene.view_settings.white_balance_temperature = 6100
 scene.view_settings.white_balance_tint = 2
 scene.render.image_settings.file_format = "PNG"
