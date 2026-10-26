@@ -80,12 +80,12 @@
 *::after { box-sizing: border-box; }
 
 /* Pantallas más anchas que la página (90rem): la página es una hoja blanca centrada
-   y los costados van en cemento, no en blanco (pedido de Claudia, 2026-10-25: "la
-   página está muy blanca"). */
+   y los costados van en antracita, el color del pie, no en blanco (pedido de Claudia,
+   2026-10-25: "la página está muy blanca"; el cemento no le gustó a Ariel). */
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  background: var(--color-cement);
+  background: var(--color-anthracite);
 }
 
 body {

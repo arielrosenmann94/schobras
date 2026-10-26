@@ -211,11 +211,12 @@ class V2StaticTests(SimpleTestCase):
         for name in ("export-scene.js", "render-final.py"):
             self.assertTrue((tools / name).exists(), name)
 
-    def test_wide_screens_show_cement_sides(self):
-        """Claudia (2026-10-25): "la página está muy blanca". Más ancho que la página: costados en cemento."""
+    def test_wide_screens_show_anthracite_sides(self):
+        """Claudia (2026-10-25): "la página está muy blanca". Más ancho que la página: costados en
+        antracita, el color del pie (Ariel: el cemento no le gustó)."""
         css = self.read("css/site.css")
         html_rule = re.search(r"\nhtml \{([^}]*)\}", css).group(1)
-        self.assertIn("background: var(--color-cement);", html_rule)
+        self.assertIn("background: var(--color-anthracite);", html_rule)
         body_rule = re.search(r"\nbody \{([^}]*)\}", css).group(1)
         for declaration in ("isolation: isolate;", "max-width: var(--max-width);", "margin: 0 auto;", "background: var(--color-white);"):
             self.assertIn(declaration, body_rule)
