@@ -10,9 +10,16 @@ Uso:
 
 [carpeta] (opcional) tiene los recursos CC0 de Poly Haven (polyhaven.com, dominio público):
   kloofendal_48d_partly_cloudy_puresky_2k.hdr   cielo real (sol a 48°, como la escena web)
-  jacaranda/jacaranda_tree_1k.gltf (+ textures/) árbol escaneado
+  jacaranda/jacaranda_tree_1k.gltf (+ textures/) árbol escaneado (vecinos)
+  tree_small_02/tree_small_02_1k.gltf             árbol de copa redonda (los del terreno)
+  shrub_02/shrub_02_1k.gltf                       arbusto (jardineras y maceteros)
   grass/leafy_grass_{diff,nor_gl,rough}_2k.jpg   pasto fotográfico
-Sin ella, cielo físico de Blender, árboles de racimos y pasto procedural.
+Sin ella, cielo físico de Blender, árboles de racimos y pasto procedural. Los modelos
+que falten se omiten (el jacarandá reemplaza al árbol redondo).
+
+Referencia de Ariel (2026-10-25): foto aérea de una casa parecida al atardecer, con luz
+dorada, interior amoblado y encendido, jardineras y pasto denso. La cámara y el rumbo
+del sol no cambian: el render se funde con la escena 3D y las sombras deben calzar.
 """
 import json
 import math
@@ -103,8 +110,9 @@ def gravel():
     noise = nodes.new("ShaderNodeTexNoise")
     noise.inputs["Scale"].default_value = 260
     noise.inputs["Detail"].default_value = 4
-    color_ramp(nodes, links, noise.outputs["Fac"], (0.035, 0.038, 0.042), (0.11, 0.11, 0.115), bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.95
+    # Membrana gris medio, como en la foto de referencia (antes gravilla casi negra).
+    color_ramp(nodes, links, noise.outputs["Fac"], (0.075, 0.08, 0.085), (0.16, 0.165, 0.17), bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.9
     add_bump(nodes, links, bsdf, 300, 0.6, kind="voronoi")
     return mat
 
@@ -155,7 +163,7 @@ def solid(name, rgb, roughness=0.5, metallic=0.0):
 
 def glass():
     mat, nodes, links, bsdf = principled("glass")
-    bsdf.inputs["Base Color"].default_value = (0.82, 0.9, 0.92, 1)
+    bsdf.inputs["Base Color"].default_value = (0.94, 0.97, 0.97, 1)
     bsdf.inputs["Roughness"].default_value = 0.0
     bsdf.inputs["Transmission Weight"].default_value = 1.0
     bsdf.inputs["IOR"].default_value = 1.45
@@ -166,7 +174,7 @@ def glow():
     mat, nodes, links, bsdf = principled("glow")
     bsdf.inputs["Base Color"].default_value = (0.9, 0.86, 0.8, 1)
     bsdf.inputs["Emission Color"].default_value = (1.0, 0.78, 0.52, 1)
-    bsdf.inputs["Emission Strength"].default_value = 1.6
+    bsdf.inputs["Emission Strength"].default_value = 0.9
     return mat
 
 
@@ -175,11 +183,12 @@ def water():
     coords = nodes.new("ShaderNodeTexCoord")
     sep = nodes.new("ShaderNodeSeparateXYZ")
     links.new(coords.outputs["Generated"], sep.inputs["Vector"])
-    color_ramp(nodes, links, sep.outputs["X"], (0.02, 0.42, 0.62), (0.08, 0.62, 0.78), bsdf.inputs["Base Color"])
+    # Turquesa de piscina al sol: fondo celeste claro y ondas finas (foto de referencia).
+    color_ramp(nodes, links, sep.outputs["X"], (0.04, 0.46, 0.62), (0.14, 0.68, 0.8), bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.02
     bsdf.inputs["Coat Weight"].default_value = 1.0
-    wave = add_bump(nodes, links, bsdf, 9, 0.12)
-    wave.inputs["Detail"].default_value = 2
+    wave = add_bump(nodes, links, bsdf, 22, 0.18)
+    wave.inputs["Detail"].default_value = 3
     return mat
 
 
@@ -254,9 +263,9 @@ def lawn_photo(folder):
 
     diffuse = image("diff")
     tint = nodes.new("ShaderNodeHueSaturation")
-    tint.inputs["Hue"].default_value = 0.55
-    tint.inputs["Saturation"].default_value = 1.3
-    tint.inputs["Value"].default_value = 0.66
+    tint.inputs["Hue"].default_value = 0.515
+    tint.inputs["Saturation"].default_value = 1.7
+    tint.inputs["Value"].default_value = 0.62
     links.new(diffuse.outputs["Color"], tint.inputs["Color"])
     patches = nodes.new("ShaderNodeTexNoise")
     patches.inputs["Scale"].default_value = 0.25
@@ -267,7 +276,7 @@ def lawn_photo(folder):
     shade.blend_type = "MULTIPLY"
     links.new(patches.outputs["Fac"], shade.inputs["Factor"])
     links.new(tint.outputs["Color"], shade.inputs["A"])
-    shade.inputs["B"].default_value = (0.75, 0.85, 0.6, 1)
+    shade.inputs["B"].default_value = (0.62, 0.86, 0.5, 1)
     links.new(shade.outputs["Result"], bsdf.inputs["Base Color"])
     rough = image("rough", True)
     links.new(rough.outputs["Color"], bsdf.inputs["Roughness"])
@@ -292,6 +301,11 @@ MATERIALS = {
     "leaves": leaves(),
     "trunk": solid("trunk", (0.09, 0.055, 0.03), 0.9),
     "cushion": solid("cushion", (0.85, 0.84, 0.8), 0.8),
+    "fabric": solid("fabric", (0.62, 0.58, 0.5), 0.95),
+    "linen": solid("linen", (0.9, 0.88, 0.84), 0.9),
+    "rug": solid("rug", (0.55, 0.5, 0.42), 1.0),
+    "oak": wood("oak", 1.25),
+    "pot": solid("pot", (0.72, 0.7, 0.66), 0.8),
 }
 
 for obj in scene.objects:
@@ -304,6 +318,58 @@ for obj in scene.objects:
         if base in MATERIALS:
             slot.link = "OBJECT"
             slot.material = MATERIALS[base]
+
+# ── Interior: muebles y luces cálidas, visibles por los ventanales y claraboyas ──
+# Recintos (Blender, Z arriba): estar x −7,8…2,8 · y −2,8…3,8 (ventanal al sur, y −2,9);
+# dormitorio x 3,2…8,8 · y −6,8…3,8 (ventanal al sur, y −6,9). Piso a z 0,32.
+def box(name, center, size, material):
+    bpy.ops.mesh.primitive_cube_add(location=center)
+    item = bpy.context.active_object
+    item.name = name
+    item.scale = (size[0] / 2, size[1] / 2, size[2] / 2)
+    bpy.ops.object.transform_apply(scale=True)
+    item.data.materials.append(MATERIALS[material])
+    return item
+
+
+Z = 0.32
+box("alfombra", (-4.6, -1.3, Z + 0.005), (4.6, 3.0, 0.01), "rug")
+box("sofa-asiento", (-4.6, -0.3, Z + 0.22), (3.4, 1.0, 0.44), "fabric")
+box("sofa-respaldo", (-4.6, 0.3, Z + 0.45), (3.4, 0.25, 0.9), "fabric")
+box("sofa-brazo-o", (-6.4, -0.3, Z + 0.3), (0.25, 1.0, 0.6), "fabric")
+box("sofa-brazo-e", (-2.8, -0.3, Z + 0.3), (0.25, 1.0, 0.6), "fabric")
+box("mesa-centro", (-4.6, -1.8, Z + 0.19), (1.3, 0.6, 0.06), "oak")
+box("mesa-centro-pie", (-4.6, -1.8, Z + 0.08), (1.1, 0.4, 0.16), "frame")
+box("comedor", (0.2, -0.9, Z + 0.74), (2.2, 1.0, 0.05), "oak")
+for dx in (-0.8, 0.8):
+    box("comedor-pata", (0.2 + dx, -0.9, Z + 0.36), (0.08, 0.8, 0.72), "frame")
+for sx, sy in ((-0.7, -1.6), (0.0, -1.6), (0.7, -1.6), (-0.7, -0.2), (0.0, -0.2), (0.7, -0.2)):
+    box("silla", (0.2 + sx, sy, Z + 0.23), (0.44, 0.44, 0.46), "linen")
+    box("silla-respaldo", (0.2 + sx, sy + (0.2 if sy < -0.9 else -0.2), Z + 0.65), (0.44, 0.04, 0.4), "oak")
+box("cocina", (1.0, 3.0, Z + 0.45), (3.4, 0.7, 0.9), "linen")
+box("cocina-cubierta", (1.0, 3.0, Z + 0.92), (3.5, 0.75, 0.04), "pot")
+box("isla", (0.2, 1.6, Z + 0.45), (2.2, 0.9, 0.9), "linen")
+box("isla-cubierta", (0.2, 1.6, Z + 0.92), (2.3, 1.0, 0.04), "pot")
+box("cama", (5.8, -3.2, Z + 0.25), (2.0, 2.2, 0.5), "linen")
+box("cama-cubre", (5.8, -3.0, Z + 0.52), (1.9, 1.6, 0.06), "fabric")
+box("cama-respaldo", (5.8, -2.0, Z + 0.55), (2.1, 0.08, 1.1), "oak")
+for x, y in ((4.6, -2.2), (7.0, -2.2)):
+    box("velador", (x, y, Z + 0.25), (0.5, 0.45, 0.5), "oak")
+box("ropero", (7.0, 3.3, Z + 1.1), (3.2, 0.6, 2.2), "oak")
+
+for name, location, energy, size in (
+    ("luz-estar-o", (-4.6, 0.3, 3.2), 260, 2.0),
+    ("luz-estar-e", (0.2, -0.4, 3.2), 220, 2.0),
+    ("luz-cocina", (0.8, 2.6, 3.2), 140, 1.5),
+    ("luz-dormitorio", (6.0, -2.0, 3.2), 200, 2.0),
+):
+    light = bpy.data.lights.new(name, "AREA")
+    light.energy = energy
+    light.size = size
+    light.color = (1.0, 0.78, 0.55)
+    holder = bpy.data.objects.new(name, light)
+    holder.location = location
+    scene.collection.objects.link(holder)
 
 # ── Detalle de techo: dos claraboyas sobre el estar (three.js x −5 y −1, z −1) ──
 for x in (-5.0, -1.0):
@@ -365,6 +431,44 @@ for i in range(26):
 # ── Árboles escaneados (con la carpeta de recursos) ──────────────────────────
 # Cada árbol de la escena (tronco + copa) se cambia por un jacarandá real del mismo alto,
 # en el mismo lugar; los árboles vecinos también. Los arbustos bajos quedan.
+import os  # noqa: E402
+
+
+def load_model(name, only=None):
+    """Modelo glTF de Poly Haven → colección para instanciar; None si no está en la carpeta.
+    `only`: quedarse con una sola malla (los arbustos vienen de a cuatro, en fila) y centrarla."""
+    path = f"{ASSETS}/{name}/{name}_1k.gltf"
+    if not os.path.exists(path):
+        return None
+    bpy.ops.import_scene.gltf(filepath=path)
+    collection = bpy.data.collections.new(name)
+    height = 0.0
+    for obj in list(bpy.context.selected_objects):
+        for owner in obj.users_collection:
+            owner.objects.unlink(obj)
+        if only and obj.name != only:
+            bpy.data.objects.remove(obj, do_unlink=True)
+            continue
+        if only:
+            obj.location = (0, 0, 0)
+        collection.objects.link(obj)
+        if obj.type == "MESH":
+            height = max(height, (obj.matrix_world @ Vector(obj.bound_box[1])).z)
+    collection["height"] = height
+    return collection
+
+
+def place(collection, name, x, y, height, rotation):
+    holder = bpy.data.objects.new(name, None)
+    holder.instance_type = "COLLECTION"
+    holder.instance_collection = collection
+    holder.location = (x, y, 0)
+    holder.rotation_euler = (0, 0, rotation)
+    holder.scale = (height / collection["height"],) * 3
+    scene.collection.objects.link(holder)
+    return holder
+
+
 if ASSETS:
     bpy.ops.import_scene.gltf(filepath=f"{ASSETS}/jacaranda/jacaranda_tree_1k.gltf")
     jacaranda = bpy.context.selected_objects[0]
@@ -374,6 +478,9 @@ if ASSETS:
             collection.objects.unlink(obj)
         source.objects.link(obj)
     native_height = jacaranda.dimensions.z
+    source["height"] = native_height
+    round_tree = load_model("tree_small_02") or source  # ralo de cerca: solo para algunos vecinos
+    shrub = load_model("shrub_02", only="shrub_02_a")
     trunks = [o for o in scene.objects if o.type == "MESH" and o.material_slots
               and o.material_slots[0].material == MATERIALS["trunk"]]
     spots = []
@@ -390,13 +497,30 @@ if ASSETS:
                 and o.name != "leaf-clump"]:
         bpy.data.objects.remove(obj, do_unlink=True)
     for i, (x, y, height) in enumerate(spots):
-        holder = bpy.data.objects.new(f"arbol-{i}", None)
-        holder.instance_type = "COLLECTION"
-        holder.instance_collection = source
-        holder.location = (x, y, 0)
-        holder.rotation_euler = (0, 0, (i * 2.399) % (2 * math.pi))
-        holder.scale = (height / native_height,) * 3
-        scene.collection.objects.link(holder)
+        place(source, f"arbol-{i}", x, y, height * 1.15, (i * 2.399) % (2 * math.pi))
+
+    # Jardineras: arbustos al pie de los muros y junto a la piscina, y maceteros en la
+    # terraza (foto de referencia). Nunca delante del ventanal del estar.
+    if shrub:
+        random.seed(7)
+        beds = [
+            [(x, -8.2) for x in (3.6, 4.4, 5.2, 6.0, 6.8, 7.6, 8.4)],           # frente del dormitorio
+            [(10.0, y) for y in (-6.5, -5.4, -4.3, -3.2, -2.1, -1.0, 0.1, 1.2, 2.3, 3.4)],  # costado este
+            [(-9.2, y) for y in (-2.4, -1.4, 2.4, 3.4)],                           # costado oeste, sin tapar la puerta
+            [(x, -12.6) for x in (-6.5, -5.3, -4.1, -2.9, -1.7, -0.5, 0.7)],       # borde sur de la piscina
+            [(2.4, y) for y in (-11.0, -9.8)],                                     # cabecera este de la piscina
+        ]
+        for b, bed in enumerate(beds):
+            for j, (x, y) in enumerate(bed):
+                place(shrub, f"arbusto-{b}-{j}", x + random.uniform(-0.2, 0.2), y + random.uniform(-0.2, 0.2),
+                      random.uniform(0.8, 1.2), random.uniform(0, 2 * math.pi))
+        for j, (x, y) in enumerate(((-7.6, -3.6), (2.5, -3.6), (-3.2, -7.2))):
+            bpy.ops.mesh.primitive_cylinder_add(radius=0.3, depth=0.5, location=(x, y, 0.55))
+            pot = bpy.context.active_object
+            pot.name = f"macetero-{j}"
+            pot.data.materials.append(MATERIALS["pot"])
+            bush = place(shrub, f"macetero-planta-{j}", x, y, 0.9, random.uniform(0, 2 * math.pi))
+            bush.location.z = 0.78
 
 if ASSETS:
     random.seed(11)
@@ -406,13 +530,8 @@ if ASSETS:
             y = random.uniform(-12, 45)
             if not (x0 - 3 < x < x1 + 3 and y0 - 3 < y < y1 + 3):
                 break
-        holder = bpy.data.objects.new(f"vecino-{i}", None)
-        holder.instance_type = "COLLECTION"
-        holder.instance_collection = source
-        holder.location = (x, y, 0)
-        holder.rotation_euler = (0, 0, random.uniform(0, 2 * math.pi))
-        holder.scale = (random.uniform(6.5, 11) / native_height,) * 3
-        scene.collection.objects.link(holder)
+        species = round_tree if random.random() < 0.3 else source
+        place(species, f"vecino-{i}", x, y, random.uniform(6.5, 11), random.uniform(0, 2 * math.pi))
 
 # ── Follaje: racimos de hojas sobre cada copa ──────────────────────────────
 bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=1, location=(0, 0, -50))
@@ -455,6 +574,30 @@ ground = bpy.context.active_object
 ground.name = "pasto"
 ground.data.materials.append(lawn_photo(ASSETS) if ASSETS else lawn())
 
+# Hebras de pasto (pelo) cerca de la casa: dan el relieve del césped de la referencia.
+bpy.ops.mesh.primitive_plane_add(size=260, location=(1, -6, 0.002))
+turf = bpy.context.active_object
+turf.name = "cesped"
+# Verde propio: la textura del suelo, leída por coordenadas de objeto, tiñe mal las hebras.
+turf.data.materials.append(solid("hebras", (0.04, 0.115, 0.028), 0.8))
+blades = turf.modifiers.new("hebras", "PARTICLE_SYSTEM").particle_system
+blades_settings = blades.settings
+blades_settings.type = "HAIR"
+blades_settings.count = 1_600_000
+blades_settings.hair_length = 0.09
+blades_settings.use_advanced_hair = True
+blades_settings.root_radius = 0.6
+blades_settings.tip_radius = 0.05
+blades_settings.child_type = "SIMPLE"
+blades_settings.child_percent = 4
+blades_settings.rendered_child_count = 4
+blades_settings.child_length = 0.9
+blades_settings.child_length_threshold = 0.3
+blades_settings.clump_factor = 0.3
+blades_settings.roughness_2 = 0.08
+blades_settings.use_hair_bspline = True
+blades.seed = 3
+
 # ── Cielo y sol ───────────────────────────────────────────────────────────
 world = bpy.data.worlds.new("cielo")
 scene.world = world
@@ -482,8 +625,17 @@ if ASSETS:
     world.node_tree.links.new(coords.outputs["Generated"], mapping.inputs["Vector"])
     world.node_tree.links.new(mapping.outputs["Vector"], env.inputs["Vector"])
     background = world.node_tree.nodes.get("Background")
-    background.inputs["Strength"].default_value = 1.0
+    background.inputs["Strength"].default_value = 0.6
     world.node_tree.links.new(env.outputs["Color"], background.inputs["Color"])
+    # Sol cálido extra en el mismo rumbo que el del cielo: luz dorada de la referencia sin
+    # mover las sombras (el render se funde con la escena 3D).
+    gold_data = bpy.data.lights.new("sol-dorado", "SUN")
+    gold_data.energy = 3.6
+    gold_data.angle = math.radians(1.5)
+    gold_data.color = (1.0, 0.88, 0.72)
+    gold = bpy.data.objects.new("sol-dorado", gold_data)
+    scene.collection.objects.link(gold)
+    gold.rotation_euler = (-sun_dir).to_track_quat("-Z", "Y").to_euler()
 else:
     sky = world.node_tree.nodes.new("ShaderNodeTexSky")
     sky.sky_type = "NISHITA"
@@ -527,8 +679,12 @@ scene.render.resolution_y = HEIGHT
 scene.render.resolution_percentage = 100
 scene.render.film_transparent = False
 scene.view_settings.view_transform = "AgX"
-scene.view_settings.look = "AgX - Medium High Contrast" if not ASSETS else "AgX - High Contrast"
-scene.view_settings.exposure = 0.0
+scene.view_settings.look = "AgX - Medium High Contrast"
+scene.view_settings.exposure = -0.1
+# Balance de blancos corrido al frío: la imagen queda cálida, como al atardecer.
+scene.view_settings.use_white_balance = True
+scene.view_settings.white_balance_temperature = 6100
+scene.view_settings.white_balance_tint = 2
 scene.render.image_settings.file_format = "PNG"
 scene.render.filepath = OUT
 bpy.ops.render.render(write_still=True)
