@@ -154,7 +154,7 @@
     position: absolute;
     left: 0;
     bottom: 0;
-    z-index: 1;
+    z-index: 2;
     max-width: 24rem;
     padding: var(--space-1) var(--space-2) 0 0;
     background: var(--color-white);
@@ -178,6 +178,35 @@
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  /* Al 100 %, la escena se funde con un render fotorrealista de la misma casa y desde la
+     misma cámara (portada-render-*.webp, 4:5, cover): v2-hero3d.js sube su opacidad.
+     Se descarga recién cuando el 3D arrancó (.has-render). */
+  .v2-hero__render {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    background: 50% 50% / cover no-repeat;
+    pointer-events: none;
+  }
+
+  .v2-hero.has-render .v2-hero__render {
+    background-image: image-set(url("../img/portada-render-400.webp") 1x, url("../img/portada-render-800.webp") 2x);
+  }
+
+  /* Es una casa que no existe: se dice, para no hacerla pasar por una obra real. */
+  .v2-hero__note {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    opacity: 0;
+    padding: var(--space-1) 0 0 var(--space-2);
+    background: var(--color-white);
+    font-size: var(--text-label);
+    line-height: 1.4;
   }
 
   .v2-hero.is-3d .v2-plan { opacity: 0; }
@@ -207,6 +236,10 @@
 
   .v2-hero:not(.no-3d) .v2-plan {
     background-image: image-set(url("../img/portada-plano-720.webp") 1x, url("../img/portada-plano-1440.webp") 2x);
+  }
+
+  .v2-hero.has-render .v2-hero__render {
+    background-image: image-set(url("../img/portada-render-720.webp") 1x, url("../img/portada-render-1440.webp") 2x);
   }
 }
 

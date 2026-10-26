@@ -47,11 +47,13 @@ const PRIVATE = { x0: 3, x1: 9, z0: -4, z1: 7, h: 2.7 };   // dormitorios (6 × 
 const POOL = { x0: -7, x1: 1, z0: 9, z1: 11.4 };
 const DECK = { x0: -8, x1: 3, z0: 3, z1: 7.5 };
 const POSTER_ASPECT = 0.8; // imagen fija de la portada: 4:5 (ancho:alto)
+const TAN_REF = Math.tan((15 * Math.PI) / 180); // la mitad del campo vertical de 30°
+const CENTER = { x: 1.2, z: 3.4 };
 
 /* Colores de la naturaleza: pasto, agua y follaje. Son la única excepción a los tokens
    de marca, solo dentro de la escena (pedido de Claudia, 2026-10-25: "piscina con
    colores típicos de piscina, al igual que los árboles"). La obra sigue en la paleta. */
-const NATURE = {
+export const NATURE = {
   grass: "#7DA356",
   water: "#2E9FD0",
   waterLight: "#7FD3EE",
@@ -251,29 +253,42 @@ function slats(items, { axis, from, to, at, height, skip = [] }) {
   }
 }
 
-function buildHouse(colors) {
+export function buildHouse(colors) {
   const plaster = new MeshStandardMaterial({ color: colors.white, roughness: 0.92 });
+  plaster.name = "plaster"; // nombre que usa frontend/tools/render-final.py
   const concrete = new MeshStandardMaterial({ color: colors.cement, roughness: 0.95 });
+  concrete.name = "concrete"; // nombre que usa frontend/tools/render-final.py
   // Techo: membrana con grava en antracita (pedido de Claudia: "color en el techo").
   const roofMat = new MeshStandardMaterial({
     color: mix(colors.anthracite, colors.cement, 0.18), roughness: 0.95, map: noiseTexture(256, 6, { spread: 70, dots: 5000, radius: 1.3 }),
   });
+  roofMat.name = "roof";
   const roofEdge = new MeshStandardMaterial({ color: colors.white, roughness: 0.9 });
+  roofEdge.name = "roof-edge"; // nombre que usa frontend/tools/render-final.py
   const wood = new MeshStandardMaterial({ color: colors.white, roughness: 0.62 });
+  wood.name = "wood"; // nombre que usa frontend/tools/render-final.py
   const deckWood = new MeshStandardMaterial({ color: mix(colors.bronze, colors.white, 0.12), roughness: 0.7 });
+  deckWood.name = "door-wood"; // nombre que usa frontend/tools/render-final.py
   const frameMat = new MeshStandardMaterial({ color: colors.anthracite, roughness: 0.45, metalness: 0.4 });
+  frameMat.name = "frame"; // nombre que usa frontend/tools/render-final.py
   const glassMat = new MeshStandardMaterial({
     color: mix(colors.anthracite, colors.cement, 0.35), roughness: 0.04, metalness: 0.6,
     transparent: true, opacity: 0, depthWrite: false,
   });
+  glassMat.name = "glass";
   const glowMat = new MeshStandardMaterial({
     color: mix(colors.white, colors.cement, 0.25), roughness: 1,
     emissive: mix(colors.bronze, colors.white, 0.45), emissiveIntensity: 0,
   });
+  glowMat.name = "glow";
   const water = new MeshStandardMaterial({ map: waterTexture(), roughness: 0.06, metalness: 0.05 });
+  water.name = "water"; // nombre que usa frontend/tools/render-final.py
   const canopy = new MeshStandardMaterial({ color: colors.white, roughness: 0.9 });
+  canopy.name = "leaves"; // nombre que usa frontend/tools/render-final.py
   const trunkMat = new MeshStandardMaterial({ color: new Color(NATURE.trunk), roughness: 0.85 });
+  trunkMat.name = "trunk"; // nombre que usa frontend/tools/render-final.py
   const cushion = new MeshStandardMaterial({ color: colors.white, roughness: 0.8 });
+  cushion.name = "cushion"; // nombre que usa frontend/tools/render-final.py
   const planMat = new LineMaterial({ color: colors.anthracite, linewidth: 2, transparent: true });
   const axisMat = new LineMaterial({ color: colors.cement, linewidth: 1.3, dashed: true, dashSize: 0.5, gapSize: 0.35, transparent: true });
   const dimMat = new LineMaterial({ color: colors.bronze, linewidth: 2, transparent: true });
@@ -369,6 +384,7 @@ function buildHouse(colors) {
   // Interior: un piso de madera y muros del fondo que se encienden (luz cálida).
   const interior = new Group();
   const floorMat = new MeshStandardMaterial({ color: mix(colors.bronze, colors.white, 0.3), roughness: 0.7 });
+  floorMat.name = "floor";
   box(interior, floorMat, [s.x1 - s.x0 - 2 * T, 0.02, s.z1 - s.z0 - 2 * T], [(s.x0 + s.x1) / 2, BASE + 0.01, (s.z0 + s.z1) / 2], { shadow: false });
   box(interior, floorMat, [p.x1 - p.x0 - 2 * T, 0.02, p.z1 - p.z0 - 2 * T], [(p.x0 + p.x1) / 2, BASE + 0.01, (p.z0 + p.z1) / 2], { shadow: false });
   box(interior, glowMat, [s.x1 - s.x0 - 2 * T - 0.1, s.h - 0.05, 0.02], [(s.x0 + s.x1) / 2, BASE + s.h / 2, s.z0 + T + 0.03], { shadow: false });
@@ -440,10 +456,86 @@ function buildHouse(colors) {
   };
 }
 
+/* Estado de la obra para un avance t (0 → 1): qué está construido y cuánto. */
+export function applyProgress(house, t) {
+  // Fundaciones: cimientos corridos y después el radier. Ya se ven al 5 % (Ariel,
+  // 2026-10-25: en el celular la obra tardaba en empezar).
+  house.footings.update(t, 0.035, 0.16, 0.04);
+  const slabIn = ease(span(t, 0.13, 0.23));
+  house.slab.visible = slabIn > 0;
+  house.slab.scale.y = Math.max(0.01, slabIn);
+  // Estructura: pilares uno por uno y las cadenas que los amarran.
+  house.columns.update(t, 0.22, 0.4, 0.06);
+  house.beams.update(t, 0.36, 0.5, 0.06);
+  // Cerramientos: muros que se levantan y losas que bajan.
+  const wallsIn = ease(span(t, 0.5, 0.66));
+  house.walls.visible = wallsIn > 0;
+  house.walls.scale.y = Math.max(0.01, wallsIn);
+  house.doorLeaf.visible = wallsIn >= 1;
+  const roofIn = ease(span(t, 0.62, 0.78));
+  house.roof.visible = roofIn > 0;
+  house.roof.position.y = (1 - roofIn) * 4;
+  // Entrega: vidrios, madera, terraza, piscina, jardín y luces encendidas.
+  const framesIn = ease(span(t, 0.76, 0.84));
+  house.frames.visible = framesIn > 0;
+  house.frames.scale.y = Math.max(0.01, framesIn);
+  house.interior.visible = framesIn > 0;
+  house.glassMat.opacity = 0.42 * span(t, 0.8, 0.88);
+  house.glass.visible = house.glassMat.opacity > 0;
+  house.cladding.update(t, 0.78, 0.92, 0.05);
+  house.deck.visible = t > 0.8;
+  house.deckBoards.update(t, 0.8, 0.9, 0.05);
+  house.pool.visible = t > 0.82;
+  const fill = ease(span(t, 0.84, 0.92));
+  house.waterMesh.scale.y = Math.max(0.01, fill);
+  house.waterMesh.position.y = 0.04 * fill;
+  house.stones.update(t, 0.84, 0.92, 0.04);
+  house.trunks.update(t, 0.86, 0.97, 0.05);
+  house.crowns.update(t, 0.87, 0.99, 0.06);
+  house.glowMat.emissiveIntensity = 1.4 * ease(span(t, 0.86, 0.97));
+
+  const linesOut = 1 - span(t, 0.55, 0.85);
+  house.plan.visible = linesOut > 0;
+  house.planMat.opacity = linesOut;
+  house.axisMat.opacity = linesOut;
+  house.dimMat.opacity = linesOut;
+}
+
+/* Cámara en riel: parte cenital (el plano) y baja a una vista en 3/4. La posición no
+   depende de la pantalla: solo el campo visual se recorta (fovFor), igual que una
+   imagen con object-fit: cover. Así la imagen fija del inicio y el render del final
+   (ambos 4:5) calzan con la escena en cualquier pantalla. El mouse deja de influir
+   al final, para que el render calce. */
+export function cameraPose(t, look = { x: 0, y: 0 }) {
+  const turn = ease(span(t, 0.03, 0.72));
+  const steady = 1 - span(t, 0.9, 0.97);
+  const phi = lerp(0.04, 1.02, turn) + look.y * 0.05 * turn * steady;
+  const theta = lerp(0, -0.62, ease(span(t, 0.03, 0.96))) + look.x * 0.08 * steady;
+  const r = lerp(15, 16.5, turn) / TAN_REF; // 12 m de ancho visible a cada lado en 4:5
+  const targetY = lerp(0, 1.4, turn);
+  return {
+    position: [
+      CENTER.x + r * Math.sin(phi) * Math.sin(theta),
+      targetY + r * Math.cos(phi),
+      CENTER.z + r * Math.sin(phi) * Math.cos(theta),
+    ],
+    target: [CENTER.x, targetY, CENTER.z],
+  };
+}
+
+/* Campo visual vertical (grados) para una pantalla: en 4:5 o más angosta, 30°; más
+   ancha, se recorta arriba y abajo como cover. */
+export function fovFor(aspect) {
+  if (aspect < POSTER_ASPECT) return 30;
+  return (2 * Math.atan((TAN_REF * POSTER_ASPECT) / aspect) * 180) / Math.PI;
+}
+
 export function start(hero) {
   const host = hero.querySelector("[data-scene]");
   const pin = hero.querySelector(".v2-hero__pin");
   if (!host || !pin) return false;
+  const render = hero.querySelector("[data-render]");
+  const note = hero.querySelector("[data-render-note]");
 
   let renderer;
   try {
@@ -514,9 +606,6 @@ export function start(hero) {
   scene.add(sun);
 
   const camera = new PerspectiveCamera(30, 1, 1, 400);
-  let distance = 60;
-  let opening = 60;
-  const center = { x: 1.2, z: 3.4 };
 
   const fit = () => {
     const width = host.clientWidth;
@@ -525,13 +614,7 @@ export function start(hero) {
     renderer.setSize(width, height, false);
     house.lineMats.forEach((material) => material.resolution.copy(new Vector2(width, height)));
     camera.aspect = width / height;
-    const tan = Math.tan((camera.fov * Math.PI) / 360);
-    // Que entren la casa, la piscina y las cotas, también en pantallas angostas.
-    distance = Math.max(10 / tan, 12 / (tan * camera.aspect));
-    // Primer cuadro (el plano visto desde arriba): mismo encuadre que la imagen fija de
-    // la portada (static/img/portada-plano.webp, 4:5, con object-fit: cover), para que el
-    // cambio de la imagen a la escena no se note. Ancho visible fijo de 24 m (12 por lado).
-    opening = (camera.aspect >= POSTER_ASPECT ? 12 / camera.aspect : 12 / POSTER_ASPECT) / tan;
+    camera.fov = fovFor(camera.aspect);
     camera.updateProjectionMatrix();
   };
 
@@ -543,61 +626,15 @@ export function start(hero) {
   };
 
   const draw = (t, look) => {
-    const turn = ease(span(t, 0.03, 0.72));
-    const phi = lerp(0.04, 1.02, turn) + look.y * 0.05 * turn;
-    const theta = lerp(0, -0.62, ease(span(t, 0.03, 0.96))) + look.x * 0.08;
-    const r = lerp(opening, distance * 1.1, turn);
-    const targetY = lerp(0, 1.4, turn);
-    camera.position.set(
-      center.x + r * Math.sin(phi) * Math.sin(theta),
-      targetY + r * Math.cos(phi),
-      center.z + r * Math.sin(phi) * Math.cos(theta),
-    );
-    camera.lookAt(center.x, targetY, center.z);
-
-    // Fundaciones: cimientos corridos y después el radier. Ya se ven al 5 % (Ariel,
-    // 2026-10-25: en el celular la obra tardaba en empezar).
-    house.footings.update(t, 0.035, 0.16, 0.04);
-    const slabIn = ease(span(t, 0.13, 0.23));
-    house.slab.visible = slabIn > 0;
-    house.slab.scale.y = Math.max(0.01, slabIn);
-    // Estructura: pilares uno por uno y las cadenas que los amarran.
-    house.columns.update(t, 0.22, 0.4, 0.06);
-    house.beams.update(t, 0.36, 0.5, 0.06);
-    // Cerramientos: muros que se levantan y losas que bajan.
-    const wallsIn = ease(span(t, 0.5, 0.66));
-    house.walls.visible = wallsIn > 0;
-    house.walls.scale.y = Math.max(0.01, wallsIn);
-    house.doorLeaf.visible = wallsIn >= 1;
-    const roofIn = ease(span(t, 0.62, 0.78));
-    house.roof.visible = roofIn > 0;
-    house.roof.position.y = (1 - roofIn) * 4;
-    // Entrega: vidrios, madera, terraza, piscina, jardín y luces encendidas.
-    const framesIn = ease(span(t, 0.76, 0.84));
-    house.frames.visible = framesIn > 0;
-    house.frames.scale.y = Math.max(0.01, framesIn);
-    house.interior.visible = framesIn > 0;
-    house.glassMat.opacity = 0.42 * span(t, 0.8, 0.88);
-    house.glass.visible = house.glassMat.opacity > 0;
-    house.cladding.update(t, 0.78, 0.92, 0.05);
-    house.deck.visible = t > 0.8;
-    house.deckBoards.update(t, 0.8, 0.9, 0.05);
-    house.pool.visible = t > 0.82;
-    const fill = ease(span(t, 0.84, 0.92));
-    house.waterMesh.scale.y = Math.max(0.01, fill);
-    house.waterMesh.position.y = 0.04 * fill;
-    house.stones.update(t, 0.84, 0.92, 0.04);
-    house.trunks.update(t, 0.86, 0.97, 0.05);
-    house.crowns.update(t, 0.87, 0.99, 0.06);
-    house.glowMat.emissiveIntensity = 1.4 * ease(span(t, 0.86, 0.97));
+    const pose = cameraPose(t, look);
+    camera.position.set(...pose.position);
+    camera.lookAt(...pose.target);
+    applyProgress(house, t);
     boardMat.color.copy(terrain).lerp(grass, ease(span(t, 0.84, 0.96)));
-
-    const linesOut = 1 - span(t, 0.55, 0.85);
-    house.plan.visible = linesOut > 0;
-    house.planMat.opacity = linesOut;
-    house.axisMat.opacity = linesOut;
-    house.dimMat.opacity = linesOut;
-
+    // Al 100 %, la imagen fotorrealista de la misma casa y con la misma cámara.
+    const real = ease(span(t, 0.97, 0.999));
+    if (render) render.style.opacity = String(real);
+    if (note) note.style.opacity = String(real);
     renderer.render(scene, camera);
   };
 
@@ -643,6 +680,7 @@ export function start(hero) {
   draw(shown.t, shown);
   caption(shown.t);
   hero.classList.add("is-3d");
+  hero.classList.add("has-render"); // empieza a bajar el render del final
 
   window.addEventListener("scroll", () => {
     target.t = progress();

@@ -96,6 +96,14 @@ class HomeDesignTests(TestCase):
         for link in preloads:
             self.assertIn("(scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-height: 34em)", link)
 
+    def test_photoreal_render_closes_the_animation_and_says_so(self):
+        """Ariel (2026-10-25): al final, una casa que cueste distinguir de una foto. Como la casa no
+        existe, se dice: «Imagen referencial» (no se hace pasar por una obra de la empresa)."""
+        _, html = self.get()
+        scene = re.search(r"<div class=\"v2-hero__scene\".*?</ol>", html, re.S).group(0)
+        self.assertIn('<div class="v2-hero__render" data-render></div>', scene)
+        self.assertIn('<p class="v2-hero__note" data-render-note>Imagen referencial</p>', scene)
+
     def test_drawings_are_decorative(self):
         _, html = self.get()
         for svg_class in ("v2-plan", "v2-stage"):
@@ -187,6 +195,21 @@ class V2StaticTests(SimpleTestCase):
     def test_page_frame_lines_are_anthracite(self):
         css = self.read("css/site.css")
         self.assertIn("border-inline: 1px solid var(--axes-color, var(--color-anthracite));", css)
+
+    def test_render_images_exist_and_load_only_with_the_3d(self):
+        css = self.read("css/v2.css")
+        for width in (400, 800, 720, 1440):
+            self.assertIn(f'url("../img/portada-render-{width}.webp")', css)
+            self.assertTrue((Path(settings.BASE_DIR) / "static" / "img" / f"portada-render-{width}.webp").exists())
+        self.assertIn(".v2-hero.has-render .v2-hero__render {", css)
+        source = (Path(settings.BASE_DIR) / "frontend" / "src" / "v2-hero3d.js").read_text()
+        # Misma cámara para la escena y el render: posición fija, campo visual recortado como cover.
+        self.assertIn("export function cameraPose(", source)
+        self.assertIn("export function fovFor(", source)
+        self.assertIn("render.style.opacity", source)
+        tools = Path(settings.BASE_DIR) / "frontend" / "tools"
+        for name in ("export-scene.js", "render-final.py"):
+            self.assertTrue((tools / name).exists(), name)
 
     def test_frontend_tools_are_pinned(self):
         pkg = json.loads((Path(settings.BASE_DIR) / "frontend" / "package.json").read_text())
