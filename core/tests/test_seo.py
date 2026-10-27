@@ -130,3 +130,20 @@ class NotFoundTests(TestCase):
         self.assertIn("SCHobras", html)
         self.assertIn(f'href="{reverse("core:home")}"', html)
         self.assertEqual(SiteSettings.objects.count(), 0)
+
+    def test_404_commercial_block_with_whatsapp(self):
+        site = SiteSettings.load()
+        site.whatsapp = "912345678"
+        site.save()
+        html = self.client.get("/no-existe/").content.decode()
+        closing = html[html.index('class="wall error-cta"'):html.index("</section>", html.index('class="wall error-cta"'))]
+        self.assertIn("Tu proyecto sí puede existir", closing)
+        self.assertIn("Diseñamos y construimos", closing)
+        self.assertRegex(closing, r'<a class="btn btn--primary" href="https://wa\.me/56912345678\?text=[^"]*"[^>]*>Cotiza tu proyecto por WhatsApp</a>')
+        self.assertIn("Volver al inicio", html)
+
+    def test_404_without_whatsapp_has_no_commercial_button(self):
+        html = self.client.get("/no-existe/").content.decode()
+        self.assertNotIn("wa.me", html)
+        self.assertNotIn("Cotiza tu proyecto por WhatsApp", html)
+        self.assertIn("Volver al inicio", html)

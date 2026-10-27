@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load site_tags %}
 {% block title %}Esta página no existe | SCHobras.cl{% endblock %}
+{% block whatsapp_message %}Hola, llegué a una página que no existe en su web y quiero conversar sobre un proyecto.{% endblock %}
 {% block og %}
   <meta property="og:site_name" content="SCHobras.cl">
   <meta property="og:locale" content="es_CL">
@@ -15,7 +16,20 @@
       <h1 class="display">Esta página no existe</h1>
       <p class="lead">Puede que el enlace esté mal escrito o que el proyecto ya no esté publicado.</p>
     </header>
-    <p><a class="btn btn--primary" href="{% url 'core:home' %}">Volver al inicio</a></p>
+    <p><a class="btn btn--ghost" href="{% url 'core:home' %}">Volver al inicio</a></p>
+  </div>
+</section>
+
+<section class="wall error-cta" aria-labelledby="error-cta-titulo">
+  <div class="container project__closing-inner">
+    <div class="error-cta__copy">
+      <h2 class="heading" id="error-cta-titulo">Tu proyecto sí puede existir</h2>
+      <p class="lead">Diseñamos y construimos tu proyecto. Si construyes con nosotros, el valor del proyecto de arquitectura se descuenta del presupuesto de la obra.</p>
+    </div>
+    <div class="error-cta__actions">
+      {% if wa_href %}<a class="btn btn--primary" href="{{ wa_href }}" target="_blank" rel="noopener">Cotiza tu proyecto por WhatsApp</a>{% endif %}
+      {% if has_projects %}<a class="btn btn--ghost" href="{% url 'projects:list' %}">Ver proyectos</a>{% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

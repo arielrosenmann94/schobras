@@ -306,6 +306,11 @@ body::before,
   margin-bottom: var(--space-6);
 }
 
+/* 404 comercial: un muro con el llamado a conversar el proyecto. */
+.error-cta { padding-block: var(--space-6); }
+.error-cta__copy { display: grid; gap: var(--space-2); max-width: 36rem; }
+.error-cta__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
 .rule {
   height: 1px;
   border: 0;
